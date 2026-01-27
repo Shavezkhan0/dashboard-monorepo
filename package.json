@@ -1,0 +1,20 @@
+{
+    "name": "dashboard-monorepo",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "pnpm -r --parallel --filter @dashboard/* dev",
+        "frontend-dev": "pnpm --filter @dashboard/frontend dev",
+        "api-dev": "pnpm --filter @dashboard/api dev",
+        "build": "pnpm -r build",
+        "start": "pnpm --filter @dashboard/frontend start",
+        "lint": "pnpm --recursive lint"
+    },
+    "devDependencies": {
+        "@types/pg": "^8.16.0",
+        "dotenv": "^17.2.3",
+        "pg": "^8.17.2",
+        "tsx": "^4.21.0",
+        "typescript": "^5.3.3"
+    }
+}
