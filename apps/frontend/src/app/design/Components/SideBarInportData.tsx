@@ -1,5 +1,4 @@
 'use client';
-'use client';
 import * as Dialog from '@radix-ui/react-dialog';
 import React, { useState } from 'react'
 import { X } from "lucide-react";
@@ -12,7 +11,7 @@ const SideBarInportData = () => {
 
   // The missing function and state variable are added for a complete fix
   const [selectedOption, setSelectedOption] = useState(null);
-  const handlePopupClose = (open) => {
+  const handlePopupClose = (open: boolean) => {
     setPopupOpen(open);
     if (!open) {
       setSelectedOption(null);
@@ -61,7 +60,7 @@ const SideBarInportData = () => {
                       </Dialog.Close>
                     </div>
                     <div className="p-6 overflow-y-auto max-h-[80vh]">
-                      <GetData />
+                      <GetData onClose={() => setPopupOpen(false)} />
                     </div>
                   </>
                 )}
@@ -91,4 +90,3 @@ const SideBarInportData = () => {
 }
 
 export default SideBarInportData;
-

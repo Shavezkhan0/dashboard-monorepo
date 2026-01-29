@@ -1,6 +1,5 @@
 'use client';
-'use client';
-import React, { useState, useMemo, cloneElement } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ElementsList } from '../Elements/SidebarList';
 import LineGraphSetting from './Setting/LineChartSetting';
 import * as Dialog from '@radix-ui/react-dialog';
@@ -19,6 +18,8 @@ import BubbleChartSetting from './Setting/BubbleChartSetting';
 import WaterfallChartSetting from './Setting/WaterfallChartSetting';
 import SideBarInportData from './SideBarInportData';
 import AiGenerateSidebar from './AiGenerateSidebar';
+import HeaderSetting from './Setting/HeaderSetting';
+import KpiChartSetting from './Setting/KpiChartSetting';
 
 export default function Sidebar() {
     const { widgets, selectedWidgetId, setSelectedWidgetId, updateWidget } = useCanvasHook();
@@ -27,17 +28,17 @@ export default function Sidebar() {
         return widgets.find(w => w.id === selectedWidgetId);
     }, [widgets, selectedWidgetId]);
 
-    const [selectedOption, setSelectedOption] = useState(null);
+    const [selectedOption, setSelectedOption] = useState<any>(null);
     const [selectedAi, setSelectedAi] = useState(false);
     const [popupOpen, setPopupOpen] = useState(false);
 
-    const handleElementClick = (element) => {
+    const handleElementClick = (element: any) => {
         setSelectedOption(element);
         setPopupOpen(true);
         setSelectedWidgetId(null);
     };
 
-    const handlePopupClose = (open) => {
+    const handlePopupClose = (open: boolean) => {
         setPopupOpen(open);
         if (!open) {
             setSelectedOption(null);
@@ -48,7 +49,7 @@ export default function Sidebar() {
         setSelectedWidgetId(null);
     };
 
-    const handleChartDataUpdate = (newData) => {
+    const handleChartDataUpdate = (newData: any) => {
         if (selectedWidgetId) {
             updateWidget(selectedWidgetId, newData);
         }
@@ -77,6 +78,14 @@ export default function Sidebar() {
                 ) : selectedWidget ? (
                     <div className="w-full h-full">
                         {/* Settings Panel */}
+                        {selectedWidget.type === 'header' && (
+                            <HeaderSetting
+                                key={selectedWidget.id}
+                                initialData={selectedWidget.props}
+                                onUpdate={handleChartDataUpdate}
+                                onClose={handleCloseObjectSettings}
+                            />
+                        )}
                         {selectedWidget.type === 'line' && (
                             <LineGraphSetting
                                 key={selectedWidget.id}
@@ -135,6 +144,14 @@ export default function Sidebar() {
                         )}
                         {selectedWidget.type === 'scatter' && (
                             <ScatterChartSetting
+                                key={selectedWidget.id}
+                                initialData={selectedWidget.props}
+                                onUpdate={handleChartDataUpdate}
+                                onClose={handleCloseObjectSettings}
+                            />
+                        )}
+                        {selectedWidget.type === 'kpi' && (
+                            <KpiChartSetting
                                 key={selectedWidget.id}
                                 initialData={selectedWidget.props}
                                 onUpdate={handleChartDataUpdate}
@@ -215,7 +232,7 @@ export default function Sidebar() {
                             </Dialog.Close>
                         </div>
                         <div className="p-6 overflow-y-auto max-h-[80vh]">
-                            {selectedOption?.add && cloneElement(selectedOption.add, {
+                            {selectedOption?.component && React.createElement(selectedOption.component, {
                                 onClose: () => setPopupOpen(false)
                             })}
                         </div>
@@ -225,4 +242,3 @@ export default function Sidebar() {
         </div>
     );
 }
-

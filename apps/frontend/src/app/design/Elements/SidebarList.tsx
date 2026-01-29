@@ -1,4 +1,3 @@
-'use client';
 import { LuRectangleHorizontal } from "react-icons/lu";
 import { VscGraphLine } from "react-icons/vsc";
 import { TfiBarChartAlt } from "react-icons/tfi";
@@ -25,92 +24,93 @@ import AddTreemap from "./AddTreemap";
 import AddBubbleChart from "./AddBubbleChart";
 import AddWaterfallChart from "./AddWaterfallChart";
 import AddLineChart from "./AddLineChart";
+import AddHeader from "./AddHeader";
+import AddKpiChart from "./AddKpiChart";
 
 export const ElementsList = [
-    // {
-    //     name: "Header",
-    //     desc: "Header for your project",
-    //     add: "Add Header for your project",
-    //     icon: <LuRectangleHorizontal />
-    // },
+    {
+        name: "Header",
+        desc: "Header for your project",
+        component: AddHeader,
+        icon: <LuRectangleHorizontal />
+    },
     {
         name: "Bar Chart",
         desc: "Bar Chart for your project",
-        add: <AddBarChart />,
+        component: AddBarChart,
         icon: <TfiBarChartAlt />
     },
     {
         name: "Pie Chart",
         desc: "Pie Chart for your project",
-        add: <AddPieChart />,
+        component: AddPieChart,
         icon: <GrPieChart />
-    },
-    {
-        name: "Histogram",
-        desc: "Histogram for your project",
-        add: <AddHistogram />,
-        icon: <GiHistogram />
     },
     {
         name: "Line Chart",
         desc: "Line Chart for your project",
-        add: <AddLineChart />,
+        component: AddLineChart,
         icon: <VscGraphLine />
     },
     {
         name: "Area Chart",
         desc: "Area Chart for your project",
-        add: <AddAreaChart />,
+        component: AddAreaChart,
         icon: <AiOutlineAreaChart />
     },
     {
         name: "Donut Chart",
         desc: "Donut Chart for your project",
-        add: <AddDonutChart />,
+        component: AddDonutChart,
         icon: <MdOutlineDonutSmall />
     },
     {
         name: "Funnel Chart",
         desc: "Funnel Chart for your project",
-        add: <AddFunnelChart />,
+        component: AddFunnelChart,
         icon: <AiOutlineFunnelPlot />
     },
     {
         name: "Scatter Plot",
         desc: "Scatter Plot for your project",
-        add: <AddScatterChart/>,
+        component: AddScatterChart,
         icon: <PiChartScatter />
     },
-    // {
-    //     name: "KPIs",
-    //     desc: "Key Performance Indicators for your project",
-    //     add: "Add KPI metrics to display performance indicators",
-    //     icon: <FaRegRectangleList />
-    // },
+    {
+        name: "KPIs",
+        desc: "Key Performance Indicators for your project",
+        component: AddKpiChart,
+        icon: <FaRegRectangleList />
+    },
     {
         name: "Gauge",
         desc: "Gauge for your project",
-        add: <AddGaugeChart/>,
+        component: AddGaugeChart,
         icon: <PiGaugeLight />
     },
     {
         name: "Treemap ",
         desc: "Tree Map for your project",
-        add: <AddTreemap/>,
+        component: AddTreemap,
         icon: <TbChartTreemap />
     },
     {
         name: "Bubble Chart",
         desc: "Bubble Chart for your project",
-        add: <AddBubbleChart/>,
+        component: AddBubbleChart,
         icon: <TbChartBubble />
     },
     {
         name: "Waterfall Chart",
         desc: "Waterfall Chart for your project",
-        add: <AddWaterfallChart/>,
+        component: AddWaterfallChart,
         icon: <MdOutlineWaterfallChart />
+    },
+    {
+        name: "Histogram",
+        desc: "Histogram for your project",
+        component: AddHistogram,
+        icon: <GiHistogram />
     },
 
 ];
-

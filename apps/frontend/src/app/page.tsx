@@ -1,12 +1,11 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { ApiClient, useDashboards } from '@dashboard/api-client';
+import { ApiClient, useDashboards, useDeleteDashboard } from '@dashboard/api-client';
 import { formatDistanceToNow } from 'date-fns';
-import { FaPlus, FaChartLine, FaClock } from 'react-icons/fa';
+import { FaPlus, FaChartLine, FaClock, FaTrash } from 'react-icons/fa';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -24,6 +23,17 @@ export default function Home() {
   const { data: dashboards, isLoading: dashboardsLoading } = useDashboards(client!, {
     enabled: !!client && isAuthenticated,
   });
+
+  const deleteMutation = useDeleteDashboard(client!);
+
+  const handleDelete = (e: React.MouseEvent, id: string) => {
+    e.preventDefault(); // Prevent navigation
+    e.stopPropagation();
+
+    if (window.confirm('Are you sure you want to delete this dashboard?')) {
+      deleteMutation.mutate(id);
+    }
+  };
 
   if (authLoading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -92,20 +102,31 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {dashboards?.map((dashboard) => (
-              <Link
+              <div
                 key={dashboard.id}
-                href={`/design/${dashboard.id}`}
-                className="block group"
+                className="group relative bg-white border rounded-lg hover:shadow-md transition border-gray-200 group-hover:border-indigo-300 h-full flex flex-col"
               >
-                <div className="bg-white border rounded-lg p-6 hover:shadow-md transition border-gray-200 group-hover:border-indigo-300 h-full flex flex-col">
-                  <div className="flex items-start justify-between mb-4">
+                <Link
+                  href={`/design/${dashboard.id}`}
+                  className="absolute inset-0 z-0"
+                  aria-label={`Open ${dashboard.name}`}
+                />
+
+                <div className="p-6 flex flex-col h-full pointer-events-none">
+                  <div className="flex items-start justify-between mb-4 pointer-events-auto">
                     <div className="p-3 bg-indigo-50 rounded-lg text-indigo-600 mb-4">
                       <FaChartLine size={24} />
                     </div>
-                    {/* You could add a delete button here */}
+                    <button
+                      onClick={(e) => handleDelete(e, dashboard.id)}
+                      className="text-gray-400 hover:text-red-500 p-2 transition-colors z-10 cursor-pointer"
+                      title="Delete Dashboard"
+                    >
+                      <FaTrash size={16} />
+                    </button>
                   </div>
 
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate group-hover:text-indigo-600">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate group-hover:text-indigo-600 pointer-events-auto">
                     {dashboard.name}
                   </h3>
 
@@ -116,7 +137,7 @@ export default function Home() {
                     </span>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         )}

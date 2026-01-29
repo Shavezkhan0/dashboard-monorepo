@@ -1,9 +1,8 @@
 'use client';
-'use client';
 import React, { useState, useMemo } from 'react';
 import { useCanvasHook } from '../Context/CanvasContext';
 import ScatterChartWidget from './Widgets/ScatterChartWidget';
-import { Database } from 'lucide-react';
+import { Database, Info } from 'lucide-react';
 
 const AddScatterChart = ({ onClose }) => {
     const { addWidget, storedDataSets } = useCanvasHook();
@@ -21,8 +20,15 @@ const AddScatterChart = ({ onClose }) => {
             ],
             color: '#EF4444'
         }],
-        showTitle: true, showXAxis: true, showXAxisTitle: false, xAxisTitle: 'Variable X',
-        showYAxis: true, showYAxisTitle: false, yAxisTitle: 'Variable Y',
+        showTitle: true, 
+        showXAxis: true, 
+        showXAxisTitle: false, 
+        xAxisTitle: 'Variable X',
+        showYAxis: true, 
+        showYAxisTitle: false, 
+        yAxisTitle: 'Variable Y',
+        showLegend: false, // Added
+        showValues: false, // Added
         markerSize: 8,
         isEmpty: true // Flag to indicate no real data is selected
     });
@@ -56,21 +62,22 @@ const AddScatterChart = ({ onClose }) => {
         setDataSource('stored');
     };
 
-    const handleDataMapped = (mappedData) => {
+    const handleDataMapped = ({ xAxisField, yAxisField, dataPoints, generatedTitle }) => {
         const newDataset = {
             id: 1,
-            name: `${mappedData.yAxisField} vs ${mappedData.xAxisField}`,
-            dataPoints: mappedData.dataPoints,
+            name: `${yAxisField} vs ${xAxisField}`,
+            dataPoints: dataPoints,
             color: '#4BB7F5FF'
         };
         setChartProps(prev => ({
             ...prev,
+            title: generatedTitle || prev.title, // Use generated title
             datasets: [newDataset],
-            xAxisTitle: mappedData.xAxisField,
-            yAxisTitle: mappedData.yAxisField,
+            xAxisTitle: xAxisField,
+            yAxisTitle: yAxisField,
             isEmpty: false
         }));
-        setParsedData(null);
+        // Don't hide the parsedData - keep showing the columns
         setDataSource('configured');
     };
 
@@ -198,33 +205,53 @@ const AddScatterChart = ({ onClose }) => {
 
 const DataMapper = ({ data, onMap, onBack }) => {
     const headers = data.meta.fields;
-
+    const [aggregationType, setAggregationType] = useState('sum');
+    
     const isNumericColumn = (columnName) => {
         const sampleSize = Math.min(10, data.data.length);
+        if (sampleSize === 0) return false;
         const samples = data.data.slice(0, sampleSize);
         let numericCount = 0;
         for (const row of samples) {
             const value = row[columnName];
             if (value !== null && value !== undefined && value !== '') {
-                const numValue = Number(value);
-                if (!isNaN(numValue) && isFinite(numValue)) {
-                    numericCount++;
-                }
+                if (!isNaN(Number(value))) numericCount++;
             }
         }
-        return numericCount / sampleSize > 0.7;
+        return (numericCount / sampleSize) > 0.7;
     };
 
     const [xAxisField, setXAxisField] = useState(headers.find(isNumericColumn) || headers[0]);
     const [yAxisField, setYAxisField] = useState(headers.filter(isNumericColumn).slice(1, 2)[0] || headers[1] || headers[0]);
 
+    // Function to generate dynamic title
+    const generateTitle = (xField, yField, aggregation) => {
+        const aggregationLabels = {
+            'sum': 'Sum',
+            'count': 'Count',
+            'average': 'Average',
+            'min': 'Minimum',
+            'max': 'Maximum',
+            'distinct_count': 'Distinct Count'
+        };
+
+        // Format: X vs Y - Aggregation
+        // Example: "Sales vs Revenue - Sum" or "Age vs Income - Average"
+        return `${xField} vs ${yField} - ${aggregationLabels[aggregation]}`;
+    };
 
     const handleGenerate = () => {
+        // For scatter plots, we typically don't aggregate the same way as other charts
+        // Instead, we create data points directly from the raw data
         const dataPoints = data.data.map(row => ({
-            x: row[xAxisField],
-            y: row[yAxisField]
-        })).filter(p => typeof p.x === 'number' && typeof p.y === 'number'); // Ensure both are numbers
-        onMap({ xAxisField, yAxisField, dataPoints });
+            x: Number(row[xAxisField]) || 0,
+            y: Number(row[yAxisField]) || 0
+        })).filter(p => !isNaN(p.x) && !isNaN(p.y));
+        
+        // Generate the dynamic title
+        const generatedTitle = generateTitle(xAxisField, yAxisField, aggregationType);
+        
+        onMap({ xAxisField, yAxisField, dataPoints, generatedTitle });
     };
 
     return (
@@ -306,6 +333,37 @@ const DataMapper = ({ data, onMap, onBack }) => {
                     </div>
                 </div>
             </div>
+
+            {/* Preview of generated title */}
+            {xAxisField && yAxisField && (
+                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+                    <div className="flex items-center space-x-2">
+                        <Info size={16} className="text-indigo-600" />
+                        <span className="text-sm font-medium text-indigo-800">Generated Title Preview</span>
+                    </div>
+                    <p className="text-sm text-indigo-700 mt-1 font-medium">
+                        "{generateTitle(xAxisField, yAxisField, aggregationType)}"
+                    </p>
+                </div>
+            )}
+
+            {/* Aggregation Selection */}
+            <div>
+                <label className="block text-sm font-medium text-gray-600 mb-2">Data Processing</label>
+                <select
+                    value={aggregationType}
+                    onChange={(e) => setAggregationType(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black"
+                >
+                    <option value="sum">Sum</option>
+                    <option value="count">Count</option>
+                    <option value="average">Average</option>
+                    <option value="min">Minimum</option>
+                    <option value="max">Maximum</option>
+                    <option value="distinct_count">Distinct Count</option>
+                </select>
+            </div>
+
             <button onClick={handleGenerate} className="w-full py-2 px-4 bg-blue-50 text-indigo-600 hover:text-white transition-all duration-200 border-2 border-indigo-300 rounded-md font-medium hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer">
                 Generate Chart 
             </button>

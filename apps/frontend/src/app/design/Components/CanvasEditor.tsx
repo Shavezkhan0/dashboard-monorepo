@@ -1,5 +1,4 @@
 'use client';
-'use client';
 
 import React, { useEffect } from 'react';
 import { Responsive, WidthProvider } from 'react-grid-layout';
@@ -18,10 +17,13 @@ import GaugeChartWidget from '../Elements/Widgets/GaugeChartWidget';
 import TreemapWidget from '../Elements/Widgets/TreemapWidget';
 import BubbleChartWidget from '../Elements/Widgets/BubbleChartWidget';
 import WaterfallChartWidget from '../Elements/Widgets/WaterfallChartWidget';
+import HeaderWidget from '../Elements/Widgets/HeaderWidget';
+import KpiWidget from '../Elements/Widgets/KpiWidget';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const widgetComponents = {
+    header: HeaderWidget,
     line: LineChartWidget,
     pie: PieChartWidget,
     bar: BarChartWidget,
@@ -30,17 +32,19 @@ const widgetComponents = {
     donut: DonutChartWidget,
     funnel: FunnelChartWidget,
     scatter: ScatterChartWidget,
+    kpi: KpiWidget,
     gauge: GaugeChartWidget,
     treemap: TreemapWidget,
-    bubble:BubbleChartWidget,
-    waterfall:WaterfallChartWidget
+    bubble: BubbleChartWidget,
+    waterfall: WaterfallChartWidget,
+
 };
 
 function CanvasEditor() {
     const { widgets, updateLayout, selectedWidgetId, setSelectedWidgetId, deleteWidget, duplicateWidget, bringToFront } = useCanvasHook();
 
     useEffect(() => {
-        const handleKeyDown = (e) => {
+        const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Delete' && selectedWidgetId) {
                 deleteWidget(selectedWidgetId);
             }
@@ -49,14 +53,14 @@ function CanvasEditor() {
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, [selectedWidgetId, deleteWidget]);
 
-    const handleWidgetClick = (e, widgetId) => {
+    const handleWidgetClick = (e: React.MouseEvent, widgetId: string) => {
         e.stopPropagation();
         setSelectedWidgetId(widgetId);
     };
 
 
 
-    const FloatingToolbar = ({ widgetId }) => (
+    const FloatingToolbar = ({ widgetId }: { widgetId: string }) => (
         <div
             className="absolute top-[-40px] left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 p-1 bg-slate-800 text-white rounded-md shadow-lg"
             onClick={(e) => e.stopPropagation()}
@@ -71,18 +75,16 @@ function CanvasEditor() {
     return (
         <div className="w-full flex-1 bg-gray-100 p-4 flex justify-center items-center overflow-auto">
             <div
-                className="bg-white shadow-lg relative"
-                style={{ width: '86vw', height: '87vh' }}
+                className="bg-white shadow-lg relative w-full h-full"
                 onClick={() => setSelectedWidgetId(null)}
             >
-                <div className="w-full h-full relative overflow-hidden overflow-y-auto">
+                <div className="w-full h-full relative overflow-auto ">
                     <ResponsiveGridLayout
                         layouts={{ lg: widgets.map(w => w.layout) }}
-                        onLayoutChange={(layout) => updateLayout(layout)}
-                        onDragStart={(layout, oldItem, newItem) => setSelectedWidgetId(newItem.i)}
-                        onResizeStart={(layout, oldItem, newItem) => setSelectedWidgetId(newItem.i)}
+                        onLayoutChange={(layout: any) => updateLayout(layout)}
+                        onDragStart={(layout: any, oldItem: any, newItem: any) => setSelectedWidgetId(newItem.i)}
+                        onResizeStart={(layout: any, oldItem: any, newItem: any) => setSelectedWidgetId(newItem.i)}
                         className="layout"
-                        width={1000}
                         rowHeight={10}
                         isBounded={true}
                         allowOverlap={true}
@@ -99,7 +101,6 @@ function CanvasEditor() {
                                     data-grid={widget.layout}
                                     className={clsx(
                                         'bg-white ',
-                                        // 'overflow-hidden ',
                                         'relative group transition-[border-color,box-shadow] duration-200  ',
                                         'cursor-grab active:cursor-grabbing',
                                         isSelected ? 'border-1 border-indigo-500 shadow-xl z-10' : 'border border-gray-200 hover:border-gray-300 '
@@ -109,7 +110,7 @@ function CanvasEditor() {
                                     {isSelected && <FloatingToolbar widgetId={widget.id} />}
 
                                     <div className="w-full h-full">
-                                        {WidgetComponent ? <WidgetComponent {...widget.props} /> : <div>Unknown Widget</div>}
+                                        {WidgetComponent ? <WidgetComponent {...(widget.props as any)} /> : <div>Unknown Widget</div>}
                                     </div>
 
                                     {isSelected && (

@@ -30,13 +30,14 @@ export class ApiClient {
     const url = `${this.baseUrl}${endpoint}`;
     const token = this.getAuthToken();
 
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    };
+    const headers = new Headers(options.headers);
+
+    if (!headers.has('Content-Type')) {
+      headers.set('Content-Type', 'application/json');
+    }
 
     if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+      headers.set('Authorization', `Bearer ${token}`);
     }
 
     const response = await fetch(url, {
@@ -51,6 +52,10 @@ export class ApiClient {
         statusCode: response.status,
       }));
       throw new Error(error.message || error.error);
+    }
+
+    if (response.status === 204) {
+      return {} as T;
     }
 
     const data: ApiResponse<T> = await response.json();

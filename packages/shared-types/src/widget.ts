@@ -22,7 +22,9 @@ export type WidgetType =
   | 'gauge'
   | 'treemap'
   | 'bubble'
-  | 'waterfall';
+  | 'waterfall'
+  | 'header'
+  | 'kpi';
 
 export interface Widget {
   id: string;

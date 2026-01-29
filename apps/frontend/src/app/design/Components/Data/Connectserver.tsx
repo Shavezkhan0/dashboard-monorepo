@@ -1,4 +1,3 @@
-'use client';
 import React, { useState, useEffect } from "react";
 import { Database, Table, Server, AlertCircle, Loader2, CheckCircle, Download } from "lucide-react";
 import { useCanvasHook } from '../../Context/CanvasContext';
@@ -17,7 +16,11 @@ const SqlServerConnector = () => {
   // Get context functions for storing data
   const { addStoredDataSet } = useCanvasHook();
 
-  const API_BASE = "http://localhost:5000";
+  const BasePort = process.env.NEXT_PUBLIC_BACKEND_BASE_PORT;
+  let API_BASE = "";
+  if (typeof window !== "undefined") {
+    API_BASE = `${window.location.protocol}//${window.location.hostname}:${BasePort}`;
+  }
 
   // Check server status on mount
   useEffect(() => {
@@ -59,7 +62,7 @@ const SqlServerConnector = () => {
     }
   };
 
-  const fetchTables = async (dbName) => {
+  const fetchTables = async (dbName: string) => {
     setLoading(true);
     setError("");
     setTables([]);
@@ -82,7 +85,7 @@ const SqlServerConnector = () => {
     }
   };
 
-  const fetchRows = async (dbName, tableName) => {
+  const fetchRows = async (dbName: string, tableName: string) => {
     setLoading(true);
     setError("");
 
@@ -156,7 +159,7 @@ const SqlServerConnector = () => {
     }
   };
 
-  const handleDatabaseChange = (dbName) => {
+  const handleDatabaseChange = (dbName: string) => {
     setSelectedDB(dbName);
     if (dbName) {
       fetchTables(dbName);
@@ -167,7 +170,7 @@ const SqlServerConnector = () => {
     }
   };
 
-  const handleTableChange = (tableName) => {
+  const handleTableChange = (tableName: string) => {
     setSelectedTable(tableName);
     if (tableName && selectedDB) {
       fetchRows(selectedDB, tableName);

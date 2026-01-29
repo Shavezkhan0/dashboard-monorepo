@@ -1,5 +1,4 @@
 'use client';
-'use client';
 
 import React, { memo } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, Title, Tooltip, Legend } from 'chart.js';
@@ -24,6 +23,9 @@ function FunnelChartWidget({
     labels = [],
     datasets = [],
     showTitle = true,
+    showLegend = false,
+    showValues = false,
+    funnelStyle = 'classic',
 }) {
     const data = {
         labels: labels,
@@ -39,10 +41,24 @@ function FunnelChartWidget({
     const options = {
         responsive: true,
         maintainAspectRatio: false,
-        indexAxis: 'y', // Keep this for the classic funnel shape
+        indexAxis: funnelStyle === 'bar' ? 'x' : 'y', // Dynamic axis based on style
         plugins: {
             legend: {
-                display: false // Typically hidden for funnels
+                display: showLegend,
+                position: 'right',
+                align: 'start',
+                labels: {
+                    boxWidth: 14,
+                    boxHeight: 14,
+                    padding: 10,
+                    usePointStyle: true,
+                    pointStyle: 'circle',
+                    font: {
+                        size: 12,
+                        family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                        weight: '500'
+                    }
+                }
             },
             title: {
                 display: showTitle,
@@ -51,9 +67,9 @@ function FunnelChartWidget({
                 padding: { top: 5, bottom: 5 }
             },
             datalabels: {
+                display: showValues,
                 color: '#FFFFFF',
                 font: {
-                    // weight: 'semibold',
                     size: 10
                 },
                 formatter: (value, context) => {

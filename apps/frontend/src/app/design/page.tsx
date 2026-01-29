@@ -10,6 +10,9 @@ import { CanvasProvider } from "./Context/CanvasContext";
 import Sidebar from "./Components/Sidebar";
 import CanvasEditor from "./Components/CanvasEditor";
 
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 export default function NewDesignPage() {
@@ -58,7 +61,7 @@ export default function NewDesignPage() {
     }
 
     return (
-        <CanvasProvider dashboardId={dashboardId}>
+        <CanvasProvider dashboardId={dashboardId} client={client}>
             <main className="flex flex-col h-screen ">
                 <DesignHeader />
                 <div className="flex flex-1 overflow-hidden">

@@ -1,62 +1,202 @@
 'use client';
-'use client';
-import React, { useState, useEffect } from 'react';
-import { Plus, Minus, ChevronDown, X } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { ChevronDown, X, Database, RefreshCw, TrendingUp } from 'lucide-react';
+import { useCanvasHook } from '../../Context/CanvasContext';
 
 const WaterfallChartSetting = ({ initialData, onUpdate, onClose }) => {
+    const { storedDataSets } = useCanvasHook();
     const [mounted, setMounted] = useState(false);
     const [activeTab, setActiveTab] = useState('data');
     const [expandedSections, setExpandedSections] = useState({
-        details: false,
-        xaxis: false,
-        yaxis: false,
-        properties: false
+        details: true,
+        appearance: true,
+        colors: true,
+        axes: false
     });
     const [graphData, setGraphData] = useState(initialData);
+    
+    // Data mapping states
+    const [selectedDataSet, setSelectedDataSet] = useState(null);
+    const [labelField, setLabelField] = useState('');
+    const [valueField, setValueField] = useState('');
+    const [aggregationType, setAggregationType] = useState('sum');
+    const [initialValue, setInitialValue] = useState(0);
+    const [isUsingStoredData, setIsUsingStoredData] = useState(false);
+    const [updateSuccess, setUpdateSuccess] = useState(false);
 
     useEffect(() => {
         setMounted(true);
         if (initialData) {
             setGraphData(initialData);
+            
+            // Load existing data source if available
+            if (initialData.dataSourceId) {
+                const dataSet = storedDataSets.find(ds => ds.id === initialData.dataSourceId);
+                if (dataSet) {
+                    setSelectedDataSet(dataSet);
+                    setLabelField(initialData.labelField || '');
+                    setValueField(initialData.valueField || '');
+                    setAggregationType(initialData.aggregationType || 'sum');
+                    setInitialValue(initialData.initialValue || 0);
+                    setIsUsingStoredData(true);
+                }
+            }
         }
-    }, [initialData]);
+    }, [initialData, storedDataSets]);
 
-    const handleTitleChange = (e) => {
+    const handleTitleChange = useCallback((e) => {
         if (!mounted) return;
         setGraphData(prev => ({ ...prev, title: e.target.value }));
-    };
+    }, [mounted]);
 
-    const handleLabelChange = (index, value) => {
-        if (!mounted) return;
-        const newLabels = [...graphData.labels];
-        newLabels[index] = value;
-        setGraphData(prev => ({ ...prev, labels: newLabels }));
-    };
+    const isNumericColumn = useCallback((columnName) => {
+        if (!selectedDataSet) return false;
+        const sampleSize = Math.min(10, selectedDataSet.data.length);
+        const samples = selectedDataSet.data.slice(0, sampleSize);
+        let numericCount = 0;
+        for (const row of samples) {
+            const value = row[columnName];
+            if (value !== null && value !== undefined && value !== '') {
+                const numValue = Number(value);
+                if (!isNaN(numValue) && isFinite(numValue)) {
+                    numericCount++;
+                }
+            }
+        }
+        return numericCount / sampleSize > 0.7;
+    }, [selectedDataSet]);
 
-    const handleDataPointChange = (index, value) => {
-        if (!mounted) return;
-        const newDataPoints = [...graphData.dataPoints];
-        newDataPoints[index] = parseFloat(value) || 0;
-        setGraphData(prev => ({ ...prev, dataPoints: newDataPoints }));
-    };
+    const handleDataSetSelect = useCallback((dataSet) => {
+        setSelectedDataSet(dataSet);
+        setIsUsingStoredData(true);
+        
+        // Smart defaults - detect first numeric column
+        const isNumeric = (columnName) => {
+            const sampleSize = Math.min(10, dataSet.data.length);
+            const samples = dataSet.data.slice(0, sampleSize);
+            let numericCount = 0;
+            for (const row of samples) {
+                const value = row[columnName];
+                if (value !== null && value !== undefined && value !== '') {
+                    const numValue = Number(value);
+                    if (!isNaN(numValue) && isFinite(numValue)) {
+                        numericCount++;
+                    }
+                }
+            }
+            return numericCount / sampleSize > 0.7;
+        };
+        
+        const firstNumeric = dataSet.headers.find(h => isNumeric(h));
+        setLabelField(dataSet.headers[0] || '');
+        setValueField(firstNumeric || dataSet.headers[1] || dataSet.headers[0] || '');
+        setAggregationType('sum'); // Reset to default
+        setInitialValue(0); // Reset initial value
+    }, []);
 
-    const addDataPoint = () => {
-        if (!mounted) return;
-        const newLabels = [...graphData.labels, `Point ${graphData.labels.length + 1}`];
-        const newDataPoints = [...graphData.dataPoints, 0];
-        setGraphData(prev => ({ ...prev, labels: newLabels, dataPoints: newDataPoints }));
-    };
+    const handleRegenerateWaterfall = useCallback(() => {
+        if (!selectedDataSet || !labelField || !valueField) return;
+        
+        try {
+            let labels, dataPoints;
 
-    const removeDataPoint = (index) => {
-        if (!mounted || graphData.labels.length <= 1) return;
-        const newLabels = graphData.labels.filter((_, i) => i !== index);
-        const newDataPoints = graphData.dataPoints.filter((_, i) => i !== index);
-        setGraphData(prev => ({ ...prev, labels: newLabels, dataPoints: newDataPoints }));
-    };
+            if (aggregationType === 'none') {
+                // No aggregation - use raw data
+                labels = selectedDataSet.data
+                    .map(row => String(row[labelField] || 'Unknown'))
+                    .filter(label => label.trim() !== '');
 
-    const toggleSection = (section) => {
+                dataPoints = selectedDataSet.data
+                    .map(row => {
+                        const value = Number(row[valueField]);
+                        return isNaN(value) ? 0 : value;
+                    })
+                    .slice(0, labels.length);
+            } else {
+                // Group by labelField and aggregate valueField
+                const grouped = {};
+                
+                selectedDataSet.data.forEach(row => {
+                    const label = String(row[labelField] || 'Unknown');
+                    const value = Number(row[valueField]);
+                    
+                    if (!grouped[label]) {
+                        grouped[label] = {
+                            values: [],
+                            count: 0
+                        };
+                    }
+                    
+                    if (!isNaN(value) && isFinite(value)) {
+                        grouped[label].values.push(value);
+                    }
+                    grouped[label].count++;
+                });
+
+                // Calculate aggregated values
+                labels = Object.keys(grouped);
+                dataPoints = labels.map(label => {
+                    const group = grouped[label];
+                    
+                    if (aggregationType === 'sum') {
+                        return group.values.reduce((acc, val) => acc + val, 0);
+                    } else if (aggregationType === 'average') {
+                        return group.values.length > 0 
+                            ? group.values.reduce((acc, val) => acc + val, 0) / group.values.length 
+                            : 0;
+                    } else if (aggregationType === 'count') {
+                        return group.count;
+                    } else if (aggregationType === 'min') {
+                        return group.values.length > 0 ? Math.min(...group.values) : 0;
+                    } else if (aggregationType === 'max') {
+                        return group.values.length > 0 ? Math.max(...group.values) : 0;
+                    }
+                    return 0;
+                });
+            }
+
+            if (labels.length === 0 || dataPoints.length === 0) {
+                alert('No valid data found. Please check your column mappings.');
+                return;
+            }
+
+            const updatedGraphData = {
+                ...graphData,
+                labels,
+                dataPoints,
+                initialValue,
+                dataSourceId: selectedDataSet.id,
+                labelField,
+                valueField,
+                aggregationType
+            };
+            
+            setGraphData(updatedGraphData);
+            onUpdate && onUpdate(updatedGraphData);
+            
+            // Show success message
+            setUpdateSuccess(true);
+            setTimeout(() => setUpdateSuccess(false), 3000);
+            
+            // Don't close the data selection - keep it visible for easy changes
+        } catch (error) {
+            console.error('Error regenerating waterfall:', error);
+            alert('Error processing data.');
+        }
+    }, [selectedDataSet, labelField, valueField, aggregationType, initialValue, graphData, onUpdate]);
+
+    const handleBackToDataSelection = useCallback(() => {
+        setIsUsingStoredData(false);
+        setSelectedDataSet(null);
+        setLabelField('');
+        setValueField('');
+        setAggregationType('sum');
+        setInitialValue(0);
+    }, []);
+
+    const toggleSection = useCallback((section) => {
         setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
-    };
+    }, []);
 
     if (!mounted || !graphData) {
         return (
@@ -69,32 +209,22 @@ const WaterfallChartSetting = ({ initialData, onUpdate, onClose }) => {
     return (
         <div className="pr-2 h-full bg-white border-r border-gray-200 flex flex-col shadow-lg">
             <div className="flex items-center justify-between px-4 py-2 border-b-2 border-gray-200">
-                <h2 className="text-lg font-semibold">Edit Waterfall Chart</h2>
+                <h2 className="text-lg font-semibold text-black">Edit Waterfall Chart</h2>
                 <button onClick={onClose} className="p-2 text-gray-600 hover:bg-gray-100 rounded-md">
                     <X size={16} />
                 </button>
             </div>
 
-            {/* Tabs */}
             <div className="flex border-b border-gray-200">
                 <button
                     onClick={() => setActiveTab('data')}
-                    className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all
-                        ${activeTab === 'data'
-                            ? 'text-blue-600 bg-blue-50 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r after:from-blue-800 after:via-indigo-700 after:to-purple-600 after:content-[""]'
-                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}
-                    `}
+                    className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all ${activeTab === 'data' ? 'text-blue-600 bg-blue-50 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 after:content-[""]' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
                 >
                     Data
                 </button>
-
                 <button
                     onClick={() => setActiveTab('customize')}
-                    className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all
-                        ${activeTab === 'customize'
-                            ? 'text-blue-600 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r after:from-blue-800 bg-blue-50 after:via-indigo-700 after:to-purple-600 after:content-[""]'
-                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}
-                    `}
+                    className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all ${activeTab === 'customize' ? 'text-blue-600 bg-blue-50 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 after:content-[""]' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
                 >
                     Customize
                 </button>
@@ -102,364 +232,375 @@ const WaterfallChartSetting = ({ initialData, onUpdate, onClose }) => {
 
             <div className="flex-1 overflow-y-auto">
                 {activeTab === 'data' && (
-                    <div className="p-4">
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Chart Title</label>
-                            <input 
-                                type="text" 
-                                value={graphData.title} 
-                                onChange={handleTitleChange} 
-                                className="w-full p-2 border border-gray-300 rounded-md text-sm" 
-                            />
-                        </div>
-
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Initial Value</label>
-                            <input 
-                                type="number" 
-                                value={graphData.initialValue || 0} 
-                                onChange={(e) => setGraphData(prev => ({ ...prev, initialValue: parseFloat(e.target.value) || 0 }))} 
-                                className="w-full p-2 border border-gray-300 rounded-md text-sm" 
-                                placeholder="Starting value"
-                            />
-                        </div>
-
-                        <div className="mb-6">
-                            <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-sm font-medium text-gray-700">Data Points</h3>
-                                <span className="text-xs text-gray-500">{graphData.labels?.length} points</span>
-                            </div>
-                            <div className="space-y-3 mb-3">
-                                {graphData.labels?.map((label, index) => (
-                                    <div key={index} className="border border-gray-200 rounded-lg p-3">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <span className="text-sm font-medium text-gray-700">Point {index + 1}</span>
-                                            {graphData.labels.length > 1 && (
-                                                <button 
-                                                    onClick={() => removeDataPoint(index)} 
-                                                    className="p-1 text-gray-400 hover:text-red-500 rounded"
-                                                >
-                                                    <X className="w-4 h-4" />
-                                                </button>
-                                            )}
-                                        </div>
-                                        <div className="grid grid-cols-1 gap-2">
-                                            <div>
-                                                <label className="block text-xs text-gray-500 mb-1">Label</label>
-                                                <input 
-                                                    type="text" 
-                                                    value={label} 
-                                                    onChange={(e) => handleLabelChange(index, e.target.value)} 
-                                                    className="w-full p-2 border border-gray-300 rounded text-sm" 
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs text-gray-500 mb-1">Value Change</label>
-                                                <input 
-                                                    type="number" 
-                                                    value={graphData.dataPoints[index]} 
-                                                    onChange={(e) => handleDataPointChange(index, e.target.value)} 
-                                                    className="w-full p-2 border border-gray-300 rounded text-sm" 
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <button 
-                                onClick={addDataPoint} 
-                                className="w-full py-2 px-3 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-md text-sm font-medium flex items-center justify-center space-x-1"
-                            >
-                                <Plus className="w-4 h-4" />
-                                <span>Add Data Point</span>
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                {activeTab === 'customize' && (
                     <div className="p-4 space-y-4">
-                        {/* Details Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
-                            <div
-                                className="flex items-center justify-between cursor-pointer"
-                                onClick={() => toggleSection('details')}
-                            >
-                                <h3 className="text-sm font-medium text-gray-700">Details</h3>
-                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.details ? 'rotate-180' : ''}`} />
+                        {/* Chart Title */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-600 mb-2">Chart Title</label>
+                                    <input
+                                        type="text"
+                                        value={graphData.title}
+                                        onChange={handleTitleChange}
+                                className="w-full p-2 border border-gray-300 rounded-md text-sm text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    />
+                                </div>
+
+                        {/* Data Source Selection */}
+                        <div className="border border-gray-200 rounded-lg p-3 bg-gray-50">
+                            <div className="flex items-center justify-between mb-3">
+                                <h4 className="font-medium text-gray-700 flex items-center space-x-2">
+                                        <Database size={16} className="text-indigo-600" />
+                                        <span>Data Source</span>
+                                    </h4>
+                                {isUsingStoredData && selectedDataSet && (
+                                    <button
+                                        onClick={handleBackToDataSelection}
+                                        className="text-xs text-indigo-600 hover:text-indigo-800 underline"
+                                    >
+                                        Change
+                                    </button>
+                                )}
                             </div>
-                            {expandedSections.details && (
-                                <div className="mt-3 space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Title</span>
-                                        <button
-                                            onClick={() => setGraphData(prev => ({ ...prev, showTitle: !prev.showTitle }))}
-                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showTitle !== false ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
-                                        >
-                                            <span
-                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showTitle !== false ? 'translate-x-6' : 'translate-x-1'}`}
-                                            />
-                                        </button>
+
+                            {isUsingStoredData && selectedDataSet ? (
+                                <div className="bg-white border border-indigo-200 rounded p-2">
+                                    <div className="flex items-center space-x-2">
+                                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                        <span className="text-sm font-medium text-gray-800">{selectedDataSet.name}</span>
                                     </div>
-                                    {graphData.showTitle !== false && (
+                                    <div className="text-xs text-gray-500 mt-1">
+                                        {selectedDataSet.rowCount} rows • {selectedDataSet.headers.length} columns
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    {storedDataSets.length > 0 ? (
+                                        <div className="space-y-2 max-h-40 overflow-y-auto">
+                                            {storedDataSets.map(dataSet => (
+                                                <button
+                                                    key={dataSet.id}
+                                                    onClick={() => handleDataSetSelect(dataSet)}
+                                                    className="w-full text-left p-2 text-sm bg-white border border-gray-200 rounded hover:bg-indigo-50 hover:border-indigo-300 transition-colors"
+                                                >
+                                                    <div className="font-medium text-gray-800">{dataSet.name}</div>
+                                                    <div className="text-xs text-gray-500">
+                                                        {dataSet.rowCount} rows • {dataSet.headers.length} columns
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-4 text-gray-500">
+                                            <Database size={24} className="mx-auto mb-2 text-gray-300" />
+                                            <p className="text-sm">No datasets available</p>
+                                            <p className="text-xs">Import data using the "Data" tab first</p>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+
+                        {/* Enhanced Column Configuration */}
+                        {selectedDataSet && (
+                            <div className="space-y-4">
+                                <div className="border border-gray-200 rounded-lg p-4 bg-white">
+                                    <h5 className="font-medium text-gray-700 mb-3">Waterfall Configuration</h5>
+                                    
+                                    {/* Initial Value */}
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-gray-600 mb-2">
+                                            Initial Starting Value
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={initialValue}
+                                            onChange={(e) => setInitialValue(Number(e.target.value) || 0)}
+                                            className="w-full p-2 border border-gray-300 rounded text-sm text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                            placeholder="Enter starting value (e.g., 0, 100, 1000)"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">The beginning value for the waterfall</p>
+                                    </div>
+
+                                    {/* Field Selection in Grid */}
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-xs text-gray-500 mb-1">Edit Text</label>
-                                            <input
-                                                type="text"
-                                                value={graphData.title}
-                                                onChange={handleTitleChange}
-                                                className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="Title goes here"
-                                            />
+                                            <label className="block text-sm font-medium text-gray-600 mb-2">
+                                                Label Column
+                                            </label>
+                                            <select
+                                                value={labelField}
+                                                onChange={(e) => setLabelField(e.target.value)}
+                                                className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                            >
+                                                <option value="">Select column...</option>
+                                                {selectedDataSet.headers.map(column => (
+                                                    <option key={column} value={column}>
+                                                        {isNumericColumn(column) ? 'Σ ' : ''}{column}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <p className="text-xs text-gray-500 mt-1">Categories for waterfall steps</p>
                                         </div>
-                                    )}
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Legend</span>
-                                        <button
-                                            onClick={() => setGraphData(prev => ({ ...prev, showLegend: !prev.showLegend }))}
-                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showLegend !== false ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
-                                        >
-                                            <span
-                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showLegend !== false ? 'translate-x-6' : 'translate-x-1'}`}
-                                            />
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
 
-                        {/* X Axis Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
-                            <div
-                                className="flex items-center justify-between cursor-pointer"
-                                onClick={() => toggleSection('xaxis')}
-                            >
-                                <h3 className="text-sm font-medium text-gray-700">X Axis</h3>
-                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.xaxis ? 'rotate-180' : ''}`} />
-                            </div>
-                            {expandedSections.xaxis && (
-                                <div className="mt-3 space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Axis</span>
-                                        <button
-                                            onClick={() => setGraphData(prev => ({ ...prev, showXAxis: !prev.showXAxis }))}
-                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showXAxis !== false ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
-                                        >
-                                            <span
-                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showXAxis !== false ? 'translate-x-6' : 'translate-x-1'}`}
-                                            />
-                                        </button>
-                                    </div>
-                                    {graphData.showXAxis !== false && (
-                                        <div className="space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-sm text-gray-600">Title</span>
-                                                <button
-                                                    onClick={() => setGraphData(prev => ({ ...prev, showXAxisTitle: !prev.showXAxisTitle }))}
-                                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showXAxisTitle ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
-                                                >
-                                                    <span
-                                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showXAxisTitle ? 'translate-x-6' : 'translate-x-1'}`}
-                                                    />
-                                                </button>
-                                            </div>
-                                            {graphData.showXAxisTitle && (
-                                                <div>
-                                                    <label className="block text-xs text-gray-500 mb-1">Edit Text</label>
-                                                    <input
-                                                        type="text"
-                                                        value={graphData.xAxisTitle || ''}
-                                                        onChange={e => setGraphData(prev => ({ ...prev, xAxisTitle: e.target.value }))}
-                                                        className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                        placeholder="X label"
-                                                    />
-                                                </div>
-                                            )}
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-600 mb-2">
+                                                <TrendingUp size={16} className="inline mr-1" />
+                                                Value Column (Changes)
+                                            </label>
+                                            <select
+                                                value={valueField}
+                                                onChange={(e) => setValueField(e.target.value)}
+                                                className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                            >
+                                                <option value="">Select column...</option>
+                                                {selectedDataSet.headers.map(column => (
+                                                    <option key={column} value={column}>
+                                                        {isNumericColumn(column) ? 'Σ ' : ''}{column}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <p className="text-xs text-gray-500 mt-1">Positive = increase, Negative = decrease</p>
                                         </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
+                                    </div>
 
-                        {/* Y Axis Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
-                            <div
-                                className="flex items-center justify-between cursor-pointer"
-                                onClick={() => toggleSection('yaxis')}
-                            >
-                                <h3 className="text-sm font-medium text-gray-700">Y Axis</h3>
-                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.yaxis ? 'rotate-180' : ''}`} />
-                            </div>
-                            {expandedSections.yaxis && (
-                                <div className="mt-3 space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Axis</span>
-                                        <button
-                                            onClick={() => setGraphData(prev => ({ ...prev, showYAxis: !prev.showYAxis }))}
-                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showYAxis !== false ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
+                                    {/* Aggregation Type */}
+                                    <div className="mt-4">
+                                        <label className="block text-sm font-medium text-gray-600 mb-2">
+                                            Aggregation Method
+                                        </label>
+                                        <select 
+                                            value={aggregationType} 
+                                            onChange={(e) => setAggregationType(e.target.value)} 
+                                            className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                         >
-                                            <span
-                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showYAxis !== false ? 'translate-x-6' : 'translate-x-1'}`}
-                                            />
-                                        </button>
+                                            <option value="sum">Sum</option>
+                                            <option value="average">Average</option>
+                                            <option value="count">Count</option>
+                                            <option value="min">Minimum</option>
+                                            <option value="max">Maximum</option>
+                                            <option value="none">None (Use Raw Data)</option>
+                                        </select>
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            How to combine multiple rows with the same label
+                                        </p>
                                     </div>
-                                    {graphData.showYAxis !== false && (
-                                        <div className="space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-sm text-gray-600">Title</span>
-                                                <button
-                                                    onClick={() => setGraphData(prev => ({ ...prev, showYAxisTitle: !prev.showYAxisTitle }))}
-                                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showYAxisTitle ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
-                                                >
-                                                    <span
-                                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showYAxisTitle ? 'translate-x-6' : 'translate-x-1'}`}
-                                                    />
-                                                </button>
-                                            </div>
-                                            {graphData.showYAxisTitle && (
-                                                <div>
-                                                    <label className="block text-xs text-gray-500 mb-1">Edit Text</label>
-                                                    <input
-                                                        type="text"
-                                                        value={graphData.yAxisTitle || ''}
-                                                        onChange={e => setGraphData(prev => ({ ...prev, yAxisTitle: e.target.value }))}
-                                                        className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                        placeholder="Y label"
-                                                    />
-                                                </div>
-                                            )}
-                                            <div className="flex items-center space-x-2 mt-2">
-                                                <div>
-                                                    <label className="block text-xs text-gray-500 mb-1">Min</label>
-                                                    <input
-                                                        type="number"
-                                                        value={graphData.yMin ?? 0}
-                                                        onChange={e => setGraphData(prev => ({ ...prev, yMin: parseFloat(e.target.value) }))}
-                                                        className="w-16 p-1 border border-gray-300 rounded text-sm"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs text-gray-500 mb-1">Max</label>
-                                                    <input
-                                                        type="number"
-                                                        value={graphData.yMax ?? 100}
-                                                        onChange={e => setGraphData(prev => ({ ...prev, yMax: parseFloat(e.target.value) }))}
-                                                        className="w-16 p-1 border border-gray-300 rounded text-sm"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs text-gray-500 mb-1">Step Size</label>
-                                                    <input
-                                                        type="number"
-                                                        value={graphData.yStep ?? 10}
-                                                        onChange={e => setGraphData(prev => ({ ...prev, yStep: parseFloat(e.target.value) }))}
-                                                        className="w-16 p-1 border border-gray-300 rounded text-sm"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
-                            )}
-                        </div>
 
-                        {/* Properties Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
-                            <div
-                                className="flex items-center justify-between cursor-pointer"
-                                onClick={() => toggleSection('properties')}
-                            >
-                                <h3 className="text-sm font-medium text-gray-700">Properties</h3>
-                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.properties ? 'rotate-180' : ''}`} />
+                                {/* Update Button */}
+                                <button
+                                    onClick={handleRegenerateWaterfall}
+                                    disabled={!labelField || !valueField}
+                                    className="flex items-center justify-center gap-2 w-full py-2 px-4 bg-blue-50 text-indigo-600 hover:text-white transition-all duration-200 border-2 border-indigo-300 rounded-md font-medium hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    <RefreshCw size={16} />
+                                    <span>Update Waterfall Data</span>
+                                </button>
+
+                                {/* Success Message */}
+                                {updateSuccess && (
+                                    <div className="bg-green-50 border border-green-200 rounded-lg p-2 text-center animate-fadeIn">
+                                        <p className="text-sm font-medium text-green-800">✓ Chart updated successfully!</p>
+                                        <p className="text-xs text-green-600 mt-1">You can now change columns and update again</p>
+                                    </div>
+                                )}
                             </div>
-                            {expandedSections.properties && (
-                                <div className="mt-3 space-y-3">
-                                    <div>
-                                        <label className="block text-xs text-gray-500 mb-1">Positive Color</label>
-                                        <div className="flex items-center space-x-2">
-                                            <input 
-                                                type="color" 
-                                                value={graphData.positiveColor || '#10B981'} 
-                                                onChange={(e) => setGraphData(prev => ({ ...prev, positiveColor: e.target.value }))} 
-                                                className="w-8 h-8 border rounded cursor-pointer" 
-                                            />
-                                            <input 
-                                                type="text" 
-                                                value={graphData.positiveColor || '#10B981'} 
-                                                onChange={(e) => setGraphData(prev => ({ ...prev, positiveColor: e.target.value }))} 
-                                                className="flex-1 p-1.5 border border-gray-300 rounded text-sm" 
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs text-gray-500 mb-1">Negative Color</label>
-                                        <div className="flex items-center space-x-2">
-                                            <input 
-                                                type="color" 
-                                                value={graphData.negativeColor || '#EF4444'} 
-                                                onChange={(e) => setGraphData(prev => ({ ...prev, negativeColor: e.target.value }))} 
-                                                className="w-8 h-8 border rounded cursor-pointer" 
-                                            />
-                                            <input 
-                                                type="text" 
-                                                value={graphData.negativeColor || '#EF4444'} 
-                                                onChange={(e) => setGraphData(prev => ({ ...prev, negativeColor: e.target.value }))} 
-                                                className="flex-1 p-1.5 border border-gray-300 rounded text-sm" 
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs text-gray-500 mb-1">Total/Cumulative Color</label>
-                                        <div className="flex items-center space-x-2">
-                                            <input 
-                                                type="color" 
-                                                value={graphData.totalColor || '#3B82F6'} 
-                                                onChange={(e) => setGraphData(prev => ({ ...prev, totalColor: e.target.value }))} 
-                                                className="w-8 h-8 border rounded cursor-pointer" 
-                                            />
-                                            <input 
-                                                type="text" 
-                                                value={graphData.totalColor || '#3B82F6'} 
-                                                onChange={(e) => setGraphData(prev => ({ ...prev, totalColor: e.target.value }))} 
-                                                className="flex-1 p-1.5 border border-gray-300 rounded text-sm" 
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Show Values on Bars</span>
-                                        <button
-                                            onClick={() => setGraphData(prev => ({ ...prev, showValues: !prev.showValues }))}
-                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showValues !== false ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
-                                        >
-                                            <span
-                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showValues !== false ? 'translate-x-6' : 'translate-x-1'}`}
-                                            />
-                                        </button>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Show Connectors</span>
-                                        <button
-                                            onClick={() => setGraphData(prev => ({ ...prev, showConnectors: !prev.showConnectors }))}
-                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showConnectors !== false ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
-                                        >
-                                            <span
-                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showConnectors !== false ? 'translate-x-6' : 'translate-x-1'}`}
-                                            />
-                                        </button>
-                                    </div>
+                        )}
+
+                        {/* Current Configuration Summary */}
+                        {isUsingStoredData && labelField && valueField && (
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                <h5 className="text-sm font-medium text-blue-900 mb-2">Current Configuration</h5>
+                                <div className="text-xs text-blue-700 space-y-1">
+                                    <div><span className="font-medium">Label:</span> {labelField}</div>
+                                    <div><span className="font-medium">Value:</span> {valueField}</div>
+                                    <div><span className="font-medium">Aggregation:</span> {aggregationType.charAt(0).toUpperCase() + aggregationType.slice(1)}</div>
+                                    <div><span className="font-medium">Starting Value:</span> {initialValue}</div>
+                                    <div><span className="font-medium">Data Points:</span> {graphData.dataPoints?.length || 0}</div>
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </div>
                 )}
+
+
+                 {activeTab === 'customize' && (
+                                    <div className="p-4 space-y-4">
+                                        {/* Details Section */}
+                                        <div className="border border-gray-200 rounded-lg p-4">
+                                            <div
+                                                className="flex items-center justify-between cursor-pointer"
+                                                onClick={() => toggleSection('details')}
+                                            >
+                                                <h3 className="text-sm font-medium text-gray-700">Details</h3>
+                                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.details ? 'rotate-180' : ''}`} />
+                                            </div>
+                                            {expandedSections.details && (
+                                                <div className="mt-3 space-y-3">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-sm text-gray-600">Show Title</span>
+                                                        <button
+                                                            onClick={() => setGraphData(prev => ({ ...prev, showTitle: !prev.showTitle }))}
+                                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showTitle ? 'bg-indigo-600' : 'bg-gray-200'}`}
+                                                        >
+                                                            <span
+                                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showTitle ? 'translate-x-6' : 'translate-x-1'}`}
+                                                            />
+                                                        </button>
+                                                    </div>
+                                                    {graphData.showTitle !== false && (
+                                                        <div>
+                                                            <label className="block text-xs text-gray-500 mb-1">Title Text</label>
+                                                            <input
+                                                                type="text"
+                                                                value={graphData.title}
+                                                                onChange={handleTitleChange}
+                                                                className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
+                                                                placeholder="Title goes here"
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                
+                                        {/* Appearance Section */}
+                                        <div className="border border-gray-200 rounded-lg p-4">
+                                            <div
+                                                className="flex items-center justify-between cursor-pointer"
+                                                onClick={() => toggleSection('appearance')}
+                                            >
+                                                <h3 className="text-sm font-medium text-gray-700">Appearance</h3>
+                                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.appearance ? 'rotate-180' : ''}`} />
+                                            </div>
+                                            {expandedSections.appearance && (
+                                                <div className="mt-3 space-y-3">
+                                                    <div>
+                                                        <label className="block text-xs text-gray-600 mb-1">Value Format</label>
+                                                        <select
+                                                            value={graphData.valueFormat || 'default'}
+                                                            onChange={(e) => setGraphData(prev => ({ ...prev, valueFormat: e.target.value }))}
+                                                            className="w-full p-2 border border-gray-300 rounded text-sm text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                                        >
+                                                            <option value="default">Default</option>
+                                                            <option value="currency">Currency ($)</option>
+                                                            <option value="percentage">Percentage (%)</option>
+                                                            <option value="compact">Compact (K, M)</option>
+                                                        </select>
+                                                    </div>
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-sm text-gray-600">Show Data Labels</span>
+                                                        <button
+                                                            onClick={() => setGraphData(prev => ({ ...prev, showDataLabels: !prev.showDataLabels }))}
+                                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showDataLabels ? 'bg-indigo-600' : 'bg-gray-200'}`}
+                                                        >
+                                                            <span
+                                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showDataLabels ? 'translate-x-6' : 'translate-x-1'}`}
+                                                            />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                
+                                        {/* Colors Section */}
+                                        <div className="border border-gray-200 rounded-lg p-4">
+                                            <div
+                                                className="flex items-center justify-between cursor-pointer"
+                                                onClick={() => toggleSection('colors')}
+                                            >
+                                                <h3 className="text-sm font-medium text-gray-700">Colors</h3>
+                                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.colors ? 'rotate-180' : ''}`} />
+                                            </div>
+                                            {expandedSections.colors && (
+                                                <div className="mt-3 space-y-3">
+                                                    <div className="flex items-center justify-between">
+                                                        <label className="text-sm text-gray-600">Positive Color (Increases)</label>
+                                                        <input
+                                                            type="color"
+                                                            value={graphData.positiveColor || '#10B981'}
+                                                            onChange={(e) => setGraphData(prev => ({ ...prev, positiveColor: e.target.value }))}
+                                                            className="w-10 h-10 p-1 border border-gray-300 rounded cursor-pointer"
+                                                        />
+                                                    </div>
+                                                            <div className="flex items-center justify-between">
+                                                        <label className="text-sm text-gray-600">Negative Color (Decreases)</label>
+                                                                    <input
+                                                            type="color"
+                                                            value={graphData.negativeColor || '#EF4444'}
+                                                            onChange={(e) => setGraphData(prev => ({ ...prev, negativeColor: e.target.value }))}
+                                                            className="w-10 h-10 p-1 border border-gray-300 rounded cursor-pointer"
+                                                                    />
+                                                                </div>
+                                                    <div className="flex items-center justify-between">
+                                                        <label className="text-sm text-gray-600">Total Color (Start/End)</label>
+                                                                    <input
+                                                            type="color"
+                                                            value={graphData.totalColor || '#3B82F6'}
+                                                            onChange={(e) => setGraphData(prev => ({ ...prev, totalColor: e.target.value }))}
+                                                            className="w-10 h-10 p-1 border border-gray-300 rounded cursor-pointer"
+                                                                    />
+                                                                </div>
+                                                </div>
+                                            )}
+                                        </div>
+                
+                                        {/* Axes Section */}
+                                        <div className="border border-gray-200 rounded-lg p-4">
+                                            <div
+                                                className="flex items-center justify-between cursor-pointer"
+                                                onClick={() => toggleSection('axes')}
+                                            >
+                                                <h3 className="text-sm font-medium text-gray-700">Axes</h3>
+                                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.axes ? 'rotate-180' : ''}`} />
+                                            </div>
+                                            {expandedSections.axes && (
+                                                <div className="mt-3 space-y-3">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-sm text-gray-600">Show X Axis</span>
+                                                        <button
+                                                            onClick={() => setGraphData(prev => ({ ...prev, showXAxis: !prev.showXAxis }))}
+                                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showXAxis !== false ? 'bg-indigo-600' : 'bg-gray-200'}`}
+                                                        >
+                                                            <span
+                                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showXAxis !== false ? 'translate-x-6' : 'translate-x-1'}`}
+                                                            />
+                                                        </button>
+                                                    </div>
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-sm text-gray-600">Show Y Axis</span>
+                                                        <button
+                                                            onClick={() => setGraphData(prev => ({ ...prev, showYAxis: !prev.showYAxis }))}
+                                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showYAxis !== false ? 'bg-indigo-600' : 'bg-gray-200'}`}
+                                                        >
+                                                            <span
+                                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showYAxis !== false ? 'translate-x-6' : 'translate-x-1'}`}
+                                                            />
+                                                        </button>
+                                                    </div>
+                                                    {graphData.showYAxis !== false && (
+                                                            <div>
+                                                            <label className="block text-xs text-gray-500 mb-1">Y-Axis Title</label>
+                                                                <input
+                                                                type="text"
+                                                                value={graphData.yAxisTitle || ''}
+                                                                onChange={e => setGraphData(prev => ({ ...prev, yAxisTitle: e.target.value }))}
+                                                                className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
+                                                                placeholder="Y Axis Label"
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
             </div>
 
             <div className="p-4 border-t border-gray-200 bg-gray-50">
-                <button 
-                    onClick={() => onUpdate && onUpdate(graphData)} 
-                    className="w-full py-2 px-3 bg-blue-50 border-2 border-indigo-300 text-indigo-600 rounded-md text-sm font-medium transition-all duration-200 hover:text-white hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 transition-colors"
+                <button
+                    onClick={() => onUpdate && onUpdate(graphData)}
+                    className="w-full py-2 px-3 bg-blue-50 border-2 border-indigo-300 text-indigo-600 rounded-md text-sm font-medium transition-all duration-200 hover:text-white hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600"
                 >
-                    Save
+                    Save Changes
                 </button>
             </div>
         </div>

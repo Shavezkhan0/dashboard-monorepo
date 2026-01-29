@@ -2,11 +2,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ApiClient } from '../client';
 import type { User, LoginRequest, RegisterRequest } from '@dashboard/shared-types';
 
-export function useAuth(client: ApiClient) {
+export function useAuth(client: ApiClient, options?: any) {
   return useQuery({
     queryKey: ['auth', 'me'],
     queryFn: () => client.getCurrentUser(),
     retry: false,
+    ...options
   });
 }
 
