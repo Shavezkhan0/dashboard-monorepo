@@ -1,31 +1,30 @@
 'use client';
-'use client';
 import React, { useState } from 'react';
 import Papa from 'papaparse';
 import { X, Table2, UploadCloud, Trash2, Calendar, Database, Eye, EyeOff, Server } from 'lucide-react';
 import { useCanvasHook } from '../../Context/CanvasContext';
 
-const GetData = ({ onClose }) => {
+const GetData = ({ onClose }: { onClose: () => void }) => {
     const { storedDataSets, addStoredDataSet, removeStoredDataSet } = useCanvasHook();
-    const [file, setFile] = useState(null);
-    const [dataPreview, setDataPreview] = useState(null);
+    const [file, setFile] = useState<any>(null);
+    const [dataPreview, setDataPreview] = useState<any>(null);
     const [dataSetName, setDataSetName] = useState('');
-    const [expandedDataSet, setExpandedDataSet] = useState(null);
+    const [expandedDataSet, setExpandedDataSet] = useState<string | null>(null);
 
-    const handleFileChange = (event) => {
-        const uploadedFile = event.target.files[0];
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const uploadedFile = event.target.files?.[0];
         if (uploadedFile) {
-            setFile(uploadedFile);
+            setFile(uploadedFile as any);
             setDataSetName(uploadedFile.name.replace(/\.[^/.]+$/, "")); // Remove file extension
             Papa.parse(uploadedFile, {
                 header: true,
                 dynamicTyping: true,
                 skipEmptyLines: true,
                 preview: 5,
-                complete: (results) => {
+                complete: (results: any) => {
                     setDataPreview(results);
                 },
-                error: (error) => {
+                error: (error: any) => {
                     alert(`Error parsing file: ${error.message}`);
                     setFile(null);
                     setDataPreview(null);
@@ -40,7 +39,7 @@ const GetData = ({ onClose }) => {
                 header: true,
                 dynamicTyping: true,
                 skipEmptyLines: true,
-                complete: (results) => {
+                complete: (results: any) => {
                     if (results.data.length > 0) {
                         const storedId = addStoredDataSet({
                             name: dataSetName.trim(),
@@ -58,7 +57,7 @@ const GetData = ({ onClose }) => {
                         alert('The uploaded file is empty or invalid.');
                     }
                 },
-                error: (error) => {
+                error: (error: any) => {
                     alert(`Error parsing file: ${error.message}`);
                 }
             });
@@ -67,21 +66,21 @@ const GetData = ({ onClose }) => {
         }
     };
 
-    const handleDeleteDataSet = (dataSetId) => {
+    const handleDeleteDataSet = (dataSetId: string) => {
         if (confirm('Are you sure you want to delete this dataset?')) {
             removeStoredDataSet(dataSetId);
         }
     };
 
-    const toggleDataSetPreview = (dataSetId) => {
+    const toggleDataSetPreview = (dataSetId: string) => {
         setExpandedDataSet(expandedDataSet === dataSetId ? null : dataSetId);
     };
 
-    const formatDate = (dateString) => {
+    const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleString();
     };
 
-    const getSourceIcon = (source) => {
+    const getSourceIcon = (source: string) => {
         switch (source) {
             case 'database':
                 return <Server size={14} className="text-blue-500" />;
@@ -91,7 +90,7 @@ const GetData = ({ onClose }) => {
         }
     };
 
-    const getSourceLabel = (dataSet) => {
+    const getSourceLabel = (dataSet: any) => {
         if (dataSet.source === 'database' && dataSet.database && dataSet.table) {
             return `${dataSet.database}.${dataSet.table}`;
         }
@@ -110,7 +109,7 @@ const GetData = ({ onClose }) => {
                     <UploadCloud size={20} className="text-indigo-600" />
                     <h3 className="text-lg font-semibold text-gray-800">Import New Data</h3>
                 </div>
-                
+
                 {file ? (
                     <div className="space-y-4 p-4 border bg-gray-100 rounded-lg">
                         <div className="space-y-2">
@@ -123,34 +122,34 @@ const GetData = ({ onClose }) => {
                                 placeholder="Enter a name for this dataset"
                             />
                         </div>
-                        
+
                         <div className="flex justify-between items-center text-sm font-medium">
                             <span className="flex items-center space-x-2 text-indigo-600">
                                 <Table2 size={16} />
                                 <span>{file.name}</span>
                             </span>
-                            <button 
-                                onClick={() => { setFile(null); setDataPreview(null); setDataSetName(''); }} 
+                            <button
+                                onClick={() => { setFile(null); setDataPreview(null); setDataSetName(''); }}
                                 className="text-gray-400 hover:text-red-500"
                             >
                                 <X size={16} />
                             </button>
                         </div>
-                        
+
                         {dataPreview && dataPreview.data && dataPreview.data.length > 0 && (
                             <div className="overflow-x-auto  rounded-md border border-gray-300 bg-white text-black">
                                 <table className="min-w-full text-xs">
                                     <thead>
                                         <tr className="bg-gray-200 text-gray-700 uppercase">
-                                            {dataPreview.meta.fields.map(field => (
+                                            {dataPreview.meta.fields.map((field: any) => (
                                                 <th key={field} className="px-4 py-2 text-left">{field}</th>
                                             ))}
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {dataPreview.data.map((row, index) => (
+                                        {dataPreview.data.map((row: any, index: number) => (
                                             <tr key={index} className="border-t border-gray-200 hover:bg-gray-50">
-                                                {dataPreview.meta.fields.map(field => (
+                                                {dataPreview.meta.fields.map((field: any) => (
                                                     <td key={field} className="px-4 py-2">{String(row[field])}</td>
                                                 ))}
                                             </tr>
@@ -162,7 +161,7 @@ const GetData = ({ onClose }) => {
                                 </div>
                             </div>
                         )}
-                        
+
                         <button
                             onClick={handleStoreData}
                             disabled={!dataSetName.trim()}
@@ -254,22 +253,22 @@ const GetData = ({ onClose }) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         {expandedDataSet === dataSet.id && (
                                             <div className="border-t border-blue-200 p-4 bg-white">
                                                 <div className="overflow-x-auto rounded-md border border-gray-200 bg-white">
                                                     <table className="min-w-full text-xs">
                                                         <thead>
                                                             <tr className="bg-gray-100 text-gray-700 uppercase">
-                                                                {dataSet.headers.map(header => (
+                                                                {dataSet.headers.map((header: any) => (
                                                                     <th key={header} className="px-4 py-2 text-left">{header}</th>
                                                                 ))}
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            {dataSet.data.slice(0, 5).map((row, index) => (
+                                                            {dataSet.data.slice(0, 5).map((row: any, index: number) => (
                                                                 <tr key={index} className="border-t border-gray-200 hover:bg-gray-50">
-                                                                    {dataSet.headers.map(header => (
+                                                                    {dataSet.headers.map((header: any) => (
                                                                         <td key={header} className="px-4 py-2 text-black">{String(row[header])}</td>
                                                                     ))}
                                                                 </tr>
@@ -339,22 +338,22 @@ const GetData = ({ onClose }) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         {expandedDataSet === dataSet.id && (
                                             <div className="border-t border-gray-200 p-4 bg-gray-50">
                                                 <div className="overflow-x-auto rounded-md border border-gray-200 bg-white">
                                                     <table className="min-w-full text-xs">
                                                         <thead>
                                                             <tr className="bg-gray-100 text-gray-700 uppercase">
-                                                                {dataSet.headers.map(header => (
+                                                                {dataSet.headers.map((header: any) => (
                                                                     <th key={header} className="px-4 py-2 text-left">{header}</th>
                                                                 ))}
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            {dataSet.data.slice(0, 5).map((row, index) => (
+                                                            {dataSet.data.slice(0, 5).map((row: any, index: number) => (
                                                                 <tr key={index} className="border-t border-gray-200 hover:bg-gray-50">
-                                                                    {dataSet.headers.map(header => (
+                                                                    {dataSet.headers.map((header: any) => (
                                                                         <td key={header} className="px-4 py-2 text-black">{String(row[header])}</td>
                                                                     ))}
                                                                 </tr>

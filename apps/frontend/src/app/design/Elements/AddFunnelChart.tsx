@@ -1,9 +1,8 @@
 'use client';
-'use client';
-import React, { useState, useMemo,useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useCanvasHook } from '../Context/CanvasContext';
 import FunnelChartWidget from './Widgets/FunnelChartWidget';
-import { Database } from 'lucide-react';
+import { Database, Info } from 'lucide-react';
 
 const AddFunnelChart = ({ onClose }) => {
     const { addWidget, storedDataSets } = useCanvasHook();
@@ -20,6 +19,9 @@ const AddFunnelChart = ({ onClose }) => {
             colors: ['#6366F1', '#4F46E5', '#4338CA', '#3730A3', '#312E81']
         }],
         showTitle: true,
+        showLegend: false,
+        showValues: false, // Changed from true to false
+        funnelStyle: 'classic',
         isEmpty: true // Flag to indicate no real data is selected
     });
 
@@ -32,17 +34,18 @@ const AddFunnelChart = ({ onClose }) => {
         setDataSource('stored');
     };
 
-    const handleDataMapped = ({ labels, dataPoints }) => {
+    const handleDataMapped = ({ labels, dataPoints, generatedTitle }) => {
         const colors = ['#6366F1', '#4F46E5', '#4338CA', '#3730A3', '#312E81', '#10B981', '#F59E0B', '#EF4444'];
         const generatedColors = labels.map((_, i) => colors[i % colors.length]);
 
         setChartProps(prev => ({
             ...prev,
+            title: generatedTitle || prev.title, // Use generated title
             labels: labels,
             datasets: [{ ...prev.datasets[0], dataPoints: dataPoints, colors: generatedColors }],
             isEmpty: false
         }));
-        setParsedData(null);
+        // Don't hide the parsedData - keep showing the columns
         setDataSource('configured');
     };
 
@@ -78,7 +81,6 @@ const AddFunnelChart = ({ onClose }) => {
                 />
             ) : (
                 <div className="space-y-4">
-                    {/* Title Input - only show when data is configured */}
                     {!chartProps.isEmpty && (
                         <div>
                             <label className="block text-xs font-medium text-gray-600 mb-1">Chart Title</label>
@@ -92,10 +94,8 @@ const AddFunnelChart = ({ onClose }) => {
                         </div>
                     )}
 
-                    {/* Data Source Selection */}
                     <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
                         <h4 className="font-medium text-gray-700 mb-3">Data Source</h4>
-
                         {storedDataSets.length > 0 ? (
                             <div className="space-y-2">
                                 <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
@@ -130,7 +130,6 @@ const AddFunnelChart = ({ onClose }) => {
                         )}
                     </div>
 
-                    {/* Status Information */}
                     {chartProps.isEmpty ? (
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                             <div className="flex items-center space-x-2">
@@ -138,7 +137,7 @@ const AddFunnelChart = ({ onClose }) => {
                                 <span className="text-sm font-medium text-blue-800">Preview Mode</span>
                             </div>
                             <p className="text-xs text-blue-700 mt-1">
-                                Default chart preview shown. Select a dataset above to configure your funnel chart.
+                                Default chart preview shown. Select a dataset to configure your funnel chart.
                             </p>
                         </div>
                     ) : (
@@ -152,10 +151,10 @@ const AddFunnelChart = ({ onClose }) => {
                             </p>
                         </div>
                     )}
+
                 </div>
             )}
 
-            {/* Action Button */}
             <button
                 onClick={handleAdd}
                 disabled={chartProps.isEmpty}
@@ -171,56 +170,128 @@ const AddFunnelChart = ({ onClose }) => {
     );
 };
 
-// Data Mapper for counting, filtering, and sorting data for Funnel charts
 const DataMapper = ({ data, onMap, onBack }) => {
     const headers = data.meta.fields;
-    const [categoryField, setCategoryField] = useState(headers[0]);
-    const [uniqueCategories, setUniqueCategories] = useState([]);
-    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [aggregationType, setAggregationType] = useState('sum');
+    
+    const isNumericColumn = (columnName) => {
+        const sampleSize = Math.min(10, data.data.length);
+        if (sampleSize === 0) return false;
+        const samples = data.data.slice(0, sampleSize);
+        let numericCount = 0;
+        for (const row of samples) {
+            const value = row[columnName];
+            if (value !== null && value !== undefined && value !== '') {
+                if (!isNaN(Number(value))) numericCount++;
+            }
+        }
+        return (numericCount / sampleSize) > 0.7;
+    };
 
-    useEffect(() => {
-        if (!categoryField || !data.data) return;
-        const allValues = data.data.map(row => row[categoryField]);
-        const unique = [...new Set(allValues)].filter(val => val != null && val !== '');
+    const [labelField, setLabelField] = useState(headers.find(h => !isNumericColumn(h)) || headers[0]);
+    const [valueField, setValueField] = useState(headers.find(h => isNumericColumn(h)) || headers[1] || headers[0]);
 
-        setUniqueCategories(unique);
-        setSelectedCategories(unique); // Select all by default
-    }, [categoryField, data.data]);
+    // Function to generate dynamic title
+    const generateTitle = (legend, value, aggregation) => {
+        const aggregationLabels = {
+            'sum': 'Sum',
+            'count': 'Count',
+            'average': 'Average',
+            'min': 'Minimum',
+            'max': 'Maximum',
+            'distinct_count': 'Distinct Count'
+        };
 
-    const handleCategoryToggle = (category) => {
-        setSelectedCategories(prev =>
-            prev.includes(category)
-                ? prev.filter(item => item !== category)
-                : [...prev, category]
-        );
+        // Format: Legend - Values - Value Calculation
+        // Example: "Region - Sales - Sum" or "Category - Revenue - Average"
+        return `${legend} - ${value} - ${aggregationLabels[aggregation]}`;
     };
 
     const handleGenerate = () => {
-        const columnData = data.data.map(row => row[categoryField]);
-        const counts = {};
-        for (const item of columnData) {
-            if (selectedCategories.includes(item)) {
-                counts[item] = (counts[item] || 0) + 1;
+        const aggregationMap = new Map();
+
+        data.data.forEach(row => {
+            const category = row[labelField];
+            const value = row[valueField];
+
+            if (category == null || category === '') return;
+
+            if (!aggregationMap.has(category)) {
+                switch (aggregationType) {
+                    case 'average': aggregationMap.set(category, { sum: 0, count: 0 }); break;
+                    case 'min': aggregationMap.set(category, Infinity); break;
+                    case 'max': aggregationMap.set(category, -Infinity); break;
+                    case 'distinct_count': aggregationMap.set(category, new Set()); break;
+                    default: aggregationMap.set(category, 0); break;
+                }
             }
+
+            const numericValue = Number(value) || 0;
+
+            switch (aggregationType) {
+                case 'sum':
+                    aggregationMap.set(category, aggregationMap.get(category) + numericValue);
+                    break;
+                case 'count':
+                    if (value != null) aggregationMap.set(category, aggregationMap.get(category) + 1);
+                    break;
+                case 'average':
+                    const avgData = aggregationMap.get(category);
+                    avgData.sum += numericValue;
+                    avgData.count++;
+                    break;
+                case 'min':
+                    aggregationMap.set(category, Math.min(aggregationMap.get(category), numericValue));
+                    break;
+                case 'max':
+                    aggregationMap.set(category, Math.max(aggregationMap.get(category), numericValue));
+                    break;
+                case 'distinct_count':
+                    if (value != null) aggregationMap.get(category).add(value);
+                    break;
+            }
+        });
+
+        const labels = Array.from(aggregationMap.keys());
+        let dataPoints = [];
+
+        switch (aggregationType) {
+            case 'average':
+                dataPoints = labels.map(label => {
+                    const { sum, count } = aggregationMap.get(label);
+                    return count > 0 ? sum / count : 0;
+                });
+                break;
+            case 'distinct_count':
+                dataPoints = labels.map(label => aggregationMap.get(label).size);
+                break;
+            case 'min':
+                dataPoints = labels.map(label => (aggregationMap.get(label) === Infinity ? 0 : aggregationMap.get(label)));
+                break;
+            case 'max':
+                dataPoints = labels.map(label => (aggregationMap.get(label) === -Infinity ? 0 : aggregationMap.get(label)));
+                break;
+            default:
+                dataPoints = Array.from(aggregationMap.values());
         }
-
-        // Sort the data in descending order before sending it back
-        const unsortedLabels = Object.keys(counts);
-        const combined = unsortedLabels.map(label => ({
-            label: label,
-            value: counts[label]
-        }));
-
-        combined.sort((a, b) => b.value - a.value);
-
-        const labels = combined.map(item => item.label);
-        const dataPoints = combined.map(item => item.value);
-
-        onMap({ labels, dataPoints });
+        
+        // Sort by value (descending for funnel)
+        const sortedData = labels.map((label, index) => ({
+            label,
+            value: dataPoints[index]
+        })).sort((a, b) => b.value - a.value);
+        
+        const sortedLabels = sortedData.map(item => item.label);
+        const sortedDataPoints = sortedData.map(item => item.value);
+        
+        // Generate the dynamic title
+        const generatedTitle = generateTitle(labelField, valueField, aggregationType);
+        
+        onMap({ labels: sortedLabels, dataPoints: sortedDataPoints, generatedTitle });
     };
 
     return (
-        <div className="space-y-4 p-4 border bg-gray-50 rounded-lg">
+        <div className="space-y-4 p-4 border bg-white rounded-lg">
             <div className="flex items-center justify-between">
                 <h4 className="font-semibold text-gray-700">Configure Chart Data</h4>
                 <button
@@ -230,38 +301,105 @@ const DataMapper = ({ data, onMap, onBack }) => {
                     ← Back to Data Selection
                 </button>
             </div>
-
-            <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">Select Column to Count</label>
-                <select value={categoryField} onChange={(e) => setCategoryField(e.target.value)} className="w-full p-2 border border-gray-300 rounded text-sm text-black">
-                    {headers.map(h => <option key={h} value={h}>{h}</option>)}
-                </select>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">Category Column (Stages)</label>
+                    <div className="max-h-32 overflow-y-auto p-2 border border-gray-300 rounded text-sm bg-white">
+                        {headers.map(header => {
+                            const isNumeric = isNumericColumn(header);
+                            return (
+                                <label key={`label-${header}`} className="flex items-center cursor-pointer hover:bg-gray-50 px-1 py-0.5 rounded">
+                                    <input
+                                        type="checkbox"
+                                        name="labelField"
+                                        value={header}
+                                        checked={labelField === header}
+                                        onChange={(e) => setLabelField(e.target.value)}
+                                        className="h-4 w-4 border-gray-300 mr-3"
+                                    />
+                                    <div className="flex items-center space-x-2 min-w-0 flex-1">
+                                        {isNumeric ? (
+                                            <>
+                                                <span className="text-indigo-600 font-semibold text-sm flex-shrink-0">Σ</span>
+                                                <span className="text-sm text-gray-900 truncate">{header}</span>
+                                            </>
+                                        ) : (
+                                            <span className="text-sm text-gray-900 truncate pl-4">{header}</span>
+                                        )}
+                                    </div>
+                                </label>
+                            );
+                        })}
+                    </div>
+                </div>
+                
+                <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">Value Column (Sizes)</label>
+                    <div className="max-h-32 overflow-y-auto p-2 border bg-white rounded-md space-y-1">
+                        {headers.filter(h => h !== labelField).map(header => {
+                            const isNumeric = isNumericColumn(header);
+                            return (
+                                <label key={`value-${header}`} className="flex items-center cursor-pointer hover:bg-gray-50 px-1 py-0.5 rounded">
+                                    <input
+                                        type="checkbox"
+                                        name="valueField"
+                                        value={header}
+                                        checked={valueField === header}
+                                        onChange={(e) => setValueField(e.target.value)}
+                                        className="h-4 w-4 border-gray-300 mr-3"
+                                    />
+                                    <div className="flex items-center space-x-2 min-w-0 flex-1">
+                                        {isNumeric ? (
+                                            <>
+                                                <span className="text-indigo-600 font-semibold text-sm flex-shrink-0">Σ</span>
+                                                <span className="text-sm text-gray-900 truncate">{header}</span>
+                                            </>
+                                        ) : (
+                                            <span className="text-sm text-gray-900 truncate pl-4">{header}</span>
+                                        )}
+                                    </div>
+                                </label>
+                            );
+                        })}
+                    </div>
+                </div>
             </div>
 
-            {uniqueCategories.length > 0 && (
-                <div>
-                    <div className="flex justify-between items-center mb-1">
-                        <h4 className="font-semibold text-gray-700">Filter Stages</h4>
-                        <div className="space-x-3">
-                            <button onClick={() => setSelectedCategories(uniqueCategories)} className="text-xs font-medium text-indigo-600 hover:underline">Select All</button>
-                            <button onClick={() => setSelectedCategories([])} className="text-xs font-medium text-indigo-600 hover:underline">Unselect All</button>
-                        </div>
+            {/* Preview of generated title */}
+            {labelField && valueField && (
+                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+                    <div className="flex items-center space-x-2">
+                        <Info size={16} className="text-indigo-600" />
+                        <span className="text-sm font-medium text-indigo-800">Generated Title Preview</span>
                     </div>
-                    <div className="max-h-32 overflow-y-auto p-2 border bg-white rounded-md space-y-1">
-                        {uniqueCategories.map(category => (
-                            <div key={category} className="flex items-center">
-                                <input id={`cb-funnel-${category}`} type="checkbox" checked={selectedCategories.includes(category)} onChange={() => handleCategoryToggle(category)} className="h-4 w-4 rounded border-gray-300" />
-                                <label htmlFor={`cb-funnel-${category}`} className="ml-2 block text-sm text-gray-900">{String(category)}</label>
-                            </div>
-                        ))}
-                    </div>
+                    <p className="text-sm text-indigo-700 mt-1 font-medium">
+                        "{generateTitle(labelField, valueField, aggregationType)}"
+                    </p>
                 </div>
             )}
 
+            {/* Aggregation Selection */}
+            <div>
+                <label className="block text-sm font-medium text-gray-600 mb-2">Value Calculation</label>
+                <select
+                    value={aggregationType}
+                    onChange={(e) => setAggregationType(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black"
+                >
+                    <option value="sum">Sum</option>
+                    <option value="count">Count</option>
+                    <option value="average">Average</option>
+                    <option value="min">Minimum</option>
+                    <option value="max">Maximum</option>
+                    <option value="distinct_count">Distinct Count</option>
+                </select>
+            </div>
+
             <button
                 onClick={handleGenerate}
-                disabled={selectedCategories.length === 0}
-                className="w-full py-2 px-3 bg-blue-50 border-2 border-indigo-300 text-indigo-600 rounded-md text-sm font-medium transition-all duration-200 hover:text-white hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 transition-colors cursor-pointer"
+                disabled={!labelField || !valueField}
+                className="w-full py-2 px-4 bg-blue-50 text-indigo-600 hover:text-white transition-all duration-200 border-2 border-indigo-300 rounded-md font-medium hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 Generate Chart
             </button>

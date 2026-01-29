@@ -1,10 +1,14 @@
 'use client';
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import DesignHeader from "../Components/DesignHeader";
 import { CanvasProvider } from "../Context/CanvasContext";
 import Sidebar from "../Components/Sidebar";
 import CanvasEditor from "../Components/CanvasEditor";
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
+import { useAuthContext } from '@/contexts/AuthContext';
+import { ApiClient } from '@dashboard/api-client';
 
 interface DesignPageProps {
     params: {
@@ -14,9 +18,18 @@ interface DesignPageProps {
 
 export default function DesignPage({ params }: DesignPageProps) {
     const dashboardId = params.id;
+    const { token } = useAuthContext();
+    const [client, setClient] = useState<ApiClient | null>(null);
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
+    useEffect(() => {
+        if (token) {
+            setClient(new ApiClient(API_URL, () => token));
+        }
+    }, [token]);
 
     return (
-        <CanvasProvider dashboardId={dashboardId}>
+        <CanvasProvider dashboardId={dashboardId} client={client}>
             <main className="flex flex-col h-screen ">
                 <DesignHeader />
                 <div className="flex flex-1 overflow-hidden">

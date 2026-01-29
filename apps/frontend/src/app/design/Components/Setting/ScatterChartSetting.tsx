@@ -1,7 +1,6 @@
 'use client';
-'use client';
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, X, Database } from 'lucide-react';
+import { ChevronDown, X, Database, RefreshCw, Info } from 'lucide-react';
 import { useCanvasHook } from '../../Context/CanvasContext';
 
 const ScatterChartSetting = ({ initialData, onUpdate, onClose }) => {
@@ -14,6 +13,7 @@ const ScatterChartSetting = ({ initialData, onUpdate, onClose }) => {
         xaxis: false,
         yaxis: false,
         properties: false,
+        display: true, // Added
     });
     const [graphData, setGraphData] = useState(initialData);
     const [parsedData, setParsedData] = useState(null); // To trigger DataMapper
@@ -34,18 +34,19 @@ const ScatterChartSetting = ({ initialData, onUpdate, onClose }) => {
         setParsedData(dataForMapper);
     };
 
-    const handleDataMapped = (mappedData) => {
+    const handleDataMapped = ({ xAxisField, yAxisField, dataPoints, generatedTitle }) => {
         const newDataset = {
             id: 1,
-            name: `${mappedData.yAxisField} vs ${mappedData.xAxisField}`,
-            dataPoints: mappedData.dataPoints,
+            name: `${yAxisField} vs ${xAxisField}`,
+            dataPoints: dataPoints,
             color: '#EF4444'
         };
         const updatedGraphData = {
             ...graphData,
+            title: generatedTitle || graphData.title, // Use generated title
             datasets: [newDataset],
-            xAxisTitle: mappedData.xAxisField,
-            yAxisTitle: mappedData.yAxisField,
+            xAxisTitle: xAxisField,
+            yAxisTitle: yAxisField,
             dataSourceId: parsedData.id
         };
         setGraphData(updatedGraphData);
@@ -249,12 +250,54 @@ const ScatterChartSetting = ({ initialData, onUpdate, onClose }) => {
                                 </div>
                             )}
                         </div>
+
+                        {/* Display Options Section */}
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('display')}>
+                                <h3 className="text-sm font-medium text-gray-700">Display Options</h3>
+                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.display ? 'rotate-180' : ''}`} />
+                            </div>
+                            {expandedSections.display && (
+                                <div className="mt-3 space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <span className="text-sm text-gray-600">Show Legend</span>
+                                            <p className="text-xs text-gray-500 mt-1">Display legend on the top of chart</p>
+                                        </div>
+                                        <button 
+                                            onClick={() => setGraphData(prev => ({ 
+                                                ...prev, 
+                                                showLegend: !prev.showLegend
+                                            }))} 
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showLegend ? 'bg-indigo-600' : 'bg-gray-200'}`}
+                                        >
+                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showLegend ? 'translate-x-6' : 'translate-x-1'}`} />
+                                        </button>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <span className="text-sm text-gray-600">Show Values</span>
+                                            <p className="text-xs text-gray-500 mt-1">Display coordinate values on data points</p>
+                                        </div>
+                                        <button 
+                                            onClick={() => setGraphData(prev => ({ 
+                                                ...prev, 
+                                                showValues: !prev.showValues
+                                            }))} 
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showValues ? 'bg-indigo-600' : 'bg-gray-200'}`}
+                                        >
+                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showValues ? 'translate-x-6' : 'translate-x-1'}`} />
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
             </div>
 
             <div className="p-4 border-t bg-gray-50">
-                <button onClick={() => onUpdate && onUpdate(graphData)} className="w-full py-2 px-3 bg-blue-50 border-2 border-indigo-300 text-indigo-600 rounded-md text-sm font-medium transition-all duration-200 hover:text-white hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 transition-colors">
+                <button onClick={() => onUpdate && onUpdate(graphData)} className="w-full py-2 px-3 bg-blue-50 border-2 border-indigo-300 text-indigo-600 rounded-md text-sm font-medium transition-all duration-200 hover:text-white hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600">
                     Save Changes
                 </button>
             </div>
@@ -264,33 +307,53 @@ const ScatterChartSetting = ({ initialData, onUpdate, onClose }) => {
 
 const DataMapper = ({ data, onMap, onBack }) => {
     const headers = data.meta.fields;
+    const [aggregationType, setAggregationType] = useState('sum');
 
     const isNumericColumn = (columnName) => {
         const sampleSize = Math.min(10, data.data.length);
+        if (sampleSize === 0) return false;
         const samples = data.data.slice(0, sampleSize);
         let numericCount = 0;
         for (const row of samples) {
             const value = row[columnName];
             if (value !== null && value !== undefined && value !== '') {
-                const numValue = Number(value);
-                if (!isNaN(numValue) && isFinite(numValue)) {
-                    numericCount++;
-                }
+                if (!isNaN(Number(value))) numericCount++;
             }
         }
-        return numericCount / sampleSize > 0.7;
+        return (numericCount / sampleSize) > 0.7;
     };
 
     const [xAxisField, setXAxisField] = useState(headers.find(isNumericColumn) || headers[0]);
     const [yAxisField, setYAxisField] = useState(headers.filter(isNumericColumn).slice(1, 2)[0] || headers[1] || headers[0]);
 
+    // Function to generate dynamic title
+    const generateTitle = (xField, yField, aggregation) => {
+        const aggregationLabels = {
+            'sum': 'Sum',
+            'count': 'Count',
+            'average': 'Average',
+            'min': 'Minimum',
+            'max': 'Maximum',
+            'distinct_count': 'Distinct Count'
+        };
+
+        // Format: X vs Y - Aggregation
+        // Example: "Sales vs Revenue - Sum" or "Age vs Income - Average"
+        return `${xField} vs ${yField} - ${aggregationLabels[aggregation]}`;
+    };
 
     const handleGenerate = () => {
+        // For scatter plots, we typically don't aggregate the same way as other charts
+        // Instead, we create data points directly from the raw data
         const dataPoints = data.data.map(row => ({
-            x: row[xAxisField],
-            y: row[yAxisField]
-        })).filter(p => typeof p.x === 'number' && typeof p.y === 'number'); // Ensure both are numbers
-        onMap({ xAxisField, yAxisField, dataPoints });
+            x: Number(row[xAxisField]) || 0,
+            y: Number(row[yAxisField]) || 0
+        })).filter(p => !isNaN(p.x) && !isNaN(p.y));
+        
+        // Generate the dynamic title
+        const generatedTitle = generateTitle(xAxisField, yAxisField, aggregationType);
+        
+        onMap({ xAxisField, yAxisField, dataPoints, generatedTitle });
     };
 
     return (
@@ -372,6 +435,37 @@ const DataMapper = ({ data, onMap, onBack }) => {
                     </div>
                 </div>
             </div>
+
+            {/* Preview of generated title */}
+            {xAxisField && yAxisField && (
+                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+                    <div className="flex items-center space-x-2">
+                        <Info size={16} className="text-indigo-600" />
+                        <span className="text-sm font-medium text-indigo-800">Generated Title Preview</span>
+                    </div>
+                    <p className="text-sm text-indigo-700 mt-1 font-medium">
+                        "{generateTitle(xAxisField, yAxisField, aggregationType)}"
+                    </p>
+                </div>
+            )}
+
+            {/* Aggregation Selection */}
+            <div>
+                <label className="block text-sm font-medium text-gray-600 mb-2">Data Processing</label>
+                <select
+                    value={aggregationType}
+                    onChange={(e) => setAggregationType(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black"
+                >
+                    <option value="sum">Sum</option>
+                    <option value="count">Count</option>
+                    <option value="average">Average</option>
+                    <option value="min">Minimum</option>
+                    <option value="max">Maximum</option>
+                    <option value="distinct_count">Distinct Count</option>
+                </select>
+            </div>
+
             <button onClick={handleGenerate} className="w-full py-2 px-4 bg-blue-50 text-indigo-600 hover:text-white transition-all duration-200 border-2 border-indigo-300 rounded-md font-medium hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer">
                 Update Chart
             </button>
@@ -380,7 +474,6 @@ const DataMapper = ({ data, onMap, onBack }) => {
 }
 
 export default ScatterChartSetting;
-
 
 
 

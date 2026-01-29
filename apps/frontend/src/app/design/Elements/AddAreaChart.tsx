@@ -1,31 +1,34 @@
 'use client';
-'use client';
 import React, { useMemo, useState } from 'react';
 import { useCanvasHook } from '../Context/CanvasContext';
 import AreaChartWidget from './Widgets/AreaChartWidget';
-import Papa from 'papaparse';
-import { Database, Upload, FileText, TrendingUp } from 'lucide-react';
+import { Database, Info, TrendingUp } from 'lucide-react';
 
 const AddAreaChart = ({ onClose }) => {
     const { addWidget, storedDataSets } = useCanvasHook();
     const [parsedData, setParsedData] = useState(null);
-    const [dataSource, setDataSource] = useState('default'); // Changed from 'empty' to 'default'
 
-    // Default chart data similar to AddLineChart
+    // Default chart data
     const [chartProps, setChartProps] = useState({
         title: 'Title Goes Here',
         labels: ['Jan 22', 'Feb 22', 'Mar 22', 'Apr 22', 'May 22', 'Jun 22'],
         datasets: [{ id: 1, name: 'Dataset 1', dataPoints: [30, 40, 15, 60, 40, 20], color: '#8B5CF6' }],
         showTitle: true,
         showXAxis: true,
-        xAxisTitle: 'Categories',
+        showXAxisTitle: false,
+        xAxisTitle: 'Months',
         showYAxis: true,
+        showYAxisTitle: false,
         yAxisTitle: 'Values',
-        strokeWidth: 1,
-        showMarkers: false,
-        markerSize: 4,
+        strokeWidth: 2,
+        lineStyle: 'solid',
+        showMarkers: true,
+        markerStyle: 'circle',
+        markerSize: 8,
+        showLegend: false, // Always false - data shown on hover only
+        fillOpacity: 0.3,
         yStep: 10,
-        isEmpty: true // Flag to indicate no real data is selected
+        isEmpty: true
     });
 
     const yAxisRange = useMemo(() => {
@@ -51,30 +54,47 @@ const AddAreaChart = ({ onClose }) => {
             meta: { fields: dataSet.headers }
         };
         setParsedData(mockResults);
-        setDataSource('stored');
     };
 
-    const handleDataMapped = (mappedData) => {
-        const colors = ['#8B5CF6', '#10B981', '#F59E0B', '#EF4444', '#6366F1', '#14B8A6'];
-        const newDatasets = mappedData.datasets.map((ds, index) => ({
+    const handleDataMapped = ({ labels, datasets, xAxisField, yAxisFields, legendField, aggregationType, generatedTitle }) => {
+        const colors = ['#8B5CF6', '#10B981', '#F59E0B', '#EF4444', '#6366F1', '#14B8A6', '#FBBF24', '#F87171'];
+        
+        // Apply colors to datasets
+        const coloredDatasets = datasets.map((dataset, index) => ({
+            ...dataset,
             id: index + 1,
-            name: ds.name,
-            dataPoints: ds.dataPoints,
             color: colors[index % colors.length]
         }));
-        setChartProps(prev => ({ 
-            ...prev, 
-            labels: mappedData.labels, 
-            datasets: newDatasets,
+        
+        setChartProps(prev => ({
+            ...prev,
+            title: generatedTitle,
+            labels: labels,
+            datasets: coloredDatasets,
+            xAxisTitle: xAxisField,
+            yAxisTitle: yAxisFields.join(', '),
+            showXAxisTitle: true,
+            showYAxisTitle: true,
+            showLegend: false, // Always false - data shown on hover only
             isEmpty: false
         }));
-        setParsedData(null);
-        setDataSource('configured');
     };
 
     const handleBackToDataSelection = () => {
         setParsedData(null);
-        setDataSource('default');
+        // Reset to default state
+        setChartProps(prev => ({
+            ...prev,
+            title: 'Title Goes Here',
+            labels: ['Jan 22', 'Feb 22', 'Mar 22', 'Apr 22', 'May 22', 'Jun 22'],
+            datasets: [{ id: 1, name: 'Dataset 1', dataPoints: [30, 40, 15, 60, 40, 20], color: '#8B5CF6' }],
+            xAxisTitle: 'Months',
+            yAxisTitle: 'Values',
+            showXAxisTitle: false,
+            showYAxisTitle: false,
+            showLegend: false,
+            isEmpty: true
+        }));
     };
 
     const handleAdd = () => {
@@ -83,7 +103,7 @@ const AddAreaChart = ({ onClose }) => {
             yMin: yAxisRange.min,
             yMax: yAxisRange.max,
         };
-        delete finalChartProps.isEmpty; // Remove the empty flag
+        delete finalChartProps.isEmpty;
         addWidget({ type: 'areachart', props: finalChartProps });
         if (onClose) onClose();
     };
@@ -152,7 +172,7 @@ const AddAreaChart = ({ onClose }) => {
                             <div className="text-center py-6 text-gray-500">
                                 <Database size={32} className="mx-auto mb-3 text-gray-300" />
                                 <p className="text-sm font-medium">No datasets available</p>
-                                <p className="text-xs mt-1">Import data using the "Data" tab in the sidebar first</p>
+                                <p className="text-xs mt-1">Import data using the "Data" tab first</p>
                             </div>
                         )}
                     </div>
@@ -165,7 +185,7 @@ const AddAreaChart = ({ onClose }) => {
                                 <span className="text-sm font-medium text-blue-800">Preview Mode</span>
                             </div>
                             <p className="text-xs text-blue-700 mt-1">
-                                Default chart preview shown. Select a dataset above to configure your area chart.
+                                Select a dataset to configure your area chart.
                             </p>
                         </div>
                     ) : (
@@ -175,7 +195,7 @@ const AddAreaChart = ({ onClose }) => {
                                 <span className="text-sm font-medium text-green-800">Data Configured</span>
                             </div>
                             <p className="text-xs text-green-700 mt-1">
-                                Chart is ready with {chartProps.datasets.length} data series. You can add it to the canvas now.
+                                Your chart is ready to be added to the canvas.
                             </p>
                         </div>
                     )}
@@ -198,37 +218,73 @@ const AddAreaChart = ({ onClose }) => {
     );
 };
 
-// Enhanced Data Mapper Component with column type detection
+// Enhanced Data Mapper Component with optimized performance for area charts
 const DataMapper = ({ data, onMap, onBack }) => {
     const headers = data.meta.fields;
-    const [xAxis, setXAxis] = useState(headers[0]);
-    const [yAxes, setYAxes] = useState([headers[1] || headers[0]]);
-    const [previewData, setPreviewData] = useState(data.data.slice(0, 5));
-
-    // Function to detect if a column contains numeric data
-    const isNumericColumn = (columnName) => {
-        // Sample a few rows to determine data type
-        const sampleSize = Math.min(10, data.data.length);
-        const samples = data.data.slice(0, sampleSize);
+    const [aggregationType, setAggregationType] = useState('sum');
+    
+    // Initialize fields with smart defaults
+    const [xAxisField, setXAxisField] = useState(() => {
+        // Try to find a date/time field first, then any non-numeric field
+        const dateField = headers.find(h => 
+            h.toLowerCase().includes('date') || 
+            h.toLowerCase().includes('time') || 
+            h.toLowerCase().includes('month') || 
+            h.toLowerCase().includes('year')
+        );
+        if (dateField) return dateField;
         
+        const nonNumericField = headers.find(h => !isNumericColumn(h));
+        return nonNumericField || headers[0];
+    });
+    
+    const [yAxisFields, setYAxisFields] = useState(() => {
+        // Default to numeric fields, excluding the x-axis field
+        const numericFields = headers.filter(h => h !== xAxisField && isNumericColumn(h));
+        return numericFields.length > 0 ? [numericFields[0]] : [headers[1] || headers[0]];
+    });
+    
+    const [legendField, setLegendField] = useState(''); // Optional grouping field
+
+    function isNumericColumn(columnName) {
+        const sampleSize = Math.min(10, data.data.length);
+        if (sampleSize === 0) return false;
+        const samples = data.data.slice(0, sampleSize);
         let numericCount = 0;
         for (const row of samples) {
             const value = row[columnName];
             if (value !== null && value !== undefined && value !== '') {
-                // Check if it's a number or can be converted to a number
-                const numValue = Number(value);
-                if (!isNaN(numValue) && isFinite(numValue)) {
-                    numericCount++;
-                }
+                if (!isNaN(Number(value))) numericCount++;
             }
         }
+        return (numericCount / sampleSize) > 0.7;
+    }
+
+    // Function to generate dynamic title
+    const generateTitle = (xAxis, yAxes, legend, aggregation) => {
+        const aggregationLabels = {
+            'sum': 'Sum',
+            'count': 'Count',
+            'average': 'Average',
+            'min': 'Minimum',
+            'max': 'Maximum'
+        };
+
+        let title = yAxes.join(' & ') + ' by ' + xAxis;
         
-        // If more than 70% of non-empty values are numeric, consider it a numeric column
-        return numericCount / sampleSize > 0.7;
+        if (aggregation !== 'none') {
+            title = aggregationLabels[aggregation] + ' of ' + title;
+        }
+        
+        if (legend) {
+            title += ` (by ${legend})`;
+        }
+        
+        return title;
     };
 
     const handleYAxisToggle = (header) => {
-        setYAxes(prev =>
+        setYAxisFields(prev =>
             prev.includes(header)
                 ? (prev.length > 1 ? prev.filter(h => h !== header) : prev)
                 : [...prev, header]
@@ -236,18 +292,155 @@ const DataMapper = ({ data, onMap, onBack }) => {
     };
 
     const handleGenerate = () => {
-        const labels = data.data.map(row => String(row[xAxis]));
-        const datasets = yAxes.map(yAxisField => ({
-            name: yAxisField,
-            dataPoints: data.data.map(row => Number(row[yAxisField]) || 0)
-        }));
-        onMap({ labels, datasets });
+        // Process data based on configuration with performance optimizations
+        let processedData = [];
+        
+        if (legendField && legendField !== '') {
+            // Group data by legend field with limits to prevent performance issues
+            const groupedData = new Map();
+            const maxLegendGroups = 8; // Reduced for area charts as they can be visually overwhelming
+            let legendGroupCount = 0;
+            
+            data.data.forEach(row => {
+                const legendValue = row[legendField];
+                const xValue = row[xAxisField];
+                
+                // Skip if we've reached max legend groups
+                if (!groupedData.has(legendValue) && legendGroupCount >= maxLegendGroups) {
+                    return;
+                }
+                
+                if (!groupedData.has(legendValue)) {
+                    groupedData.set(legendValue, new Map());
+                    legendGroupCount++;
+                }
+                
+                if (!groupedData.get(legendValue).has(xValue)) {
+                    groupedData.get(legendValue).set(xValue, {});
+                    yAxisFields.forEach(field => {
+                        groupedData.get(legendValue).get(xValue)[field] = [];
+                    });
+                }
+                
+                yAxisFields.forEach(field => {
+                    const value = Number(row[field]) || 0;
+                    groupedData.get(legendValue).get(xValue)[field].push(value);
+                });
+            });
+            
+            // Get unique x-axis values and sort them
+            const allXValues = [...new Set(data.data.map(row => row[xAxisField]))].sort();
+            
+            // Create datasets for each legend group, but limit combinations for area charts
+            const datasets = [];
+            const maxDatasets = 6; // Reduced for area charts to avoid visual clutter
+            let datasetCount = 0;
+            
+            groupedData.forEach((xValueMap, legendValue) => {
+                // For area charts, prefer single Y field per legend to avoid visual clutter
+                const fieldsToProcess = yAxisFields.length > 1 && groupedData.size > 1 
+                    ? [yAxisFields[0]] // Use only first Y field when multiple legends
+                    : yAxisFields;
+                
+                fieldsToProcess.forEach(yField => {
+                    if (datasetCount >= maxDatasets) return;
+                    
+                    const dataPoints = allXValues.map(xValue => {
+                        const values = xValueMap.get(xValue)?.[yField] || [0];
+                        
+                        // Apply aggregation
+                        switch (aggregationType) {
+                            case 'sum': return values.reduce((a, b) => a + b, 0);
+                            case 'average': return values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+                            case 'count': return values.length;
+                            case 'min': return Math.min(...values);
+                            case 'max': return Math.max(...values);
+                            default: return values[0] || 0;
+                        }
+                    });
+                    
+                    const datasetName = fieldsToProcess.length > 1 || groupedData.size === 1 
+                        ? `${legendValue} - ${yField}`
+                        : legendValue;
+                    
+                    datasets.push({
+                        name: datasetName,
+                        dataPoints
+                    });
+                    datasetCount++;
+                });
+            });
+            
+            processedData = {
+                labels: allXValues.map(String),
+                datasets
+            };
+        } else {
+            // Simple aggregation without grouping
+            const aggregatedData = new Map();
+            
+            data.data.forEach(row => {
+                const xValue = row[xAxisField];
+                
+                if (!aggregatedData.has(xValue)) {
+                    aggregatedData.set(xValue, {});
+                    yAxisFields.forEach(field => {
+                        aggregatedData.get(xValue)[field] = [];
+                    });
+                }
+                
+                yAxisFields.forEach(field => {
+                    const value = Number(row[field]) || 0;
+                    aggregatedData.get(xValue)[field].push(value);
+                });
+            });
+            
+            // Sort x-axis values
+            const sortedXValues = [...aggregatedData.keys()].sort();
+            
+            const datasets = yAxisFields.map(yField => {
+                const dataPoints = sortedXValues.map(xValue => {
+                    const values = aggregatedData.get(xValue)[yField];
+                    
+                    switch (aggregationType) {
+                        case 'sum': return values.reduce((a, b) => a + b, 0);
+                        case 'average': return values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+                        case 'count': return values.length;
+                        case 'min': return Math.min(...values);
+                        case 'max': return Math.max(...values);
+                        default: return values[0] || 0;
+                    }
+                });
+                
+                return {
+                    name: yField,
+                    dataPoints
+                };
+            });
+            
+            processedData = {
+                labels: sortedXValues.map(String),
+                datasets
+            };
+        }
+        
+        // Generate the dynamic title
+        const generatedTitle = generateTitle(xAxisField, yAxisFields, legendField, aggregationType);
+        
+        onMap({ 
+            ...processedData, 
+            xAxisField, 
+            yAxisFields, 
+            legendField, 
+            aggregationType, 
+            generatedTitle 
+        });
     };
 
     return (
         <div className="space-y-4 p-4 border bg-gray-50 rounded-lg">
             <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-gray-700">Configure Chart Data</h4>
+                <h4 className="font-semibold text-gray-700">Configure Area Chart Data</h4>
                 <button 
                     onClick={onBack}
                     className="text-xs text-indigo-600 hover:text-indigo-800 underline"
@@ -255,126 +448,152 @@ const DataMapper = ({ data, onMap, onBack }) => {
                     ← Back to Data Selection
                 </button>
             </div>
-            
-            {/* Data Preview */}
-            <div className="bg-white rounded-md border p-3">
-                <h5 className="text-sm font-medium text-gray-700 mb-2">Data Preview</h5>
-                <div className="overflow-x-auto">
-                    <table className="min-w-full text-xs">
-                        <thead>
-                            <tr className="bg-gray-100">
-                                {headers.map(header => (
-                                    <th key={header} className="px-2 py-1 text-left text-gray-600">{header}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {previewData.map((row, index) => (
-                                <tr key={index} className="border-t border-gray-100">
-                                    {headers.map(header => (
-                                        <td key={header} className="px-2 py-1 text-gray-800">
-                                            {String(row[header])}
-                                        </td>
-                                    ))}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    <div className="text-xs text-gray-500 mt-1 text-center">
-                        Showing first 5 of {data.data.length} rows
+
+            {/* Performance Warning for Area Charts */}
+            {legendField && yAxisFields.length > 1 && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                    <div className="flex items-center space-x-2">
+                        <Info size={16} className="text-yellow-600" />
+                        <span className="text-sm font-medium text-yellow-800">Area Chart Note</span>
+                    </div>
+                    <p className="text-xs text-yellow-700 mt-1">
+                        Multiple overlapping areas may be hard to read. Consider using one Y-axis field for better visualization.
+                    </p>
+                </div>
+            )}
+
+            {/* Preview of generated title */}
+            {xAxisField && yAxisFields.length > 0 && (
+                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+                    <div className="flex items-center space-x-2">
+                        <Info size={16} className="text-indigo-600" />
+                        <span className="text-sm font-medium text-indigo-800">Generated Title Preview</span>
+                    </div>
+                    <p className="text-sm text-indigo-700 mt-1 font-medium">
+                        "{generateTitle(xAxisField, yAxisFields, legendField, aggregationType)}"
+                    </p>
+                </div>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* X-Axis Selection */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
+                        <TrendingUp size={16} className="inline mr-1" />
+                        X-Axis (Time/Category)
+                    </label>
+                    <div className="max-h-36 overflow-y-auto p-2 border border-gray-300 rounded text-sm bg-white">
+                        {headers.map(h => (
+                            <ColumnSelector 
+                                key={`x-${h}`} 
+                                header={h} 
+                                checked={xAxisField === h} 
+                                onChange={setXAxisField} 
+                                name="xAxisField" 
+                                isNumeric={isNumericColumn(h)}
+                            />
+                        ))}
+                    </div>
+                </div>
+
+                {/* Y-Axis Selection */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
+                        Y-Axis (Values - Multiple Selection)
+                    </label>
+                    <div className="max-h-36 overflow-y-auto p-2 border border-gray-300 rounded text-sm bg-white">
+                        {headers.filter(h => h !== xAxisField).map(h => (
+                            <label key={`y-${h}`} className="flex items-center cursor-pointer hover:bg-gray-50 px-1 py-1 rounded">
+                                <input
+                                    type="checkbox"
+                                    checked={yAxisFields.includes(h)}
+                                    onChange={() => handleYAxisToggle(h)}
+                                    className="h-4 w-4 border-gray-300 mr-3 text-indigo-600 focus:ring-indigo-500"
+                                />
+                                <div className="flex items-center space-x-2 min-w-0 flex-1">
+                                    {isNumericColumn(h) && <span className="text-indigo-600 font-semibold text-sm flex-shrink-0">Σ</span>}
+                                    <span className={`text-sm text-gray-900 truncate ${!isNumericColumn(h) && 'pl-6'}`}>{h}</span>
+                                </div>
+                            </label>
+                        ))}
+                    </div>
+                </div>
+
+            </div>
+
+            <div className="grid grid-rows-1 lg:grid-rows-1 gap-4">
+                {/* Legend/Grouping Selection */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
+                        Legend (Optional Grouping)
+                    </label>
+                    <div className="max-h-36 overflow-y-auto p-2 border border-gray-300 rounded text-sm bg-white">
+                        <label className="flex items-center cursor-pointer hover:bg-gray-50 px-1 py-1 rounded">
+                            <input
+                                type="checkbox"
+                                checked={legendField === ''}
+                                onChange={() => setLegendField('')}
+                                className="h-4 w-4 border-gray-300 mr-3 text-indigo-600 focus:ring-indigo-500"
+                            />
+                            <span className="text-sm text-gray-500 italic">No grouping</span>
+                        </label>
+                        {headers.filter(h => h !== xAxisField && !yAxisFields.includes(h)).map(h => (
+                            <ColumnSelector 
+                                key={`legend-${h}`} 
+                                header={h} 
+                                checked={legendField === h} 
+                                onChange={setLegendField} 
+                                name="legendField" 
+                                isNumeric={isNumericColumn(h)}
+                            />
+                        ))}
                     </div>
                 </div>
             </div>
 
-            {/* Axis Configuration */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-2 ">X-Axis (Labels Select 1)</label>
-                    <div className="max-h-32 overflow-y-auto p-2 border border-gray-300 rounded text-sm bg-white">
-                        {headers.map(header => {
-                            const isNumeric = isNumericColumn(header);
-                            return (
-                                <label key={header} className="flex items-center cursor-pointer hover:bg-gray-50 px-1 py-0.5 rounded">
-                                    <input
-                                        type="radio"
-                                        name="xAxis"
-                                        value={header}
-                                        checked={xAxis === header}
-                                        onChange={(e) => setXAxis(e.target.value)}
-                                        className="h-3 w-3 rounded border-gray-300 mr-3" 
-                                    />
-                                    <div className="flex items-center space-x-2 min-w-0 flex-1">
-                                        {isNumeric ? (
-                                            <>
-                                                <span className="text-indigo-600 font-semibold text-sm flex-shrink-0">Σ</span>
-                                                <span className="text-sm text-gray-900 truncate">{header}</span>
-                                            </>
-                                        ) : (
-                                            <span className="text-sm text-gray-900 truncate pl-4">{header}</span>
-                                        )}
-                                    </div>
-                                </label>
-                            );
-                        })}
-                    </div>
-                </div>
-                
-                <div>
-                    <div className="flex justify-between items-center mb-2">
-                        <label className="text-sm font-medium text-gray-600">Y-Axis (Can Select Multiple Values)</label>
-                        <div className="space-x-2">
-                            <button 
-                                onClick={() => setYAxes(headers.filter(h => h !== xAxis))} 
-                                className="text-xs font-medium text-indigo-600 hover:underline"
-                            >
-                                All
-                            </button>
-                            <button 
-                                onClick={() => setYAxes([headers.filter(h => h !== xAxis)[0]])} 
-                                className="text-xs font-medium text-indigo-600 hover:underline"
-                            >
-                                Clear
-                            </button>
-                        </div>
-                    </div>
-                    <div className="max-h-32 overflow-y-auto p-2 border bg-white rounded-md space-y-1">
-                        {headers.filter(h => h !== xAxis).map(header => {
-                            const isNumeric = isNumericColumn(header);
-                            return (
-                                <label key={header} className="flex items-center cursor-pointer hover:bg-gray-50 px-1 py-0.5 rounded">
-                                    <input
-                                        type="checkbox"
-                                        checked={yAxes.includes(header)}
-                                        onChange={() => handleYAxisToggle(header)}
-                                        className="h-3 w-3 rounded border-gray-300 mr-3" 
-                                    />
-                                    <div className="flex items-center space-x-2 min-w-0 flex-1">
-                                        {isNumeric ? (
-                                            <>
-                                                <span className="text-indigo-600 font-semibold text-sm flex-shrink-0">Σ</span>
-                                                <span className="text-sm text-gray-900 truncate">{header}</span>
-                                            </>
-                                        ) : (
-                                            <span className="text-sm text-gray-900 truncate pl-4">{header}</span>
-                                        )}
-                                    </div>
-                                </label>
-                            );
-                        })}
-                    </div>
-                </div>
+            {/* Aggregation Selection */}
+            <div>
+                <label className="block text-sm font-medium text-gray-600 mb-2">Value Calculation</label>
+                <select
+                    value={aggregationType}
+                    onChange={(e) => setAggregationType(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black"
+                >
+                    <option value="sum">Sum</option>
+                    <option value="count">Count</option>
+                    <option value="average">Average</option>
+                    <option value="min">Minimum</option>
+                    <option value="max">Maximum</option>
+                    <option value="none">No Aggregation (First Value)</option>
+                </select>
             </div>
 
-            {/* Generate Button */}
-            <button 
+            <button
                 onClick={handleGenerate}
-                disabled={yAxes.length === 0}
+                disabled={!xAxisField || yAxisFields.length === 0}
                 className="w-full py-2 px-4 bg-blue-50 text-indigo-600 hover:text-white transition-all duration-200 border-2 border-indigo-300 rounded-md font-medium hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                Generate Chart ({yAxes.length} series selected)
+                Generate Area Chart
             </button>
         </div>
     );
 };
+
+const ColumnSelector = ({ header, checked, onChange, name, isNumeric }) => (
+    <label className="flex items-center cursor-pointer hover:bg-gray-50 px-1 py-1 rounded">
+        <input
+            type="checkbox"
+            name={name}
+            value={header}
+            checked={checked}
+            onChange={(e) => onChange(e.target.value)}
+            className="h-4 w-4 border-gray-300 mr-3 text-indigo-600 focus:ring-indigo-500"
+        />
+        <div className="flex items-center space-x-2 min-w-0 flex-1">
+            {isNumeric && <span className="text-indigo-600 font-semibold text-sm flex-shrink-0">Σ</span>}
+            <span className={`text-sm text-gray-900 truncate ${!isNumeric && 'pl-6'}`}>{header}</span>
+        </div>
+    </label>
+);
 
 export default AddAreaChart;

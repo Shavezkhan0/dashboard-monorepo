@@ -1,9 +1,8 @@
 'use client';
-'use client';
 import React, { useState, useMemo } from 'react';
 import { useCanvasHook } from '../Context/CanvasContext';
 import GaugeChartWidget from './Widgets/GaugeChartWidget';
-import { Database } from 'lucide-react';
+import { Database, TrendingUp } from 'lucide-react';
 
 const AddGaugeChart = ({ onClose }) => {
     const { addWidget, storedDataSets } = useCanvasHook();
@@ -11,21 +10,26 @@ const AddGaugeChart = ({ onClose }) => {
     const [dataSource, setDataSource] = useState('default');
 
     const [chartProps, setChartProps] = useState({
-        title: 'Title goes here',
+        title: 'Gauge Chart',
+        showTitle: true,
         value: 40,
         target: 50,
         maxValue: 100,
         minValue: 0,
-        unit: 'K',
-        labels: ['Tier 1', 'Tier 2', 'Tier 3', 'Tier 4'],
-        colors: ['#2B2A84', '#6F6DE2', '#9796F5', '#C4C4F5'],
+        unit: '',
+        labels: ['Low', 'Medium', 'High'],
+        colors: ['#EF4444', '#F59E0B', '#10B981'],
+        showTarget: true,
+        needleColor: '#1e40af',
+        valueFormat: 'default', // default, currency, percentage, compact
         isEmpty: true // Flag to indicate no real data is selected
     });
 
     const handleStoredDataSelect = (dataSet) => {
         const mockResults = {
             data: dataSet.data,
-            meta: { fields: dataSet.headers }
+            meta: { fields: dataSet.headers },
+            id: dataSet.id
         };
         setParsedData(mockResults);
         setDataSource('stored');
@@ -34,10 +38,14 @@ const AddGaugeChart = ({ onClose }) => {
     const handleDataMapped = (mappedData) => {
         setChartProps(prev => ({
             ...prev,
+            title: mappedData.title || prev.title,
             value: mappedData.value,
             minValue: mappedData.minValue,
             maxValue: mappedData.maxValue,
             target: mappedData.target,
+            dataSourceId: mappedData.dataSourceId,
+            valueField: mappedData.valueField,
+            targetField: mappedData.targetField,
             isEmpty: false
         }));
         setParsedData(null); // Hide the mapper UI
@@ -47,6 +55,16 @@ const AddGaugeChart = ({ onClose }) => {
     const handleBackToDataSelection = () => {
         setParsedData(null);
         setDataSource('default');
+        setChartProps(prev => ({
+            ...prev,
+            title: 'Gauge Chart',
+            value: 40,
+            target: 50,
+            maxValue: 100,
+            minValue: 0,
+            unit: '',
+            isEmpty: true
+        }));
     };
 
     const handlePropChange = (field, value) => {
@@ -78,54 +96,46 @@ const AddGaugeChart = ({ onClose }) => {
             ) : (
                 <div className="space-y-4">
                     {!chartProps.isEmpty && (
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                              <div>
                                 <label className="block text-xs font-medium text-gray-600 mb-1">Chart Title</label>
                                 <input
                                     type="text"
                                     value={chartProps.title}
                                     onChange={(e) => handlePropChange('title', e.target.value)}
-                                    className="w-full p-2 text-sm border border-gray-300 rounded text-black"
+                                    className="w-full p-2 text-sm border border-gray-300 rounded text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                     placeholder="Enter chart title"
                                 />
                             </div>
-                            <div className="grid grid-cols-4 gap-2">
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-600 mb-1">Min Value</label>
-                                    <input 
-                                        type="number" 
-                                        value={chartProps.minValue} 
-                                        onChange={(e) => handlePropChange('minValue', Number(e.target.value))} 
-                                        className="w-full p-2 text-sm border border-gray-300 rounded text-black" 
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-600 mb-1">Max Value</label>
-                                    <input 
-                                        type="number" 
-                                        value={chartProps.maxValue} 
-                                        onChange={(e) => handlePropChange('maxValue', Number(e.target.value))} 
-                                        className="w-full p-2 text-sm border border-gray-300 rounded text-black" 
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-600 mb-1">Target</label>
-                                    <input 
-                                        type="number" 
-                                        value={chartProps.target} 
-                                        onChange={(e) => handlePropChange('target', Number(e.target.value))} 
-                                        className="w-full p-2 text-sm border border-gray-300 rounded text-black" 
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-600 mb-1">Unit</label>
-                                    <input 
-                                        type="text" 
-                                        value={chartProps.unit} 
-                                        onChange={(e) => handlePropChange('unit', e.target.value)} 
-                                        className="w-full p-2 text-sm border border-gray-300 rounded text-black" 
-                                        placeholder="e.g., K, M, %" 
-                                    />
+
+                            {/* Format Options Section */}
+                            <div className="border border-gray-200 rounded-lg p-3 bg-gray-50">
+                                <h4 className="text-sm font-medium text-gray-700 mb-3">Format Options</h4>
+                                
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-600 mb-1">Unit / Prefix</label>
+                                        <input 
+                                            type="text" 
+                                            value={chartProps.unit} 
+                                            onChange={(e) => handlePropChange('unit', e.target.value)} 
+                                            className="w-full p-2 text-sm border border-gray-300 rounded text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                                            placeholder="e.g., $, K, M, %" 
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-600 mb-1">Value Format</label>
+                                        <select 
+                                            value={chartProps.valueFormat} 
+                                            onChange={(e) => handlePropChange('valueFormat', e.target.value)} 
+                                            className="w-full p-2 text-sm border border-gray-300 rounded text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                        >
+                                            <option value="default">Default</option>
+                                            <option value="currency">Currency</option>
+                                            <option value="percentage">Percentage</option>
+                                            <option value="compact">Compact (K, M)</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -228,6 +238,27 @@ const DataMapper = ({ data, onMap, onBack }) => {
     const [valueField, setValueField] = useState(headers.find(isNumericColumn) || headers[0]);
     const [targetField, setTargetField] = useState('manual');
     const [manualTarget, setManualTarget] = useState(50);
+    const [customTitle, setCustomTitle] = useState('');
+
+    // Generate dynamic title
+    const generateTitle = () => {
+        if (customTitle.trim()) return customTitle;
+        if (!valueField) return 'Gauge Chart';
+        
+        let title = valueField;
+        
+        if (targetField && targetField !== 'manual') {
+            if (targetField === 'average') {
+                title += ' vs Average';
+            } else if (targetField === 'max') {
+                title += ' vs Maximum';
+            } else {
+                title += ` vs ${targetField}`;
+            }
+        }
+        
+        return title;
+    };
 
     // Calculate statistics for the selected column
     const columnStats = useMemo(() => {
@@ -266,17 +297,21 @@ const DataMapper = ({ data, onMap, onBack }) => {
         }
         
         onMap({ 
+            title: generateTitle(),
             value: firstValue,
             minValue: columnStats.min,
             maxValue: columnStats.max,
-            target: targetValue
+            target: targetValue,
+            dataSourceId: data.id,
+            valueField: valueField,
+            targetField: targetField
         });
     };
 
     return (
         <div className="space-y-4 p-4 border bg-white rounded-lg">
             <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-gray-700">Configure Chart Data</h4>
+                <h4 className="font-semibold text-gray-700">Configure Gauge Data</h4>
                 <button
                     onClick={onBack}
                     className="text-xs text-indigo-600 hover:text-indigo-800 underline"
@@ -285,57 +320,53 @@ const DataMapper = ({ data, onMap, onBack }) => {
                 </button>
             </div>
 
+            {/* Dynamic Title Preview */}
+            {valueField && (
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-indigo-200 rounded-lg p-3">
+                    <div className="text-xs font-medium text-indigo-700 mb-1">Gauge Title Preview</div>
+                    <div className="text-lg font-bold text-indigo-900">{generateTitle()}</div>
+                </div>
+            )}
+
+            {/* Value Field Selection */}
             <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">Select Value Column</label>
-                <div className="max-h-32 overflow-y-auto p-2 border border-gray-300 rounded text-sm bg-white">
+                <label className="block text-sm font-medium text-gray-600 mb-2">
+                    <TrendingUp size={16} className="inline mr-1" />
+                    Value Column
+                </label>
+                <select
+                    value={valueField}
+                    onChange={(e) => setValueField(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                >
                     {headers.map(header => {
                         const isNumeric = isNumericColumn(header);
                         return (
-                            <label key={header} className="flex items-center px-1 py-0.5 rounded cursor-pointer hover:bg-gray-50">
-                                <input
-                                    type="checkbox"
-                                    name="valueField"
-                                    value={header}
-                                    checked={valueField === header}
-                                    onChange={(e) => setValueField(e.target.value)}
-                                    className="h-3 w-3 border-gray-300 mr-3"
-                                />
-                                <div className="flex items-center space-x-2 min-w-0 flex-1">
-                                    {isNumeric ? (
-                                        <>
-                                            <span className="text-indigo-600 font-semibold text-sm flex-shrink-0">Σ</span>
-                                            <span className="text-sm text-gray-900 truncate">{header}</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <span className="w-4 flex-shrink-0"></span>
-                                            <span className="text-sm text-gray-900 truncate">{header}</span>
-                                        </>
-                                    )}
-                                </div>
-                            </label>
+                            <option key={header} value={header}>
+                                {isNumeric ? 'Σ ' : ''}{header}
+                            </option>
                         );
                     })}
-                </div>
-                <p className="text-xs text-gray-500 mt-1">The first number in this column will be used as the gauge's value.</p>
+                </select>
+                <p className="text-xs text-gray-500 mt-1">The first value in this column will be displayed on the gauge.</p>
             </div>
 
             {/* Data Statistics Display */}
             {valueField && columnStats.values.length > 0 && (
-                <div className="bg-gray-50 border border-gray-200 rounded p-3">
-                    <h5 className="text-sm font-medium text-gray-700 mb-2">Data Statistics for "{valueField}"</h5>
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                    <h5 className="text-sm font-medium text-gray-700 mb-3">Data Statistics for "{valueField}"</h5>
                     <div className="grid grid-cols-3 gap-3 text-xs">
-                        <div className="text-center">
-                            <div className="font-semibold text-gray-800">{columnStats.min}</div>
-                            <div className="text-gray-500">Min</div>
+                        <div className="text-center bg-white rounded p-2">
+                            <div className="font-bold text-lg text-gray-800">{columnStats.min}</div>
+                            <div className="text-gray-500 mt-1">Minimum</div>
                         </div>
-                        <div className="text-center">
-                            <div className="font-semibold text-gray-800">{columnStats.avg}</div>
-                            <div className="text-gray-500">Average</div>
+                        <div className="text-center bg-white rounded p-2">
+                            <div className="font-bold text-lg text-indigo-600">{columnStats.avg}</div>
+                            <div className="text-gray-500 mt-1">Average</div>
                         </div>
-                        <div className="text-center">
-                            <div className="font-semibold text-gray-800">{columnStats.max}</div>
-                            <div className="text-gray-500">Max</div>
+                        <div className="text-center bg-white rounded p-2">
+                            <div className="font-bold text-lg text-gray-800">{columnStats.max}</div>
+                            <div className="text-gray-500 mt-1">Maximum</div>
                         </div>
                     </div>
                 </div>
@@ -343,52 +374,60 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
             {/* Target Value Selection */}
             {valueField && columnStats.values.length > 0 && (
-                <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-2">Target Value</label>
+                <div className="border border-gray-200 rounded-lg p-3 bg-gray-50">
+                    <label className="block text-sm font-medium text-gray-700 mb-3">Target Configuration</label>
                     <div className="space-y-2">
                         <div className="grid grid-cols-2 gap-2">
-                            <label className="flex items-center p-2 border border-gray-200 rounded cursor-pointer hover:bg-gray-50">
+                            <label className={`flex items-center p-2 border-2 rounded cursor-pointer transition-all ${
+                                targetField === 'manual' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-white hover:bg-gray-50'
+                            }`}>
                                 <input
-                                    type="checkbox"
+                                    type="radio"
                                     name="targetField"
                                     value="manual"
                                     checked={targetField === 'manual'}
                                     onChange={(e) => setTargetField(e.target.value)}
-                                    className="h-3 w-3 border-gray-300 mr-2"
+                                    className="h-4 w-4 border-gray-300 mr-2 text-indigo-600"
                                 />
-                                <span className="text-sm text-gray-700">Manual</span>
+                                <span className="text-sm text-gray-700 font-medium">Manual</span>
                             </label>
-                            <label className="flex items-center p-2 border border-gray-200 rounded cursor-pointer hover:bg-gray-50">
+                            <label className={`flex items-center p-2 border-2 rounded cursor-pointer transition-all ${
+                                targetField === 'average' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-white hover:bg-gray-50'
+                            }`}>
                                 <input
-                                    type="checkbox"
+                                    type="radio"
                                     name="targetField"
                                     value="average"
                                     checked={targetField === 'average'}
                                     onChange={(e) => setTargetField(e.target.value)}
-                                    className="h-3 w-3 border-gray-300 mr-2"
+                                    className="h-4 w-4 border-gray-300 mr-2 text-indigo-600"
                                 />
-                                <span className="text-sm text-gray-700">Average ({columnStats.avg})</span>
+                                <span className="text-sm text-gray-700 font-medium">Average ({columnStats.avg})</span>
                             </label>
-                            <label className="flex items-center p-2 border border-gray-200 rounded cursor-pointer hover:bg-gray-50">
+                            <label className={`flex items-center p-2 border-2 rounded cursor-pointer transition-all ${
+                                targetField === 'max' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-white hover:bg-gray-50'
+                            }`}>
                                 <input
-                                    type="checkbox"
+                                    type="radio"
                                     name="targetField"
                                     value="max"
                                     checked={targetField === 'max'}
                                     onChange={(e) => setTargetField(e.target.value)}
-                                    className="h-3 w-3 border-gray-300 mr-2"
+                                    className="h-4 w-4 border-gray-300 mr-2 text-indigo-600"
                                 />
-                                <span className="text-sm text-gray-700">Maximum ({columnStats.max})</span>
+                                <span className="text-sm text-gray-700 font-medium">Maximum ({columnStats.max})</span>
                             </label>
                             <div>
                                 <select
                                     value={targetField !== 'manual' && targetField !== 'average' && targetField !== 'max' ? targetField : ''}
                                     onChange={(e) => setTargetField(e.target.value)}
-                                    className="w-full p-2 text-sm border border-gray-300 rounded text-black"
+                                    className="w-full p-2 text-sm border border-gray-300 rounded text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 >
                                     <option value="">From Column...</option>
                                     {headers.filter(header => isNumericColumn(header) && header !== valueField).map(header => (
-                                        <option key={header} value={header}>{header}</option>
+                                        <option key={header} value={header}>
+                                            Σ {header}
+                                        </option>
                                     ))}
                                 </select>
                             </div>
@@ -396,12 +435,13 @@ const DataMapper = ({ data, onMap, onBack }) => {
                         
                         {targetField === 'manual' && (
                             <div className="mt-2">
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Enter Target Value</label>
                                 <input
                                     type="number"
                                     value={manualTarget}
                                     onChange={(e) => setManualTarget(Number(e.target.value))}
                                     placeholder="Enter target value"
-                                    className="w-full p-2 text-sm border border-gray-300 rounded text-black"
+                                    className="w-full p-2 text-sm border border-gray-300 rounded text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 />
                             </div>
                         )}
@@ -409,11 +449,25 @@ const DataMapper = ({ data, onMap, onBack }) => {
                 </div>
             )}
 
+            {/* Custom Title (Optional) */}
+            <div>
+                <label className="block text-sm font-medium text-gray-600 mb-2">Custom Title (Optional)</label>
+                <input
+                    type="text"
+                    value={customTitle}
+                    onChange={(e) => setCustomTitle(e.target.value)}
+                    placeholder="Leave empty for auto-generated title"
+                    className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">If empty, title will be auto-generated from selected fields</p>
+            </div>
+
             <button 
                 onClick={handleGenerate} 
-                className="w-full py-2 px-4 bg-blue-50 text-indigo-600 hover:text-white transition-all duration-200 border-2 border-indigo-300 rounded-md font-medium hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer"
+                disabled={!valueField}
+                className="w-full py-2 px-4 bg-blue-50 text-indigo-600 hover:text-white transition-all duration-200 border-2 border-indigo-300 rounded-md font-medium hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                Generate Chart
+                Generate Gauge Chart
             </button>
         </div>
     );

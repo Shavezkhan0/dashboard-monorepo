@@ -1,4 +1,3 @@
-'use client';
 import React, { useState } from "react";
 import { HiRectangleGroup } from "react-icons/hi2";
 
@@ -22,7 +21,7 @@ export default function AiGenerateSidebar() {
         body: JSON.stringify({ model: "deepseek-r1:1.5b", prompt }),
       });
 
-      const reader = response.body.getReader();
+      const reader = response.body!.getReader();
       const decoder = new TextDecoder("utf-8");
       let fullText = "";
 
@@ -46,7 +45,7 @@ export default function AiGenerateSidebar() {
         }
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error:", error);
       setResult("❌ Failed to connect to LLM server");
     }
@@ -138,4 +137,3 @@ export default function AiGenerateSidebar() {
     </div>
   );
 }
-

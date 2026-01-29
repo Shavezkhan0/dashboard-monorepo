@@ -1,5 +1,4 @@
 'use client';
-'use client';
 
 import React, { memo, useMemo } from 'react';
 import { Scatter } from 'react-chartjs-2';
@@ -17,6 +16,8 @@ function ScatterChartWidget({
     showYAxis = true,
     showYAxisTitle = false,
     yAxisTitle = 'Y-Axis',
+    showLegend = false, // Added
+    showValues = false, // Added
     yMin,
     yMax,
     xMin,
@@ -37,20 +38,51 @@ function ScatterChartWidget({
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: { position: 'top' },
+            legend: { 
+                display: showLegend,
+                position: 'top',
+                align: 'start',
+                labels: {
+                    boxWidth: 14,
+                    boxHeight: 14,
+                    padding: 10,
+                    usePointStyle: true,
+                    pointStyle: 'circle',
+                    font: {
+                        size: 12,
+                        family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                        weight: '500'
+                    }
+                }
+            },
             title: {
                 display: showTitle,
                 text: title,
                 font: { size: 16 },
                 padding: { top: 5, bottom: 5 }
             },
-            tooltip: { enabled: true },
+            tooltip: { 
+                enabled: true,
+                callbacks: {
+                    label: function(context) {
+                        if (showValues) {
+                            return `${context.dataset.label}: (${context.parsed.x}, ${context.parsed.y})`;
+                        }
+                        return context.dataset.label;
+                    }
+                }
+            },
             datalabels: {
-                display: false
+                display: showValues,
+                color: '#000000',
+                font: {
+                    size: 10,
+                    weight: 'bold'
+                },
+                formatter: (value, context) => {
+                    return `(${value.x}, ${value.y})`;
+                }
             }
-            // toolbar:{
-            //     enabled:true
-            // }
         },
         scales: {
             x: {

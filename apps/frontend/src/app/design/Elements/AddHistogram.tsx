@@ -1,5 +1,4 @@
 'use client';
-'use client';
 import React, { useState, useMemo } from 'react';
 import { useCanvasHook } from '../Context/CanvasContext';
 import HistogramWidget from './Widgets/HistogramWidget';
@@ -245,7 +244,7 @@ const DataMapper = ({ data, onMap, onBack }) => {
                         return (
                             <label key={header} className="flex items-center px-1 py-0.5 rounded cursor-pointer hover:bg-gray-50">
                                 <input
-                                    type="radio"
+                                    type="checkbox"
                                     name="dataField"
                                     value={header}
                                     checked={dataField === header}

@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
 import { ApiClient } from '../client';
 import type {
   Dashboard,
@@ -6,10 +6,14 @@ import type {
   UpdateDashboardInput,
 } from '@dashboard/shared-types';
 
-export function useDashboards(client: ApiClient) {
-  return useQuery({
+export function useDashboards(
+  client: ApiClient,
+  options?: Omit<UseQueryOptions<Dashboard[], Error>, 'queryKey' | 'queryFn'>
+) {
+  return useQuery<Dashboard[], Error>({
     queryKey: ['dashboards'],
     queryFn: () => client.getDashboards(),
+    ...options,
   });
 }
 
