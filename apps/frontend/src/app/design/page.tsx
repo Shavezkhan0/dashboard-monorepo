@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { ApiClient } from '@dashboard/api-client';
@@ -21,6 +21,7 @@ export default function NewDesignPage() {
     const [client, setClient] = useState<ApiClient | null>(null);
     const [dashboardId, setDashboardId] = useState<string | null>(null);
     const createMutation = useCreateDashboard(client!);
+    const dashboardCreationRef = useRef(false);
 
     useEffect(() => {
         if (!authLoading && !isAuthenticated) {
@@ -36,7 +37,8 @@ export default function NewDesignPage() {
 
     // Create a new dashboard when component mounts
     useEffect(() => {
-        if (client && !dashboardId && isAuthenticated) {
+        if (client && !dashboardId && isAuthenticated && !dashboardCreationRef.current) {
+            dashboardCreationRef.current = true;
             createMutation.mutate(
                 { name: 'New Dashboard', widgets: [] },
                 {

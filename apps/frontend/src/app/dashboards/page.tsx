@@ -7,6 +7,7 @@ import { ApiClient } from '@dashboard/api-client';
 import { useDashboards, useDeleteDashboard } from '@dashboard/api-client';
 import type { Dashboard } from '@dashboard/shared-types';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -35,11 +36,15 @@ export default function DashboardsPage() {
 
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this dashboard?')) {
-      try {
-        await deleteMutation.mutateAsync(id);
-      } catch (error) {
-        alert('Failed to delete dashboard');
-      }
+      deleteMutation.mutate(id, {
+        onSuccess: () => {
+          toast.success('Dashboard deleted successfully');
+        },
+        onError: (error) => {
+          toast.error('Failed to delete dashboard');
+          console.error('Delete error:', error);
+        }
+      });
     }
   };
 

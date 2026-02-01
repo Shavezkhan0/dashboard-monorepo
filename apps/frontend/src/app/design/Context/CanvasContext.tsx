@@ -5,6 +5,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { ApiClient, useDashboard, useUpdateDashboard } from '@dashboard/api-client';
 import { Widget } from '@dashboard/shared-types';
+import toast from 'react-hot-toast';
 
 interface CanvasContextType {
     widgets: Widget[];
@@ -58,6 +59,14 @@ export const CanvasProvider = ({ children, dashboardId, client }: CanvasProvider
             updateMutation.mutate({
                 id: dashboardId,
                 data: { widgets }
+            }, {
+                onSuccess: () => {
+                    toast.success('Dashboard saved successfully');
+                },
+                onError: (error) => {
+                    toast.error('Failed to save dashboard');
+                    console.error('Save error:', error);
+                }
             });
         }
     };
