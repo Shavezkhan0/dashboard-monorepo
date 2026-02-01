@@ -73,9 +73,9 @@ function CanvasEditor() {
     );
 
     return (
-        <div className="w-full flex-1 bg-gray-100 p-4 flex justify-center items-center overflow-auto">
+        <div className="w-full flex-1 bg-gray-100 dark:bg-gray-700 p-4 flex justify-center items-center overflow-auto">
             <div
-                className="bg-white shadow-lg relative w-full h-full"
+                className="bg-white dark:bg-gray-800 shadow-lg relative w-full h-full"
                 onClick={() => setSelectedWidgetId(null)}
             >
                 <div className="w-full h-full relative overflow-auto ">

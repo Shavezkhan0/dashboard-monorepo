@@ -9,6 +9,8 @@ import { useCanvasHook } from "../Context/CanvasContext";
 import { useAuthContext } from "@/contexts/AuthContext";
 import Papa from 'papaparse';
 import Image from "next/image";
+import ProfileDropdown from '@/components/ProfileDropdown';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function DesignHeader() {
     const { widgets, setWidgets, storedDataSets, setStoredDataSets } = useCanvasHook();
@@ -371,7 +373,7 @@ export default function DesignHeader() {
 
     return (
         <>
-            <header className="flex justify-between items-center px-3 py-1 border-b-2 border-gray-300 bg-white z-10">
+            <header className="flex justify-between items-center px-3 py-1 border-b-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 z-10">
                 <div className="ml-4">
                     <Image
                         className="cursor-pointer"
@@ -409,6 +411,9 @@ export default function DesignHeader() {
                 </div>
 
                 <div className="flex justify-end items-center space-x-2">
+                    <ThemeToggle />
+                    <ProfileDropdown />
+                    
                     <label className={baseBtnClass + " cursor-pointer"}>
                         <BiImport size={18} /> Import
                         <input
@@ -423,28 +428,28 @@ export default function DesignHeader() {
                         <button className={baseBtnClass}>
                             <BiExport size={18} /> Export
                         </button>
-                        <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-100">
+                        <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-100">
                             <button
                                 onClick={handleShareLink}
-                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-md"
+                                className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-md"
                             >
                                 Publish (Create Link To Share)
                             </button>
                             <button
                                 onClick={() => handleExportToCSV('single')}
-                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-md"
+                                className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-md"
                             >
                                 Export Dashboard Layout (CSV)
                             </button>
                             <button
                                 onClick={() => handleExportToCSV('separate')}
-                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                             >
                                 Export All Charts Data (CSV)
                             </button>
                             <button
                                 onClick={handleDownloadPBIT}
-                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-md disabled:opacity-50 disabled:cursor-not-allowed"
                                 disabled={isExporting || widgets.length === 0}
                             >
                                 {isExporting ? 'Generating...' : 'Export to Power BI (.pbit)'}
