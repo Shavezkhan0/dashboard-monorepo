@@ -6,6 +6,7 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import { ApiClient, useDashboards, useDeleteDashboard } from '@dashboard/api-client';
 import { formatDistanceToNow } from 'date-fns';
 import { FaPlus, FaChartLine, FaClock, FaTrash } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -31,7 +32,15 @@ export default function Home() {
     e.stopPropagation();
 
     if (window.confirm('Are you sure you want to delete this dashboard?')) {
-      deleteMutation.mutate(id);
+      deleteMutation.mutate(id, {
+        onSuccess: () => {
+          toast.success('Dashboard deleted successfully');
+        },
+        onError: (error) => {
+          toast.error('Failed to delete dashboard');
+          console.error('Delete error:', error);
+        }
+      });
     }
   };
 
