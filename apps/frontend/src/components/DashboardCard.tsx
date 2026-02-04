@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
-import { FaChartLine, FaTrash, FaEdit } from 'react-icons/fa';
+import { FaChartLine, FaTrash, FaEdit, FaEye, FaDownload } from 'react-icons/fa';
 import type { Dashboard } from '@dashboard/shared-types';
 
 interface DashboardCardProps {
@@ -14,6 +15,7 @@ interface DashboardCardProps {
 
 export default function DashboardCard({ dashboard, onDelete, onEdit }: DashboardCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const router = useRouter();
 
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -27,6 +29,20 @@ export default function DashboardCard({ dashboard, onDelete, onEdit }: Dashboard
     if (onEdit) {
       onEdit(dashboard.id);
     }
+  };
+
+  const handleView = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    router.push(`/design/view/${dashboard.id}`);
+  };
+
+  const handleDownload = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // TODO: Implement download functionality
+    console.log('Download dashboard:', dashboard.id);
+    alert('Download feature coming soon!');
   };
 
   return (
@@ -44,21 +60,42 @@ export default function DashboardCard({ dashboard, onDelete, onEdit }: Dashboard
             <FaChartLine className="text-4xl text-purple-600 dark:text-purple-400 opacity-50" />
           </div>
 
-          {/* Hover Actions */}
-          <div className={`absolute top-2 right-2 flex gap-2 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+          {/* Hover Overlay with Action Buttons */}
+          <div className={`absolute inset-0 bg-black/50 flex items-center justify-center gap-3 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+            {/* View Button - Green */}
+            <button
+              onClick={handleView}
+              className="p-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition-all transform hover:scale-110 shadow-lg"
+              title="View Dashboard"
+            >
+              <FaEye size={18} />
+            </button>
+
+            {/* Edit Button - Blue */}
             <button
               onClick={handleEdit}
-              className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
+              className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all transform hover:scale-110 shadow-lg"
               title="Edit Dashboard"
             >
-              <FaEdit size={14} />
+              <FaEdit size={18} />
             </button>
+
+            {/* Download Button - Purple */}
+            <button
+              onClick={handleDownload}
+              className="p-3 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-all transform hover:scale-110 shadow-lg"
+              title="Download Dashboard"
+            >
+              <FaDownload size={18} />
+            </button>
+
+            {/* Delete Button - Red */}
             <button
               onClick={handleDelete}
-              className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-lg"
+              className="p-3 bg-red-600 text-white rounded-full hover:bg-red-700 transition-all transform hover:scale-110 shadow-lg"
               title="Delete Dashboard"
             >
-              <FaTrash size={14} />
+              <FaTrash size={18} />
             </button>
           </div>
         </div>

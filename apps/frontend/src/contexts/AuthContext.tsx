@@ -10,97 +10,187 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 interface AuthContextType {
   user: User | null;
   token: string | null;
+  expiresAt: string | null;
   isLoading: boolean;
   login: (credentials: LoginRequest) => Promise<void>;
   register: (data: RegisterRequest) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
+  setPendingRedirect: (path: string) => void;
+  getPendingRedirect: () => string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
+  const [expiresAt, setExpiresAt] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [client, setClient] = useState<ApiClient | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
+  // Load token from localStorage on mount
   useEffect(() => {
-    // Load token from localStorage
     if (typeof window !== 'undefined') {
       const storedToken = localStorage.getItem('token');
-      if (storedToken) {
-        setToken(storedToken);
+      const storedExpiresAt = localStorage.getItem('expiresAt');
+      const storedRefreshToken = localStorage.getItem('refreshToken');
+
+      if (storedToken && storedExpiresAt) {
+        const expiry = new Date(storedExpiresAt);
+        if (expiry > new Date()) {
+          // Token is still valid
+          setToken(storedToken);
+          setExpiresAt(storedExpiresAt);
+          setRefreshToken(storedRefreshToken);
+        } else {
+          // Token expired, clear it
+          localStorage.removeItem('token');
+          localStorage.removeItem('expiresAt');
+          localStorage.removeItem('refreshToken');
+        }
       }
+      setIsInitialized(true);
     }
   }, []);
 
+  // Create API client when token changes - pass function that gets current token from localStorage
   useEffect(() => {
-    // Create API client with current token
-    const apiClient = new ApiClient(API_URL, () => token);
+    const apiClient = new ApiClient(API_URL, () => {
+      if (typeof window !== 'undefined') {
+        return localStorage.getItem('token');
+      }
+      return null;
+    });
     setClient(apiClient);
   }, [token]);
 
+  // Auto-refresh token 1 hour before expiration
+  useEffect(() => {
+    if (!expiresAt || !refreshToken || !token) return;
+
+    const expiry = new Date(expiresAt);
+    const now = new Date();
+    const timeUntilExpiry = expiry.getTime() - now.getTime();
+    const refreshTime = timeUntilExpiry - (60 * 60 * 1000); // 1 hour before
+
+    if (refreshTime > 0) {
+      const timeout = setTimeout(async () => {
+        try {
+          const tempClient = new ApiClient(API_URL, () => null);
+          const result = await tempClient.refreshToken(refreshToken);
+          setToken(result.token);
+          setRefreshToken(result.refreshToken);
+          setExpiresAt(result.expiresAt);
+          localStorage.setItem('token', result.token);
+          localStorage.setItem('refreshToken', result.refreshToken);
+          localStorage.setItem('expiresAt', result.expiresAt);
+        } catch (error) {
+          console.error('Token refresh failed:', error);
+          logout();
+        }
+      }, refreshTime);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [expiresAt, refreshToken, token]);
+
+  const setPendingRedirect = (path: string) => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('pendingRedirect', path);
+    }
+  };
+
+  const getPendingRedirect = (): string | null => {
+    if (typeof window !== 'undefined') {
+      const path = sessionStorage.getItem('pendingRedirect');
+      sessionStorage.removeItem('pendingRedirect');
+      return path;
+    }
+    return null;
+  };
+
   const loginMutation = useLogin(client || new ApiClient(API_URL, () => null));
   const registerMutation = useRegister(client || new ApiClient(API_URL, () => null));
+
+  // Fetch user data when we have a token
   const { data: user, isLoading: isLoadingUser } = useAuth(
     client || new ApiClient(API_URL, () => null),
     {
-      enabled: !!token && !!client,
+      enabled: !!token && !!client && isInitialized,
+      retry: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
     }
   );
 
   const login = async (credentials: LoginRequest) => {
-    if (!client) {
+    try {
       const tempClient = new ApiClient(API_URL, () => null);
       const result = await tempClient.login(credentials);
+
+      // The API client already unwraps the 'data' field, so result is AuthResponse
       setToken(result.token);
+      setRefreshToken(result.refreshToken);
+      setExpiresAt(result.expiresAt);
+
       if (typeof window !== 'undefined') {
         localStorage.setItem('token', result.token);
+        localStorage.setItem('refreshToken', result.refreshToken);
+        localStorage.setItem('expiresAt', result.expiresAt);
       }
-      return;
-    }
-    const result = await loginMutation.mutateAsync(credentials);
-    setToken(result.token);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('token', result.token);
+    } catch (error) {
+      throw error;
     }
   };
 
   const register = async (data: RegisterRequest) => {
-    if (!client) {
+    try {
       const tempClient = new ApiClient(API_URL, () => null);
       const result = await tempClient.register(data);
+
+      // The API client already unwraps the 'data' field, so result is AuthResponse
       setToken(result.token);
+      setRefreshToken(result.refreshToken);
+      setExpiresAt(result.expiresAt);
+
       if (typeof window !== 'undefined') {
         localStorage.setItem('token', result.token);
+        localStorage.setItem('refreshToken', result.refreshToken);
+        localStorage.setItem('expiresAt', result.expiresAt);
       }
-      return;
-    }
-    const result = await registerMutation.mutateAsync(data);
-    setToken(result.token);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('token', result.token);
+    } catch (error) {
+      console.error('Register error:', error);
+      throw error;
     }
   };
 
   const logout = () => {
     setToken(null);
+    setExpiresAt(null);
+    setRefreshToken(null);
     if (typeof window !== 'undefined') {
       localStorage.removeItem('token');
+      localStorage.removeItem('expiresAt');
+      localStorage.removeItem('refreshToken');
     }
   };
 
-  const isLoading = isLoadingUser || loginMutation.isPending || registerMutation.isPending;
+  // Show loading until we've checked localStorage and fetched user data (if token exists)
+  const isLoading = !isInitialized || (!!token && isLoadingUser) || loginMutation.isPending || registerMutation.isPending;
 
   return (
     <AuthContext.Provider
       value={{
-        user: user || null,
+        user: user as User | null,
         token,
+        expiresAt,
         isLoading,
         login,
         register,
         logout,
         isAuthenticated: !!token && !!user,
+        setPendingRedirect,
+        getPendingRedirect,
       }}
     >
       {children}

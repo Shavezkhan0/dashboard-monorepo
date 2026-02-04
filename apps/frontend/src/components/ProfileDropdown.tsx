@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Settings, LogOut, User } from 'lucide-react';
+import { Settings, LogOut, User, Sun, Moon, Monitor, Check } from 'lucide-react';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface ProfileDropdownProps {
   userName?: string;
@@ -13,6 +14,7 @@ export default function ProfileDropdown({ userName, userEmail }: ProfileDropdown
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { logout } = useAuthContext();
+  const { theme, setTheme } = useTheme();
 
   const getInitials = (name?: string) => {
     if (!name) return 'U';
@@ -96,6 +98,46 @@ export default function ProfileDropdown({ userName, userEmail }: ProfileDropdown
                   </p>
                 </div>
               </div>
+            </div>
+
+            {/* Theme Selection Section */}
+            <div className="py-1 border-b border-gray-200 dark:border-gray-700">
+              <div className="px-4 py-2 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                Theme
+              </div>
+              
+              <button
+                onClick={() => setTheme('light')}
+                className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                <div className="flex items-center">
+                  <Sun size={16} className="mr-3" />
+                  Light
+                </div>
+                {theme === 'light' && <Check size={16} className="text-indigo-600 dark:text-indigo-400" />}
+              </button>
+
+              <button
+                onClick={() => setTheme('dark')}
+                className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                <div className="flex items-center">
+                  <Moon size={16} className="mr-3" />
+                  Dark
+                </div>
+                {theme === 'dark' && <Check size={16} className="text-indigo-600 dark:text-indigo-400" />}
+              </button>
+
+              <button
+                onClick={() => setTheme('system')}
+                className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                <div className="flex items-center">
+                  <Monitor size={16} className="mr-3" />
+                  System
+                </div>
+                {theme === 'system' && <Check size={16} className="text-indigo-600 dark:text-indigo-400" />}
+              </button>
             </div>
 
             {/* Menu Items */}

@@ -21,9 +21,6 @@ import AiGenerateSidebar from './AiGenerateSidebar';
 import HeaderSetting from './Setting/HeaderSetting';
 import KpiChartSetting from './Setting/KpiChartSetting';
 
-// Import dark mode toggle
-import ThemeToggle from '@/components/ThemeToggle';
-
 export default function Sidebar() {
     const { widgets, selectedWidgetId, setSelectedWidgetId, updateWidget } = useCanvasHook();
 

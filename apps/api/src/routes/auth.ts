@@ -1,9 +1,8 @@
 import { Hono } from 'hono';
 import { supabaseAdmin } from '../lib/supabase';
-import type { AuthContext } from '../middleware/auth';
 import { authMiddleware } from '../middleware/auth';
 
-const auth = new Hono<{ Variables: AuthContext['Variables'] }>();
+const auth = new Hono<{ Variables: { userId?: string; userEmail?: string } }>();
 
 // Register
 auth.post('/register', async (c) => {
@@ -61,6 +60,10 @@ auth.post('/register', async (c) => {
       );
     }
 
+    // Set token expiration to 5 days
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 5);
+
     return c.json({
       data: {
         user: {
@@ -69,6 +72,9 @@ auth.post('/register', async (c) => {
           name: name || null,
         },
         token: sessionData.session.access_token,
+        refreshToken: sessionData.session.refresh_token,
+        expiresAt: expiresAt.toISOString(),
+        expiresIn: 5 * 24 * 60 * 60, // 5 days in seconds
       },
     });
   } catch (error: any) {
@@ -114,6 +120,10 @@ auth.post('/login', async (c) => {
       console.error('Error fetching user data:', userError);
     }
 
+    // Set token expiration to 5 days
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 5);
+
     return c.json({
       data: {
         user: {
@@ -123,6 +133,69 @@ auth.post('/login', async (c) => {
           role: userData?.role || 'user',
         },
         token: data.session.access_token,
+        refreshToken: data.session.refresh_token,
+        expiresAt: expiresAt.toISOString(),
+        expiresIn: 5 * 24 * 60 * 60, // 5 days in seconds
+      },
+    });
+  } catch (error: any) {
+    return c.json(
+      { error: 'Internal Server Error', message: error.message },
+      500
+    );
+  }
+});
+
+// Refresh token
+auth.post('/refresh', async (c) => {
+  try {
+    const { refreshToken } = await c.req.json();
+
+    if (!refreshToken) {
+      return c.json(
+        { error: 'Bad Request', message: 'Refresh token is required' },
+        400
+      );
+    }
+
+    const { data, error } = await supabaseAdmin.auth.refreshSession({
+      refresh_token: refreshToken,
+    });
+
+    if (error || !data.session || !data.user) {
+      return c.json(
+        { error: 'Token refresh failed', message: error?.message || 'Invalid refresh token' },
+        401
+      );
+    }
+
+    // Get user data from users table
+    const { data: userData, error: userError } = await supabaseAdmin
+      .from('users')
+      .select('*')
+      .eq('id', data.user.id)
+      .single();
+
+    if (userError) {
+      console.error('Error fetching user data:', userError);
+    }
+
+    // Set new token expiration to 5 days from now
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 5);
+
+    return c.json({
+      data: {
+        user: {
+          id: data.user.id,
+          email: data.user.email!,
+          name: userData?.name || null,
+          role: userData?.role || 'user',
+        },
+        token: data.session.access_token,
+        refreshToken: data.session.refresh_token,
+        expiresAt: expiresAt.toISOString(),
+        expiresIn: 5 * 24 * 60 * 60, // 5 days in seconds
       },
     });
   } catch (error: any) {

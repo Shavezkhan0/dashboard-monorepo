@@ -11,7 +11,6 @@ import toast from 'react-hot-toast';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import DashboardCard from '@/components/DashboardCard';
 import ProfileDropdown from '@/components/ProfileDropdown';
-import ThemeToggle from '@/components/ThemeToggle';
 import { FaPlus, FaSearch } from 'react-icons/fa';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -118,7 +117,6 @@ export default function DashboardsPage() {
 
             {/* Right side - User actions */}
             <div className="flex items-center space-x-4">
-              <ThemeToggle />
               <ProfileDropdown userName={user?.name} userEmail={user?.email} />
               <Link
                 href="/design"

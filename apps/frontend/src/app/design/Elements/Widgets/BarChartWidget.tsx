@@ -1,5 +1,6 @@
 import React, { memo, useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
+import { useTheme } from '@/contexts/ThemeContext';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -57,6 +58,17 @@ function BarChartWidget({
     categoryGap = 0.4,
     barGap = 0.1,
 }) {
+    const { resolvedTheme } = useTheme();
+    
+    // Theme-aware colors
+    const getThemeColors = () => ({
+        gridColor: resolvedTheme === 'dark' ? '#374151' : '#e5e7eb',
+        textColor: resolvedTheme === 'dark' ? '#f3f4f6' : '#374151',
+        axisColor: resolvedTheme === 'dark' ? '#6b7280' : '#6b7280',
+        titleColor: resolvedTheme === 'dark' ? '#f3f4f6' : '#111827',
+        legendColor: resolvedTheme === 'dark' ? '#f3f4f6' : '#666'
+    });
+    
     // State for client-side only rendering to avoid hydration issues
     const [isClient, setIsClient] = useState(false);
 
@@ -143,7 +155,7 @@ function BarChartWidget({
                         size: 12,
                         family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
                     },
-                    color: '#666',
+                    color: getThemeColors().legendColor,
                     generateLabels: function(chart) {
                         const original = ChartJS.defaults.plugins.legend.labels.generateLabels;
                         const labels = original.call(this, chart);
@@ -264,7 +276,7 @@ function BarChartWidget({
                         size: 11,
                         family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
                     },
-                    color: '#666',
+                    color: getThemeColors().legendColor,
                     padding: 8,
                     callback: function(value) {
                         if (value >= 1000000) {
@@ -288,7 +300,7 @@ function BarChartWidget({
                 },
                 grid: {
                     display: true,
-                    color: 'rgba(0, 0, 0, 0.08)',
+                    color: getThemeColors().gridColor,
                     lineWidth: 1,
                     drawBorder: false
                 },
@@ -314,7 +326,7 @@ function BarChartWidget({
     };
 
     return (
-        <div className="w-full h-full min-h-[200px] p-4 bg-white rounded-lg">
+        <div className="w-full h-full min-h-[200px] p-4 bg-white dark:bg-gray-800 rounded-lg">
             <Bar data={data} options={options} />
         </div>
     );

@@ -6,10 +6,7 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import { ApiClient, useDashboards, useDeleteDashboard } from '@dashboard/api-client';
 import { formatDistanceToNow } from 'date-fns';
 import { FaPlus, FaChartLine, FaClock, FaTrash } from 'react-icons/fa';
-import toast from 'react-hot-toast';
-import ConfirmDialog from '@/components/ConfirmDialog';
-import ProfileDropdown from '@/components/ProfileDropdown';
-import ThemeToggle from '@/components/ThemeToggle';
+import { LogIn } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -60,29 +57,51 @@ export default function Home() {
     setDashboardToDelete(null);
   };
 
+  // Redirect authenticated users to dashboard
+  useEffect(() => {
+    if (isAuthenticated && !authLoading) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, authLoading, router]);
+
   if (authLoading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-4">
-        <h1 className="text-4xl font-bold text-center">Dashboard Monorepo</h1>
-        <p className="text-xl text-gray-600 text-center">Login to manage your dashboards</p>
-        <div className="flex gap-4">
-          <Link
-            href="/auth/login"
-            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <header className="bg-white dark:bg-gray-800 shadow-sm border-b px-8 py-4 flex justify-between items-center">
+          <h1 className="text-xl font-bold text-indigo-600">Dashboard Builder</h1>
+          <button
+            onClick={() => router.push('/auth/login')}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
           >
+            <LogIn size={16} />
             Login
-          </Link>
-          <Link
-            href="/auth/register"
-            className="px-6 py-3 border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition"
-          >
-            Register
-          </Link>
-        </div>
+          </button>
+        </header>
+        
+        <main className="flex flex-col items-center justify-center min-h-[80vh] gap-6 p-4">
+          <h1 className="text-5xl font-bold text-center">Build Beautiful Dashboards</h1>
+          <p className="text-xl text-gray-600 dark:text-gray-400 text-center max-w-2xl">
+            Create interactive data visualizations and dashboards with our powerful editor
+          </p>
+          <div className="flex gap-4">
+            <Link
+              href="/preview"
+              className="px-8 py-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-lg font-medium"
+            >
+              Try Preview
+            </Link>
+            <Link
+              href="/auth/login"
+              className="px-8 py-4 border-2 border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition text-lg font-medium"
+            >
+              Login
+            </Link>
+          </div>
+        </main>
       </div>
     );
   }
@@ -92,14 +111,13 @@ export default function Home() {
       <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-8 py-4 flex justify-between items-center">
         <h1 className="text-xl font-bold text-indigo-600 dark:text-indigo-400">My Dashboards</h1>
         <div className="flex items-center gap-4">
-          <ThemeToggle />
-          <ProfileDropdown />
-          <Link
-            href="/design"
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
+          <button
+            onClick={() => router.push('/auth/login')}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
           >
-            <FaPlus size={14} /> New Dashboard
-          </Link>
+            <LogIn size={16} />
+            Login
+          </button>
         </div>
       </header>
 

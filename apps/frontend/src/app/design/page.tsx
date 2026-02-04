@@ -24,8 +24,20 @@ export default function NewDesignPage() {
     const dashboardCreationRef = useRef(false);
 
     useEffect(() => {
+        // Check for temp dashboard data from preview
+        if (typeof window !== 'undefined') {
+            const tempData = sessionStorage.getItem('tempDashboard');
+            if (tempData) {
+                const data = JSON.parse(tempData);
+                // We'll handle this in CanvasProvider initialization
+                sessionStorage.removeItem('tempDashboard');
+            }
+        }
+    }, []);
+
+    useEffect(() => {
         if (!authLoading && !isAuthenticated) {
-            router.push('/auth/login');
+            router.push('/');
         }
     }, [isAuthenticated, authLoading, router]);
 

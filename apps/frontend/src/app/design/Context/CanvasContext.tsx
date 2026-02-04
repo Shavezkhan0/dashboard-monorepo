@@ -34,9 +34,11 @@ interface CanvasProviderProps {
     children: React.ReactNode;
     dashboardId: string | null;
     client: ApiClient | null;
+    onSaveAttempt?: (dashboardData: any) => void;
+    isPreviewMode?: boolean;
 }
 
-export const CanvasProvider = ({ children, dashboardId, client }: CanvasProviderProps) => {
+export const CanvasProvider = ({ children, dashboardId, client, onSaveAttempt, isPreviewMode = false }: CanvasProviderProps) => {
     const [widgets, setWidgets] = useState<Widget[]>([]);
     const [selectedWidgetId, setSelectedWidgetId] = useState<string | null>(null);
 
@@ -55,6 +57,11 @@ export const CanvasProvider = ({ children, dashboardId, client }: CanvasProvider
     }, [dashboard]);
 
     const saveDashboard = () => {
+        if (isPreviewMode && onSaveAttempt) {
+            onSaveAttempt({ widgets });
+            return;
+        }
+        
         if (client && dashboardId) {
             updateMutation.mutate({
                 id: dashboardId,

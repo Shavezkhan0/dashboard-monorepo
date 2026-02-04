@@ -10,7 +10,6 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import Papa from 'papaparse';
 import Image from "next/image";
 import ProfileDropdown from '@/components/ProfileDropdown';
-import ThemeToggle from '@/components/ThemeToggle';
 
 export default function DesignHeader() {
     const { widgets, setWidgets, storedDataSets, setStoredDataSets } = useCanvasHook();
@@ -411,7 +410,6 @@ export default function DesignHeader() {
                 </div>
 
                 <div className="flex justify-end items-center space-x-2">
-                    <ThemeToggle />
                     <ProfileDropdown />
                     
                     <label className={baseBtnClass + " cursor-pointer"}>

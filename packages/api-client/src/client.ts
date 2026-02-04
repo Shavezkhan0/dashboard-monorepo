@@ -77,6 +77,13 @@ export class ApiClient {
     });
   }
 
+  async refreshToken(refreshToken: string): Promise<AuthResponse> {
+    return this.request<AuthResponse>('/api/auth/refresh', {
+      method: 'POST',
+      body: JSON.stringify({ refreshToken }),
+    });
+  }
+
   async getCurrentUser(): Promise<User> {
     return this.request<User>('/api/auth/me');
   }
