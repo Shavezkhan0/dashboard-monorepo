@@ -3,17 +3,18 @@ import React, { useState, useRef, useEffect } from "react";
 import { BiExport, BiImport } from "react-icons/bi";
 import { FaRegSave } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
-import { X, Copy, ExternalLink, CheckCircle, AlertCircle, LogOut } from "lucide-react";
+import { X, Copy, ExternalLink, CheckCircle, AlertCircle } from "lucide-react";
 import * as Dialog from '@radix-ui/react-dialog';
 import { useCanvasHook } from "../Context/CanvasContext";
 import { useAuthContext } from "@/contexts/AuthContext";
 import Papa from 'papaparse';
 import Image from "next/image";
 import ProfileDropdown from '@/components/ProfileDropdown';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function DesignHeader() {
-    const { widgets, setWidgets, storedDataSets, setStoredDataSets } = useCanvasHook();
-    const { logout } = useAuthContext();
+    const { widgets, setWidgets, storedDataSets, setStoredDataSets, saveDashboard, dashboard } = useCanvasHook();
+    const { user } = useAuthContext();
     const [projectName, setProjectName] = useState('My Project');
     const [isEditing, setIsEditing] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
@@ -33,6 +34,14 @@ export default function DesignHeader() {
         API_BASE = `${window.location.protocol}//${window.location.hostname}:${BasePort}`;
     }
 
+    // Load project name from dashboard
+    useEffect(() => {
+        if (dashboard?.name) {
+            setProjectName(dashboard.name);
+        }
+    }, [dashboard]);
+
+    // Save to localStorage as backup (optional)
     useEffect(() => {
         const savedState = localStorage.getItem('dashboardState');
         if (savedState) {
@@ -46,29 +55,24 @@ export default function DesignHeader() {
                     setStoredDataSets(parsedState.storedDataSets);
                     console.log('Loaded stored datasets:', parsedState.storedDataSets.length);
                 }
-                if (parsedState.projectName) {
-                    setProjectName(parsedState.projectName);
-                }
             } catch (e) {
                 console.error("Failed to parse saved data:", e);
             }
         }
     }, [setWidgets, setStoredDataSets]);
 
-    const handleSaveToBrowser = () => {
-        try {
-            const stateToSave = {
-                widgets,
-                storedDataSets,
-                projectName,
-                savedAt: new Date().toISOString()
-            };
-            localStorage.setItem('dashboardState', JSON.stringify(stateToSave));
-            alert('Dashboard and data saved to browser!');
-        } catch (e) {
-            console.error("Failed to save to browser:", e);
-            alert('Could not save dashboard. Storage may be full.');
+    // Save to Supabase database
+    const handleSave = () => {
+        saveDashboard(projectName);
+    };
+
+    const handleNameSave = () => {
+        setIsEditing(false);
+        if (inputRef.current) {
+            inputRef.current.blur();
         }
+        // Save the name to database
+        saveDashboard(projectName);
     };
 
     const handleExportToCSV = (format = 'single') => {
@@ -334,16 +338,9 @@ export default function DesignHeader() {
         setLinkCopied(false);
     };
 
-    const handleSave = () => {
-        setIsEditing(false);
-        if (inputRef.current) {
-            inputRef.current.blur();
-        }
-    };
-
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
-            handleSave();
+            handleNameSave();
         } else if (e.key === 'Escape') {
             setIsEditing(false);
         }
@@ -392,7 +389,7 @@ export default function DesignHeader() {
                             type="text"
                             value={projectName}
                             onChange={(e) => setProjectName(e.target.value)}
-                            onBlur={handleSave}
+                            onBlur={handleNameSave}
                             onKeyDown={handleKeyDown}
                             className="px-[4px] py-[2px] border-2 border-indigo-300 text-indigo-600 bg-blue-50 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             maxLength={50}
@@ -410,8 +407,9 @@ export default function DesignHeader() {
                 </div>
 
                 <div className="flex justify-end items-center space-x-2">
-                    <ProfileDropdown />
-                    
+                    <ThemeToggle />
+                    <ProfileDropdown userName={user?.name} userEmail={user?.email} />
+
                     <label className={baseBtnClass + " cursor-pointer"}>
                         <BiImport size={18} /> Import
                         <input
@@ -456,19 +454,11 @@ export default function DesignHeader() {
                     </div>
 
                     <button
-                        onClick={handleSaveToBrowser}
+                        onClick={handleSave}
                         className={baseBtnClass}
-                        title="Save dashboard and datasets to browser storage"
+                        title="Save dashboard to database"
                     >
                         <FaRegSave size={18} /> Save
-                    </button>
-
-                    <button
-                        onClick={logout}
-                        className={baseBtnClass + " bg-red-50 text-red-600 border-red-300 hover:bg-red-100"}
-                        title="Logout from the application"
-                    >
-                        <LogOut size={18} /> Logout
                     </button>
                 </div>
             </header>
@@ -477,13 +467,13 @@ export default function DesignHeader() {
             <Dialog.Root open={shareDialogOpen} onOpenChange={handleShareDialogClose}>
                 <Dialog.Portal>
                     <Dialog.Overlay className="fixed inset-0 bg-black/50 z-40" />
-                    <Dialog.Content className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-2xl w-[500px] max-w-[90vw]">
+                    <Dialog.Content className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-[500px] max-w-[90vw]">
                         <div className="flex justify-between items-center p-4 border-b">
-                            <Dialog.Title className="text-xl text-black font-semibold">
+                            <Dialog.Title className="text-xl text-black dark:text-white font-semibold">
                                 Share Dashboard
                             </Dialog.Title>
                             <Dialog.Close asChild>
-                                <button className="p-1 rounded-full text-black hover:bg-gray-200" aria-label="Close">
+                                <button className="p-1 rounded-full text-black dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700" aria-label="Close">
                                     <X size={20} />
                                 </button>
                             </Dialog.Close>
@@ -493,7 +483,7 @@ export default function DesignHeader() {
                             {shareStatus === 'loading' && (
                                 <div className="flex items-center justify-center py-8">
                                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-                                    <span className="ml-3 text-gray-600">Creating shareable link...</span>
+                                    <span className="ml-3 text-gray-600 dark:text-gray-400">Creating shareable link...</span>
                                 </div>
                             )}
 
@@ -505,7 +495,7 @@ export default function DesignHeader() {
                                     </div>
 
                                     <div className="space-y-3">
-                                        <label className="block text-sm font-medium text-gray-700">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                             Shareable Link:
                                         </label>
                                         <div className="flex items-center space-x-2">
@@ -513,7 +503,7 @@ export default function DesignHeader() {
                                                 type="text"
                                                 value={shareLink}
                                                 readOnly
-                                                className="flex-1 text-black px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                className="flex-1 text-black dark:text-white px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                             />
                                             <button
                                                 onClick={handleCopyLink}

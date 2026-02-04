@@ -79,8 +79,8 @@ const AddTreemap = ({ onClose }) => {
     return (
         <div className="space-y-4">
             {/* Chart Preview */}
-            <div className="h-[300px] w-full rounded-lg shadow-inner relative border border-gray-200 overflow-hidden">
-                <div className="bg-white h-full">
+            <div className="h-[300px] w-full rounded-lg shadow-inner relative border border-gray-200 dark:border-gray-600 overflow-hidden">
+                <div className="bg-white dark:bg-gray-800 h-full">
                     <TreemapWidget {...chartProps} />
                 </div>
             </div>
@@ -96,12 +96,12 @@ const AddTreemap = ({ onClose }) => {
                     {/* Title Input - only show when data is configured */}
                     {!chartProps.isEmpty && (
                         <div>
-                            <label className="block text-xs font-medium text-gray-600 mb-1">Chart Title</label>
+                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Chart Title</label>
                             <input
                                 type="text"
                                 value={chartProps.title}
                                 onChange={(e) => handleTitleChange(e.target.value)}
-                                className="w-full p-2 text-sm border border-gray-300 rounded text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 placeholder="Enter chart title"
                             />
                         </div>
@@ -109,8 +109,8 @@ const AddTreemap = ({ onClose }) => {
 
                     {/* Chart Options - only show when data is configured */}
                     {!chartProps.isEmpty && (
-                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                            <h4 className="font-medium text-gray-700 mb-3">Chart Options</h4>
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
+                            <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-3">Chart Options</h4>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="flex items-center space-x-2">
@@ -120,7 +120,7 @@ const AddTreemap = ({ onClose }) => {
                                             onChange={(e) => setChartProps(p => ({ ...p, showDataLabels: e.target.checked }))}
                                             className="rounded border-gray-300"
                                         />
-                                        <span className="text-sm text-gray-700">Show Labels</span>
+                                        <span className="text-sm text-gray-700 dark:text-gray-200">Show Labels</span>
                                     </label>
                                 </div>
                                 <div>
@@ -131,7 +131,7 @@ const AddTreemap = ({ onClose }) => {
                                             onChange={(e) => setChartProps(p => ({ ...p, showValues: e.target.checked }))}
                                             className="rounded border-gray-300"
                                         />
-                                        <span className="text-sm text-gray-700">Show Values</span>
+                                        <span className="text-sm text-gray-700 dark:text-gray-200">Show Values</span>
                                     </label>
                                 </div>
                             </div>
@@ -139,12 +139,12 @@ const AddTreemap = ({ onClose }) => {
                     )}
 
                     {/* Data Source Selection */}
-                    <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                        <h4 className="font-medium text-gray-700 mb-3">Data Source</h4>
+                    <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
+                        <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-3">Data Source</h4>
                         
                         {storedDataSets.length > 0 ? (
                             <div className="space-y-2">
-                                <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                                <div className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                                     <Database size={16} className="text-indigo-600" />
                                     <span>Available Datasets</span>
                                 </div>
@@ -153,7 +153,7 @@ const AddTreemap = ({ onClose }) => {
                                         <button
                                             key={dataSet.id}
                                             onClick={() => handleStoredDataSelect(dataSet)}
-                                            className="w-full text-left p-3 text-sm bg-white border border-gray-200 rounded hover:bg-indigo-50 hover:border-indigo-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                            className="w-full text-left p-3 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded hover:bg-indigo-50 hover:border-indigo-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                         >
                                             <div className="font-medium text-gray-800">{dataSet.name}</div>
                                             <div className="text-xs text-gray-500 mt-1">
@@ -384,7 +384,7 @@ const DataMapper = ({ data, onMap, onBack }) => {
         return (
             <div className="space-y-4 p-4 border bg-gray-100 rounded-lg">
                 <div className="flex justify-between items-center">
-                    <h4 className="font-semibold text-gray-700">Map Data</h4>
+                    <h4 className="font-semibold text-gray-700 dark:text-gray-200">Map Data</h4>
                     <button onClick={onBack} className="text-xs text-indigo-600 hover:text-indigo-800 underline">
                         ← Back
                     </button>
@@ -395,9 +395,9 @@ const DataMapper = ({ data, onMap, onBack }) => {
     }
 
     return (
-        <div className="space-y-4 p-4 border bg-gray-50 rounded-lg">
+        <div className="space-y-4 p-4 border bg-gray-50 dark:bg-gray-700 rounded-lg">
             <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-gray-700">Configure Treemap</h4>
+                <h4 className="font-semibold text-gray-700 dark:text-gray-200">Configure Treemap</h4>
                 <button
                     onClick={onBack}
                     className="text-xs text-indigo-600 hover:text-indigo-800 underline focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
@@ -423,14 +423,14 @@ const DataMapper = ({ data, onMap, onBack }) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Category Field */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                         <TrendingUp size={16} className="inline mr-1" />
                         Category Field (Labels)
                     </label>
                     <select
                         value={categoryField}
                         onChange={(e) => setCategoryField(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full p-2 border border-gray-300 rounded text-sm bg-white dark:bg-gray-800 text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
                         <option value="">-- Select Field --</option>
                         {headers.map(h => (
@@ -443,13 +443,13 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
                 {/* Value Field */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                         Value Field (Sizes)
                     </label>
                     <select
                         value={valueField}
                         onChange={(e) => setValueField(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full p-2 border border-gray-300 rounded text-sm bg-white dark:bg-gray-800 text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
                         <option value="">-- Select Field --</option>
                         {headers.filter(h => h !== categoryField).map(h => (
@@ -465,13 +465,13 @@ const DataMapper = ({ data, onMap, onBack }) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Parent Field (Optional) */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                         Parent Field (Optional)
                     </label>
                     <select
                         value={parentField}
                         onChange={(e) => setParentField(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full p-2 border border-gray-300 rounded text-sm bg-white dark:bg-gray-800 text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
                         <option value="">No hierarchy</option>
                         {headers.filter(h => h !== categoryField && h !== valueField).map(h => (
@@ -489,11 +489,11 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
                 {/* Aggregation Selection */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-2">Value Calculation</label>
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Value Calculation</label>
                     <select
                         value={aggregationType}
                         onChange={(e) => setAggregationType(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full p-2 border border-gray-300 rounded text-sm bg-white dark:bg-gray-800 text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
                         <option value="sum">Sum</option>
                         <option value="count">Count</option>
@@ -506,7 +506,7 @@ const DataMapper = ({ data, onMap, onBack }) => {
             </div>
 
             {/* Data Info */}
-            <div className="text-xs text-gray-600 bg-white p-2 rounded border border-gray-200">
+            <div className="text-xs text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 p-2 rounded border border-gray-200 dark:border-gray-600">
                 <span className="font-medium">Data Preview:</span> {data.data?.length || 0} rows found
             </div>
 

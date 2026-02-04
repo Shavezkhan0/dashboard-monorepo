@@ -146,10 +146,10 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
     if (!mounted || !graphData) return <div className="p-4">Loading...</div>;
 
     return (
-        <div className="h-full bg-white border-r border-gray-200 flex flex-col shadow-lg pr-2">
+        <div className="h-full bg-white dark:bg-gray-800 border-r border-gray-200 flex flex-col shadow-lg pr-2">
             <div className="flex items-center justify-between px-4 py-2 border-b-2 border-gray-200">
-                <h2 className="text-lg font-semibold text-black">Edit Gauge Chart</h2>
-                <button onClick={onClose} className="p-2 text-gray-600 hover:bg-gray-100 rounded-md"><X size={16} /></button>
+                <h2 className="text-lg font-semibold text-black dark:text-white">Edit Gauge Chart</h2>
+                <button onClick={onClose} className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-700 rounded-md"><X size={16} /></button>
             </div>
 
             <div className="flex border-b border-gray-200">
@@ -158,7 +158,7 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                     className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all
                     ${activeTab === 'data'
                             ? 'text-blue-600 bg-blue-50 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r after:from-blue-800 after:via-indigo-700 after:to-purple-600 after:content-[""]'
-                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}
+                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-700'}
                     `}
                 >
                     Data
@@ -168,7 +168,7 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                     className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all
                     ${activeTab === 'customize'
                             ? 'text-blue-600 bg-blue-50 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r after:from-blue-800 after:via-indigo-700 after:to-purple-600 after:content-[""]'
-                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}
+                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-700'}
                     `}
                 >
                     Customize
@@ -180,20 +180,20 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                     <div className="space-y-4">
                         {/* Gauge Title */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-600 mb-2">Gauge Title</label>
+                            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Gauge Title</label>
                             <input
                                 type="text"
                                 value={graphData.title}
                                 onChange={(e) => handlePropChange('title', e.target.value)}
-                                className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 placeholder="Enter gauge title"
                             />
                         </div>
 
                         {/* Data Source Selection */}
-                        <div className="border border-gray-200 rounded-lg p-3 bg-gray-50">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-3 bg-gray-50 dark:bg-gray-700">
                             <div className="flex items-center justify-between mb-3">
-                                <h4 className="font-medium text-gray-700 flex items-center space-x-2">
+                                <h4 className="font-medium text-gray-700 dark:text-gray-200 flex items-center space-x-2">
                                     <Database size={16} className="text-indigo-600" />
                                     <span>Data Source</span>
                                 </h4>
@@ -208,12 +208,12 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                             </div>
 
                             {isUsingStoredData && selectedDataSet ? (
-                                <div className="bg-white border border-indigo-200 rounded p-2">
+                                <div className="bg-white dark:bg-gray-800 border border-indigo-200 rounded p-2">
                                     <div className="flex items-center space-x-2">
                                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                        <span className="text-sm font-medium text-gray-800">{selectedDataSet.name}</span>
+                                        <span className="text-sm font-medium text-gray-800 dark:text-gray-100">{selectedDataSet.name}</span>
                                     </div>
-                                    <div className="text-xs text-gray-500 mt-1">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                         {selectedDataSet.rowCount} rows • {selectedDataSet.headers.length} columns
                                     </div>
                                 </div>
@@ -225,17 +225,17 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                                                 <button
                                                     key={dataSet.id}
                                                     onClick={() => handleDataSetSelect(dataSet)}
-                                                    className="w-full text-left p-2 text-sm bg-white border border-gray-200 rounded hover:bg-indigo-50 hover:border-indigo-300 transition-colors"
+                                                    className="w-full text-left p-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded hover:bg-indigo-50 dark:hover:bg-gray-700 hover:border-indigo-300 transition-colors"
                                                 >
-                                                    <div className="font-medium text-gray-800">{dataSet.name}</div>
-                                                    <div className="text-xs text-gray-500">
+                                                    <div className="font-medium text-gray-800 dark:text-gray-100">{dataSet.name}</div>
+                                                    <div className="text-xs text-gray-500 dark:text-gray-400">
                                                         {dataSet.rowCount} rows • {dataSet.headers.length} columns
                                                     </div>
                                                 </button>
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="text-center py-4 text-gray-500">
+                                        <div className="text-center py-4 text-gray-500 dark:text-gray-400">
                                             <Database size={24} className="mx-auto mb-2 text-gray-300" />
                                             <p className="text-sm">No datasets available</p>
                                             <p className="text-xs">Import data using the "Data" tab first</p>
@@ -248,19 +248,19 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                         {/* Enhanced Column Configuration */}
                         {selectedDataSet && (
                             <div className="space-y-4">
-                                <div className="border border-gray-200 rounded-lg p-4 bg-white">
-                                    <h5 className="font-medium text-gray-700 mb-3">Value Configuration</h5>
+                                <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-white">
+                                    <h5 className="font-medium text-gray-700 dark:text-gray-200 mb-3">Value Configuration</h5>
                                     
                                     {/* Value Field Selection */}
                                     <div className="mb-4">
-                                        <label className="block text-sm font-medium text-gray-600 mb-2">
+                                        <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                                             <TrendingUp size={16} className="inline mr-1" />
                                             Value Column
                                         </label>
                                         <select
                                             value={valueField}
                                             onChange={(e) => setValueField(e.target.value)}
-                                            className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                         >
                                             <option value="">Select column...</option>
                                             {selectedDataSet.headers.map(column => {
@@ -272,25 +272,25 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                                                 );
                                             })}
                                         </select>
-                                        <p className="text-xs text-gray-500 mt-1">The first value from this column will be displayed</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">The first value from this column will be displayed</p>
                                     </div>
 
                                     {/* Data Statistics */}
                                     {valueField && columnStats.values.length > 0 && (
-                                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4">
-                                            <h6 className="text-xs font-medium text-gray-700 mb-2">Column Statistics</h6>
+                                        <div className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-3 mb-4">
+                                            <h6 className="text-xs font-medium text-gray-700 dark:text-gray-200 mb-2">Column Statistics</h6>
                                             <div className="grid grid-cols-3 gap-2">
-                                                <div className="text-center bg-white rounded p-2">
-                                                    <div className="font-bold text-sm text-gray-800">{columnStats.min}</div>
-                                                    <div className="text-xs text-gray-500 mt-1">Min</div>
+                                                <div className="text-center bg-white dark:bg-gray-800 rounded p-2">
+                                                    <div className="font-bold text-sm text-gray-800 dark:text-gray-100">{columnStats.min}</div>
+                                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Min</div>
                                                 </div>
-                                                <div className="text-center bg-white rounded p-2">
+                                                <div className="text-center bg-white dark:bg-gray-800 rounded p-2">
                                                     <div className="font-bold text-sm text-indigo-600">{columnStats.avg}</div>
-                                                    <div className="text-xs text-gray-500 mt-1">Avg</div>
+                                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Avg</div>
                                                 </div>
-                                                <div className="text-center bg-white rounded p-2">
-                                                    <div className="font-bold text-sm text-gray-800">{columnStats.max}</div>
-                                                    <div className="text-xs text-gray-500 mt-1">Max</div>
+                                                <div className="text-center bg-white dark:bg-gray-800 rounded p-2">
+                                                    <div className="font-bold text-sm text-gray-800 dark:text-gray-100">{columnStats.max}</div>
+                                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Max</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -299,10 +299,10 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                                     {/* Target Configuration */}
                                     {valueField && columnStats.values.length > 0 && (
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Target Configuration</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Target Configuration</label>
                                             <div className="grid grid-cols-2 gap-2 mb-2">
                                                 <label className={`flex items-center p-2 border-2 rounded cursor-pointer transition-all ${
-                                                    targetField === 'manual' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-white hover:bg-gray-50'
+                                                    targetField === 'manual' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-white hover:bg-gray-50 dark:bg-gray-700'
                                                 }`}>
                                                     <input
                                                         type="radio"
@@ -310,12 +310,12 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                                                         value="manual"
                                                         checked={targetField === 'manual'}
                                                         onChange={(e) => setTargetField(e.target.value)}
-                                                        className="h-3 w-3 border-gray-300 mr-2 text-indigo-600"
+                                                        className="h-3 w-3 border-gray-300 dark:border-gray-600 mr-2 text-indigo-600"
                                                     />
-                                                    <span className="text-xs text-gray-700 font-medium">Manual</span>
+                                                    <span className="text-xs text-gray-700 dark:text-gray-200 font-medium">Manual</span>
                                                 </label>
                                                 <label className={`flex items-center p-2 border-2 rounded cursor-pointer transition-all ${
-                                                    targetField === 'average' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-white hover:bg-gray-50'
+                                                    targetField === 'average' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-white hover:bg-gray-50 dark:bg-gray-700'
                                                 }`}>
                                                     <input
                                                         type="radio"
@@ -323,12 +323,12 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                                                         value="average"
                                                         checked={targetField === 'average'}
                                                         onChange={(e) => setTargetField(e.target.value)}
-                                                        className="h-3 w-3 border-gray-300 mr-2 text-indigo-600"
+                                                        className="h-3 w-3 border-gray-300 dark:border-gray-600 mr-2 text-indigo-600"
                                                     />
-                                                    <span className="text-xs text-gray-700 font-medium">Avg ({columnStats.avg})</span>
+                                                    <span className="text-xs text-gray-700 dark:text-gray-200 font-medium">Avg ({columnStats.avg})</span>
                                                 </label>
                                                 <label className={`flex items-center p-2 border-2 rounded cursor-pointer transition-all ${
-                                                    targetField === 'max' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-white hover:bg-gray-50'
+                                                    targetField === 'max' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-white hover:bg-gray-50 dark:bg-gray-700'
                                                 }`}>
                                                     <input
                                                         type="radio"
@@ -336,15 +336,15 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                                                         value="max"
                                                         checked={targetField === 'max'}
                                                         onChange={(e) => setTargetField(e.target.value)}
-                                                        className="h-3 w-3 border-gray-300 mr-2 text-indigo-600"
+                                                        className="h-3 w-3 border-gray-300 dark:border-gray-600 mr-2 text-indigo-600"
                                                     />
-                                                    <span className="text-xs text-gray-700 font-medium">Max ({columnStats.max})</span>
+                                                    <span className="text-xs text-gray-700 dark:text-gray-200 font-medium">Max ({columnStats.max})</span>
                                                 </label>
                                                 <div>
                                                     <select
                                                         value={targetField !== 'manual' && targetField !== 'average' && targetField !== 'max' ? targetField : ''}
                                                         onChange={(e) => setTargetField(e.target.value)}
-                                                        className="w-full p-2 text-xs border border-gray-300 rounded text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                                        className="w-full p-2 text-xs border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                                     >
                                                         <option value="">From Column...</option>
                                                         {selectedDataSet.headers.filter(h => isNumericColumn(h) && h !== valueField).map(h => (
@@ -360,7 +360,7 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                                                     value={manualTarget}
                                                     onChange={(e) => setManualTarget(Number(e.target.value))}
                                                     placeholder="Enter target value"
-                                                    className="w-full p-2 text-sm border border-gray-300 rounded text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                                    className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                                 />
                                             )}
                                         </div>
@@ -402,27 +402,27 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                 {activeTab === 'customize' && (
                     <div className="space-y-4">
                         {/* General Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                             <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('general')}>
-                                <h3 className="text-sm font-medium text-gray-700">General</h3>
+                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">General</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.general ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.general && (
                                 <div className="mt-3 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Show Title</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Show Title</span>
                                         <button onClick={() => handlePropChange('showTitle', !graphData.showTitle)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showTitle ? 'bg-indigo-600' : 'bg-gray-200'}`}>
                                             <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showTitle ? 'translate-x-6' : 'translate-x-1'}`} />
                                         </button>
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Show Target</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Show Target</span>
                                         <button onClick={() => handlePropChange('showTarget', !graphData.showTarget)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showTarget ? 'bg-indigo-600' : 'bg-gray-200'}`}>
                                             <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showTarget ? 'translate-x-6' : 'translate-x-1'}`} />
                                         </button>
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Show Range Labels</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Show Range Labels</span>
                                         <button onClick={() => handlePropChange('showLabels', !graphData.showLabels)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showLabels ? 'bg-indigo-600' : 'bg-gray-200'}`}>
                                             <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showLabels ? 'translate-x-6' : 'translate-x-1'}`} />
                                         </button>
@@ -432,35 +432,35 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                         </div>
 
                         {/* Value & Range Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                             <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('value')}>
-                                <h3 className="text-sm font-medium text-gray-700">Value & Range</h3>
+                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Value & Range</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.value ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.value && (
                                 <div className="mt-3 space-y-3">
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-600 mb-1">Current Value</label>
-                                        <input type="number" value={graphData.value} onChange={(e) => handleNumericPropChange('value', e.target.value)} className="w-full p-2 text-sm border border-gray-300 rounded text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+                                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Current Value</label>
+                                        <input type="number" value={graphData.value} onChange={(e) => handleNumericPropChange('value', e.target.value)} className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-600 mb-1">Min Value</label>
-                                            <input type="number" value={graphData.minValue} onChange={(e) => handleNumericPropChange('minValue', e.target.value)} className="w-full p-2 text-sm border border-gray-300 rounded text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+                                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Min Value</label>
+                                            <input type="number" value={graphData.minValue} onChange={(e) => handleNumericPropChange('minValue', e.target.value)} className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-600 mb-1">Max Value</label>
-                                            <input type="number" value={graphData.maxValue} onChange={(e) => handleNumericPropChange('maxValue', e.target.value)} className="w-full p-2 text-sm border border-gray-300 rounded text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+                                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Max Value</label>
+                                            <input type="number" value={graphData.maxValue} onChange={(e) => handleNumericPropChange('maxValue', e.target.value)} className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-600 mb-1">Target</label>
-                                            <input type="number" value={graphData.target} onChange={(e) => handleNumericPropChange('target', e.target.value)} className="w-full p-2 text-sm border border-gray-300 rounded text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+                                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Target</label>
+                                            <input type="number" value={graphData.target} onChange={(e) => handleNumericPropChange('target', e.target.value)} className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-600 mb-1">Unit / Suffix</label>
-                                            <input type="text" value={graphData.unit} onChange={(e) => handlePropChange('unit', e.target.value)} className="w-full p-2 text-sm border border-gray-300 rounded text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., K, M, %" />
+                                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Unit / Suffix</label>
+                                            <input type="text" value={graphData.unit} onChange={(e) => handlePropChange('unit', e.target.value)} className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., K, M, %" />
                                         </div>
                                     </div>
                                 </div>
@@ -468,19 +468,19 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                         </div>
 
                         {/* Appearance Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                             <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('appearance')}>
-                                <h3 className="text-sm font-medium text-gray-700">Appearance</h3>
+                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Appearance</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.appearance ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.appearance && (
                                 <div className="mt-3 space-y-3">
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-600 mb-1">Value Format</label>
+                                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Value Format</label>
                                         <select
                                             value={graphData.valueFormat || 'default'}
                                             onChange={(e) => handlePropChange('valueFormat', e.target.value)}
-                                            className="w-full p-2 text-sm border border-gray-300 rounded text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                            className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                         >
                                             <option value="default">Default</option>
                                             <option value="currency">Currency ($)</option>
@@ -489,7 +489,7 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-600 mb-1">Animation Duration (ms)</label>
+                                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Animation Duration (ms)</label>
                                         <input
                                             type="number"
                                             min="0"
@@ -497,7 +497,7 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                                             step="100"
                                             value={graphData.animationDuration || 1000}
                                             onChange={(e) => handleNumericPropChange('animationDuration', e.target.value)}
-                                            className="w-full p-2 text-sm border border-gray-300 rounded text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                            className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                         />
                                     </div>
                                 </div>
@@ -505,36 +505,36 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                         </div>
 
                         {/* Colors Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                             <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('colors')}>
-                                <h3 className="text-sm font-medium text-gray-700">Colors</h3>
+                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Colors</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.colors ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.colors && (
                                 <div className="mt-3 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <label className="text-sm text-gray-600">Needle Color</label>
+                                        <label className="text-sm text-gray-600 dark:text-gray-300">Needle Color</label>
                                         <input
                                             type="color"
                                             value={graphData.needleColor || '#1e40af'}
                                             onChange={(e) => handlePropChange('needleColor', e.target.value)}
-                                            className="w-10 h-10 p-1 border border-gray-300 rounded cursor-pointer"
+                                            className="w-10 h-10 p-1 border border-gray-300 dark:border-gray-600 rounded cursor-pointer"
                                         />
                                     </div>
                                     <div className="border-t border-gray-200 pt-3">
-                                        <h4 className="text-xs font-medium text-gray-700 mb-2">Gauge Zones</h4>
+                                        <h4 className="text-xs font-medium text-gray-700 dark:text-gray-200 mb-2">Gauge Zones</h4>
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between">
-                                                <label className="text-sm text-gray-600">Low Zone</label>
-                                                <input type="color" value={graphData.colors[0]} onChange={(e) => handleColorChange(0, e.target.value)} className="w-10 h-10 p-1 border border-gray-300 rounded cursor-pointer" />
+                                                <label className="text-sm text-gray-600 dark:text-gray-300">Low Zone</label>
+                                                <input type="color" value={graphData.colors[0]} onChange={(e) => handleColorChange(0, e.target.value)} className="w-10 h-10 p-1 border border-gray-300 dark:border-gray-600 rounded cursor-pointer" />
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <label className="text-sm text-gray-600">Medium Zone</label>
-                                                <input type="color" value={graphData.colors[1]} onChange={(e) => handleColorChange(1, e.target.value)} className="w-10 h-10 p-1 border border-gray-300 rounded cursor-pointer" />
+                                                <label className="text-sm text-gray-600 dark:text-gray-300">Medium Zone</label>
+                                                <input type="color" value={graphData.colors[1]} onChange={(e) => handleColorChange(1, e.target.value)} className="w-10 h-10 p-1 border border-gray-300 dark:border-gray-600 rounded cursor-pointer" />
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <label className="text-sm text-gray-600">High Zone</label>
-                                                <input type="color" value={graphData.colors[2]} onChange={(e) => handleColorChange(2, e.target.value)} className="w-10 h-10 p-1 border border-gray-300 rounded cursor-pointer" />
+                                                <label className="text-sm text-gray-600 dark:text-gray-300">High Zone</label>
+                                                <input type="color" value={graphData.colors[2]} onChange={(e) => handleColorChange(2, e.target.value)} className="w-10 h-10 p-1 border border-gray-300 dark:border-gray-600 rounded cursor-pointer" />
                                             </div>
                                         </div>
                                     </div>
@@ -544,7 +544,7 @@ const GaugeChartSetting = ({ initialData, onUpdate, onClose }) => {
                     </div>
                 )}
             </div>
-            <div className="p-4 border-t bg-gray-50">
+            <div className="p-4 border-t bg-gray-50 dark:bg-gray-700">
                 <button onClick={() => onUpdate && onUpdate(graphData)} className="w-full py-2 px-3 bg-blue-50 border-2 border-indigo-300 text-indigo-600 rounded-md text-sm font-medium transition-all duration-200 hover:text-white hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600">
                     Save Changes
                 </button>

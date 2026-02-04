@@ -101,7 +101,7 @@ const AddWaterfallChart = ({ onClose }) => {
 
     return (
         <div className="space-y-4">
-            <div className="h-[300px] w-full bg-white rounded-md shadow-inner relative border border-gray-200 overflow-hidden">
+            <div className="h-[300px] w-full bg-white dark:bg-gray-800 rounded-md shadow-inner relative border border-gray-200 dark:border-gray-600 overflow-hidden">
                 <WaterfallChartWidget {...chartProps} yMin={yAxisRange.min} yMax={yAxisRange.max} />
             </div>
 
@@ -125,27 +125,27 @@ const AddWaterfallChart = ({ onClose }) => {
                      {!chartProps.isEmpty && (
                         <div className="space-y-3">
                             <div>
-                                <label className="block text-xs font-medium text-gray-600 mb-1">Chart Title</label>
+                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Chart Title</label>
                                 <input 
                                     type="text" 
                                     value={chartProps.title} 
                                     onChange={(e) => setChartProps(p => ({ ...p, title: e.target.value }))} 
-                                    className="w-full p-2 text-sm border border-gray-300 rounded text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                     placeholder="Enter chart title"
                                 />
                             </div>
 
                             {/* Format Options Section */}
-                            <div className="border border-gray-200 rounded-lg p-3 bg-gray-50">
-                                <h4 className="text-sm font-medium text-gray-700 mb-3">Format Options</h4>
+                            <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-3 bg-gray-50 dark:bg-gray-700">
+                                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-3">Format Options</h4>
                                 
                                 <div className="space-y-2">
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-600 mb-1">Value Format</label>
+                                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Value Format</label>
                                         <select 
                                             value={chartProps.valueFormat} 
                                             onChange={(e) => setChartProps(p => ({ ...p, valueFormat: e.target.value }))} 
-                                            className="w-full p-2 text-sm border border-gray-300 rounded text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                            className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                         >
                                             <option value="default">Default</option>
                                             <option value="currency">Currency</option>
@@ -155,7 +155,7 @@ const AddWaterfallChart = ({ onClose }) => {
                                     </div>
 
                                     <div className="flex items-center justify-between pt-2">
-                                        <span className="text-xs text-gray-600">Show Data Labels</span>
+                                        <span className="text-xs text-gray-600 dark:text-gray-300">Show Data Labels</span>
                                         <button
                                             onClick={() => setChartProps(p => ({ ...p, showDataLabels: !p.showDataLabels }))}
                                             className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${chartProps.showDataLabels ? 'bg-indigo-600' : 'bg-gray-200'}`}
@@ -168,11 +168,11 @@ const AddWaterfallChart = ({ onClose }) => {
                         </div>
                     )}
 
-                    <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                        <h4 className="font-medium text-gray-700 mb-3">Data Source</h4>
+                    <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
+                        <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-3">Data Source</h4>
                         {storedDataSets.length > 0 ? (
                             <div className="space-y-2">
-                                <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                                <div className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                                     <Database size={16} className="text-indigo-600" />
                                     <span>Available Datasets</span>
                                 </div>
@@ -181,10 +181,10 @@ const AddWaterfallChart = ({ onClose }) => {
                                         <button
                                             key={dataSet.id}
                                             onClick={() => handleStoredDataSelect(dataSet)}
-                                            className="w-full text-left p-3 text-sm bg-white border border-gray-200 rounded hover:bg-indigo-50 hover:border-indigo-300 transition-colors"
+                                            className="w-full text-left p-3 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded hover:bg-indigo-50 dark:hover:bg-gray-700 hover:border-indigo-300 transition-colors"
                                         >
-                                            <div className="font-medium text-gray-800">{dataSet.name}</div>
-                                            <div className="text-xs text-gray-500 mt-1">
+                                            <div className="font-medium text-gray-800 dark:text-gray-100">{dataSet.name}</div>
+                                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                                 📊 {dataSet.rowCount} rows • {dataSet.headers.length} columns
                                             </div>
                                             <div className="text-xs text-gray-400 mt-1">
@@ -196,7 +196,7 @@ const AddWaterfallChart = ({ onClose }) => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="text-center py-6 text-gray-500">
+                            <div className="text-center py-6 text-gray-500 dark:text-gray-400">
                                 <Database size={32} className="mx-auto mb-3 text-gray-300" />
                                 <p className="text-sm font-medium">No datasets available</p>
                                 <p className="text-xs mt-1">Import data using the "Data" tab in the sidebar first</p>
@@ -233,7 +233,7 @@ const AddWaterfallChart = ({ onClose }) => {
                 disabled={chartProps.isEmpty}
                 className={`w-full py-2 px-4 rounded-md font-medium transition-all duration-200 ${
                     chartProps.isEmpty 
-                        ? 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed' 
+                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 border-2 border-gray-200 cursor-not-allowed' 
                         : 'bg-blue-50 text-indigo-600 hover:text-white border-2 border-indigo-300 hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer'
                 }`}
             >
@@ -366,9 +366,9 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
     if (!headers || headers.length === 0) {
         return (
-            <div className="space-y-4 p-4 border bg-white rounded-lg">
+            <div className="space-y-4 p-4 border bg-white dark:bg-gray-800 rounded-lg">
                 <div className="flex justify-between items-center">
-                    <h4 className="font-semibold text-gray-700">Map Data</h4>
+                    <h4 className="font-semibold text-gray-700 dark:text-gray-200">Map Data</h4>
                     <button
                         onClick={onBack}
                         className="text-xs text-indigo-600 hover:text-indigo-800 underline"
@@ -382,9 +382,9 @@ const DataMapper = ({ data, onMap, onBack }) => {
     }
 
     return (
-        <div className="space-y-4 p-4 border bg-white rounded-lg">
+        <div className="space-y-4 p-4 border bg-white dark:bg-gray-800 rounded-lg">
             <div className="flex justify-between items-center">
-                <h4 className="font-semibold text-gray-700">Configure Waterfall Data</h4>
+                <h4 className="font-semibold text-gray-700 dark:text-gray-200">Configure Waterfall Data</h4>
                  <button
                     onClick={onBack}
                     className="text-xs text-indigo-600 hover:text-indigo-800 underline"
@@ -401,20 +401,20 @@ const DataMapper = ({ data, onMap, onBack }) => {
                 </div>
             )}
             
-            <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded border border-gray-200">
+            <div className="text-xs text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600">
                 📊 Found {data.data?.length || 0} rows
             </div>
 
             {/* Field Selection in Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                         Label Column
                     </label>
                     <select 
                         value={labelField} 
                         onChange={(e) => setLabelField(e.target.value)} 
-                        className="w-full text-black p-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full text-black dark:text-white p-2 border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
                         {headers.map(h => (
                             <option key={h} value={h}>
@@ -422,18 +422,18 @@ const DataMapper = ({ data, onMap, onBack }) => {
                             </option>
                         ))}
                     </select>
-                    <p className="text-xs text-gray-500 mt-1">Categories for waterfall steps</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Categories for waterfall steps</p>
                 </div>
                 
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                         <TrendingUp size={16} className="inline mr-1" />
                         Value Column (Changes)
                     </label>
                     <select 
                         value={valueField} 
                         onChange={(e) => setValueField(e.target.value)} 
-                        className="w-full p-2 text-black border border-gray-300 rounded text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full p-2 text-black dark:text-white border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
                         {headers.map(h => (
                             <option key={h} value={h}>
@@ -441,7 +441,7 @@ const DataMapper = ({ data, onMap, onBack }) => {
                             </option>
                         ))}
                     </select>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         Positive = increase, Negative = decrease
                     </p>
                 </div>
@@ -449,13 +449,13 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
             {/* Aggregation Type */}
             <div>
-                <label className="block text-sm font-medium text-gray-600 mb-2">
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                     Aggregation Method
                 </label>
                 <select 
                     value={aggregationType} 
                     onChange={(e) => setAggregationType(e.target.value)} 
-                    className="w-full p-2 text-black border border-gray-300 rounded text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full p-2 text-black dark:text-white border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 >
                     <option value="sum">Sum</option>
                     <option value="average">Average</option>
@@ -464,37 +464,37 @@ const DataMapper = ({ data, onMap, onBack }) => {
                     <option value="max">Maximum</option>
                     <option value="none">None (Use Raw Data)</option>
                 </select>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     How to combine multiple rows with the same label
                 </p>
             </div>
 
             {/* Initial Value */}
             <div>
-                <label className="block text-sm font-medium text-gray-600 mb-2">
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                     Initial Starting Value
                 </label>
                 <input
                     type="number"
                     value={initialValue}
                     onChange={(e) => setInitialValue(Number(e.target.value) || 0)}
-                    className="w-full text-black p-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full text-black dark:text-white p-2 border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     placeholder="Enter starting value (e.g., 0, 100, 1000)"
                 />
-                <p className="text-xs text-gray-500 mt-1">The beginning value for the waterfall</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">The beginning value for the waterfall</p>
             </div>
 
             {/* Custom Title (Optional) */}
             <div>
-                <label className="block text-sm font-medium text-gray-600 mb-2">Custom Title (Optional)</label>
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Custom Title (Optional)</label>
                 <input
                     type="text"
                     value={customTitle}
                     onChange={(e) => setCustomTitle(e.target.value)}
                     placeholder="Leave empty for auto-generated title"
-                    className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
-                <p className="text-xs text-gray-500 mt-1">If empty, title will be auto-generated from selected fields</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">If empty, title will be auto-generated from selected fields</p>
             </div>
             
             <button 

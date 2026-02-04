@@ -57,8 +57,8 @@ const DonutChartSetting = ({ initialData, onUpdate, onClose }) => {
 
     if (!mounted || !graphData) {
         return (
-            <div className="w-80 h-full bg-white border-r border-gray-200 flex items-center justify-center">
-                <div className="text-gray-500">Loading...</div>
+            <div className="w-80 h-full bg-white dark:bg-gray-800 border-r border-gray-200 flex items-center justify-center">
+                <div className="text-gray-500 dark:text-gray-400">Loading...</div>
             </div>
         );
     }
@@ -66,8 +66,8 @@ const DonutChartSetting = ({ initialData, onUpdate, onClose }) => {
     return (
         <div className=" pr-2 h-full bg-white border-r border-gray-200 flex flex-col shadow-lg">
             <div className="flex items-center justify-between px-4 py-2 border-b-2 border-gray-200">
-                <h2 className="text-lg font-semibold text-black">Edit Donut Chart</h2>
-                <button onClick={onClose} className="p-2 text-gray-600 hover:bg-gray-100 rounded-md"><X size={16} /></button>
+                <h2 className="text-lg font-semibold text-black dark:text-white">Edit Donut Chart</h2>
+                <button onClick={onClose} className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-700 rounded-md"><X size={16} /></button>
             </div>
             {/* Tabs */}
             <div className="flex border-b border-gray-200">
@@ -76,7 +76,7 @@ const DonutChartSetting = ({ initialData, onUpdate, onClose }) => {
                     className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all
                     ${activeTab === 'data'
                             ? 'text-blue-600 bg-blue-50 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r after:from-blue-800 after:via-indigo-700 after:to-purple-600 after:content-[""]'
-                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}
+                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-700'}
                     `}
                 >
                     Data
@@ -87,7 +87,7 @@ const DonutChartSetting = ({ initialData, onUpdate, onClose }) => {
                     className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all
                     ${activeTab === 'customize'
                             ? 'text-blue-600 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r after:from-blue-800 bg-blue-50 after:via-indigo-700 after:to-purple-600 after:content-[""]'
-                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}
+                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-700'}
                     `}
                 >
                     Customize
@@ -106,19 +106,19 @@ const DonutChartSetting = ({ initialData, onUpdate, onClose }) => {
                     <>
                         {/* Chart Title */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Chart Title</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Chart Title</label>
                             <input
                                 type="text"
                                 value={graphData.title}
                                 onChange={handleTitleChange}
-                                className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
+                                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black dark:text-white"
                                 placeholder="Enter chart title"
                             />
                         </div>
 
                         {/* Data Source Selection */}
-                        <div className="border border-gray-200 rounded-lg p-2 bg-gray-50">
-                            <h4 className="font-medium text-gray-700 mb-3 flex items-center space-x-2">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-2 bg-gray-50 dark:bg-gray-700">
+                            <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-3 flex items-center space-x-2">
                                 <Database size={16} className="text-indigo-600" />
                                 <span>Data Source</span>
                             </h4>
@@ -129,10 +129,10 @@ const DonutChartSetting = ({ initialData, onUpdate, onClose }) => {
                                         <button
                                             key={dataSet.id}
                                             onClick={() => handleDataSetSelect(dataSet)}
-                                            className="w-full text-left p-2 text-sm bg-white border border-gray-200 rounded hover:bg-indigo-50 hover:border-indigo-300 transition-colors"
+                                            className="w-full text-left p-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded hover:bg-indigo-50 dark:hover:bg-gray-700 hover:border-indigo-300 transition-colors"
                                         >
-                                            <div className="font-medium text-gray-800">{dataSet.name}</div>
-                                            <div className="text-xs text-gray-500">
+                                            <div className="font-medium text-gray-800 dark:text-gray-100">{dataSet.name}</div>
+                                            <div className="text-xs text-gray-500 dark:text-gray-400">
                                                 📊 {dataSet.rowCount} rows • {dataSet.headers.length} columns
                                             </div>
                                             <div className="text-xs text-gray-400 mt-1">
@@ -143,7 +143,7 @@ const DonutChartSetting = ({ initialData, onUpdate, onClose }) => {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-4 text-gray-500">
+                                <div className="text-center py-4 text-gray-500 dark:text-gray-400">
                                     <Database size={24} className="mx-auto mb-2 text-gray-300" />
                                     <p className="text-sm">No datasets available</p>
                                     <p className="text-xs">Import data using the "Data" tab first</p>
@@ -156,23 +156,23 @@ const DonutChartSetting = ({ initialData, onUpdate, onClose }) => {
                 {activeTab === 'customize' && (
                     <div className="space-y-2">
                         {/* Details Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                             <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('details')}>
-                                <h3 className="text-sm font-medium text-gray-700">Details</h3>
+                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Details</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.details ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.details && (
                                 <div className="mt-3 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Show Title</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Show Title</span>
                                         <button onClick={() => setGraphData(prev => ({ ...prev, showTitle: !prev.showTitle }))} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showTitle ? 'bg-indigo-600' : 'bg-gray-200'}`}>
                                             <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showTitle ? 'translate-x-6' : 'translate-x-1'}`} />
                                         </button>
                                     </div>
                                     {graphData.showTitle && (
                                         <div>
-                                            <label className="block text-xs text-gray-500 mb-1">Title Text</label>
-                                            <input type="text" value={graphData.title} onChange={handleTitleChange} className="w-full p-2 border border-gray-300 rounded-md text-sm text-black" />
+                                            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Title Text</label>
+                                            <input type="text" value={graphData.title} onChange={handleTitleChange} className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-black dark:text-white" />
                                         </div>
                                     )}
                                 </div>
@@ -180,17 +180,17 @@ const DonutChartSetting = ({ initialData, onUpdate, onClose }) => {
                         </div>
 
                         {/* Display Options Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                             <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('display')}>
-                                <h3 className="text-sm font-medium text-gray-700">Display Options</h3>
+                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Display Options</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.display ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.display && (
                                 <div className="mt-3 space-y-3">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <span className="text-sm text-gray-600">Show Legend</span>
-                                            <p className="text-xs text-gray-500 mt-1">Display legend on the right side of chart</p>
+                                            <span className="text-sm text-gray-600 dark:text-gray-300">Show Legend</span>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Display legend on the right side of chart</p>
                                         </div>
                                         <button 
                                             onClick={() => setGraphData(prev => ({ 
@@ -204,8 +204,8 @@ const DonutChartSetting = ({ initialData, onUpdate, onClose }) => {
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <span className="text-sm text-gray-600">Show Values</span>
-                                            <p className="text-xs text-gray-500 mt-1">Display values on chart segments</p>
+                                            <span className="text-sm text-gray-600 dark:text-gray-300">Show Values</span>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Display values on chart segments</p>
                                         </div>
                                         <button 
                                             onClick={() => setGraphData(prev => ({ 
@@ -218,7 +218,7 @@ const DonutChartSetting = ({ initialData, onUpdate, onClose }) => {
                                         </button>
                                     </div>
                                     <div>
-                                        <label className="block text-sm text-gray-600 mb-2">Inner Radius</label>
+                                        <label className="block text-sm text-gray-600 dark:text-gray-300 mb-2">Inner Radius</label>
                                         <input
                                             type="range"
                                             min="0"
@@ -227,7 +227,7 @@ const DonutChartSetting = ({ initialData, onUpdate, onClose }) => {
                                             onChange={e => setGraphData(prev => ({ ...prev, innerRadius: parseInt(e.target.value) }))}
                                             className="w-full"
                                         />
-                                        <div className="text-xs text-gray-500 mt-1">{graphData.innerRadius ?? 50}%</div>
+                                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{graphData.innerRadius ?? 50}%</div>
                                     </div>
                                 </div>
                             )}
@@ -235,7 +235,7 @@ const DonutChartSetting = ({ initialData, onUpdate, onClose }) => {
                     </div>
                 )}
             </div>
-            <div className="p-4 border-t bg-gray-50">
+            <div className="p-4 border-t bg-gray-50 dark:bg-gray-700">
                 <button onClick={() => onUpdate && onUpdate(graphData)} className="w-full py-2 px-3 bg-blue-50 border-2 border-indigo-300
     text-indigo-600 rounded-md
     text-sm font-medium
@@ -361,9 +361,9 @@ const DataMapper = ({ data, onMap, onBack }) => {
     };
 
     return (
-        <div className="space-y-4 p-4 border-2 border-dashed bg-gray-50 border-gray-200 rounded-lg">
+        <div className="space-y-4 p-4 border-2 border-dashed bg-gray-50 dark:bg-gray-700 border-gray-200 rounded-lg">
             <div className="flex justify-between items-center">
-                <h4 className="font-semibold text-xs text-gray-700">Configure Chart Data</h4>
+                <h4 className="font-semibold text-xs text-gray-700 dark:text-gray-200">Configure Chart Data</h4>
                 <button onClick={onBack} className="text-xs text-indigo-600 hover:text-indigo-800 underline">
                     ← Change Data Source
                 </button>
@@ -384,8 +384,8 @@ const DataMapper = ({ data, onMap, onBack }) => {
             
             <div className="grid grid-row-2 md:grid-row-2 gap-4">
                 <div>
-                    <label className="block font-medium text-gray-600 mb-2">Category Column (Labels)</label>
-                    <div className="max-h-32 overflow-y-auto p-2 border border-gray-300 rounded text-sm bg-white">
+                    <label className="block font-medium text-gray-600 dark:text-gray-300 mb-2">Category Column (Labels)</label>
+                    <div className="max-h-32 overflow-y-auto p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white">
                         {headers.map(header => (
                             <ColumnSelector 
                                 key={`label-${header}`} 
@@ -400,8 +400,8 @@ const DataMapper = ({ data, onMap, onBack }) => {
                 </div>
                 
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-2">Value Column (Slice Sizes)</label>
-                    <div className="max-h-32 overflow-y-auto p-2 border bg-white rounded-md space-y-1">
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Value Column (Slice Sizes)</label>
+                    <div className="max-h-32 overflow-y-auto p-2 border bg-white dark:bg-gray-800 rounded-md space-y-1">
                         {headers.map(header => (
                             <ColumnSelector 
                                 key={`value-${header}`} 
@@ -418,11 +418,11 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
             {/* Aggregation Selection */}
             <div>
-                <label className="block text-sm font-medium text-gray-600 mb-2">Value Calculation</label>
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Value Calculation</label>
                 <select
                     value={aggregationType}
                     onChange={(e) => setAggregationType(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white text-black dark:text-white"
                 >
                     <option value="sum">Sum</option>
                     <option value="count">Count</option>
@@ -444,7 +444,7 @@ const DataMapper = ({ data, onMap, onBack }) => {
             {/* Add option to go back to data selection if needed */}
             <button
                 onClick={onBack}
-                className="w-full py-2 px-4 bg-gray-100 text-gray-600 border border-gray-300 rounded-md text-sm font-medium transition-all duration-200 hover:bg-gray-200"
+                className="w-full py-2 px-4 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-700"
             >
                 Change Data Source
             </button>
@@ -453,14 +453,14 @@ const DataMapper = ({ data, onMap, onBack }) => {
 };
 
 const ColumnSelector = ({ header, checked, onChange, name, isNumeric }) => (
-    <label className="flex items-center cursor-pointer hover:bg-gray-50 px-1 py-0.5 rounded">
+    <label className="flex items-center cursor-pointer hover:bg-gray-50 dark:bg-gray-700 px-1 py-0.5 rounded">
         <input
             type="checkbox"
             name={name}
             value={header}
             checked={checked}
             onChange={(e) => onChange(e.target.value)}
-            className="h-4 w-4 border-gray-300 mr-3 text-indigo-600 focus:ring-indigo-500"
+            className="h-4 w-4 border-gray-300 dark:border-gray-600 mr-3 text-indigo-600 focus:ring-indigo-500"
         />
         <div className="flex items-center space-x-2 min-w-0 flex-1">
             {isNumeric ? (

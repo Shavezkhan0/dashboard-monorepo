@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import DashboardCard from '@/components/DashboardCard';
 import ProfileDropdown from '@/components/ProfileDropdown';
+import ThemeToggle from '@/components/ThemeToggle';
 import { FaPlus, FaSearch } from 'react-icons/fa';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -19,10 +20,10 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 const categories = [
   { name: 'Presentation', icon: '📊', color: 'bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-300' },
   { name: 'Social Media', icon: '📱', color: 'bg-pink-100 text-pink-600 dark:bg-pink-900 dark:text-pink-300' },
+  { name: 'Documents', icon: '📄', color: 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300' },
   { name: 'Video', icon: '🎥', color: 'bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-300' },
-  { name: 'Document', icon: '📄', color: 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300' },
-  { name: 'Analytics', icon: '📈', color: 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300' },
-  { name: 'Business', icon: '💼', color: 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900 dark:text-yellow-300' },
+  { name: 'Print Products', icon: '🖨️', color: 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300' },
+  { name: 'More', icon: '➕', color: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300' },
 ];
 
 export default function DashboardsPage() {
@@ -102,7 +103,7 @@ export default function DashboardsPage() {
               <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                 What will you design today?
               </h1>
-              
+
               <div className="relative">
                 <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                 <input
@@ -117,6 +118,7 @@ export default function DashboardsPage() {
 
             {/* Right side - User actions */}
             <div className="flex items-center space-x-4">
+              <ThemeToggle />
               <ProfileDropdown userName={user?.name} userEmail={user?.email} />
               <Link
                 href="/design"
@@ -136,31 +138,28 @@ export default function DashboardsPage() {
         <div className="flex space-x-8 mb-8 border-b border-gray-200 dark:border-gray-700">
           <button
             onClick={() => setActiveTab('designs')}
-            className={`pb-3 px-1 font-medium text-sm transition-colors ${
-              activeTab === 'designs'
-                ? 'text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-            }`}
+            className={`pb-3 px-1 font-medium text-sm transition-colors ${activeTab === 'designs'
+              ? 'text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400'
+              : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
           >
             Your designs
           </button>
           <button
             onClick={() => setActiveTab('templates')}
-            className={`pb-3 px-1 font-medium text-sm transition-colors ${
-              activeTab === 'templates'
-                ? 'text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-            }`}
+            className={`pb-3 px-1 font-medium text-sm transition-colors ${activeTab === 'templates'
+              ? 'text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400'
+              : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
           >
             Templates
           </button>
           <button
             onClick={() => setActiveTab('ai')}
-            className={`pb-3 px-1 font-medium text-sm transition-colors ${
-              activeTab === 'ai'
-                ? 'text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-            }`}
+            className={`pb-3 px-1 font-medium text-sm transition-colors ${activeTab === 'ai'
+              ? 'text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400'
+              : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
           >
             AI Design
           </button>
@@ -189,7 +188,7 @@ export default function DashboardsPage() {
           <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">
             {activeTab === 'designs' ? 'Your Recent Designs' : `${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`}
           </h2>
-          
+
           {activeTab === 'designs' && filteredDashboards.length === 0 ? (
             <div className="text-center py-20">
               <div className="text-6xl mb-4">🎨</div>

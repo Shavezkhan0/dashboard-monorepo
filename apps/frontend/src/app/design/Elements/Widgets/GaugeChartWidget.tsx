@@ -109,7 +109,7 @@ function GaugeChartWidget({
     }
 
     return (
-        <div className="w-full h-full box-border flex flex-col items-center justify-center relative bg-white">
+        <div className="w-full h-full box-border flex flex-col items-center justify-center relative bg-white dark:bg-gray-800">
             {showTitle && (
                 <div className="absolute top-2 left-4 text-sm font-semibold text-gray-800 truncate max-w-[80%]">{title}</div>
             )}

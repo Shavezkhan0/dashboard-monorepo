@@ -154,17 +154,17 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
 
     if (!mounted || !graphData) {
         return (
-            <div className="w-80 h-full bg-white border-r border-gray-200 flex items-center justify-center">
-                <div className="text-gray-500">Loading...</div>
+            <div className="w-80 h-full bg-white dark:bg-gray-800 border-r border-gray-200 flex items-center justify-center">
+                <div className="text-gray-500 dark:text-gray-400">Loading...</div>
             </div>
         );
     }
 
     return (
-        <div className="pr-2 h-full bg-white border-r border-gray-200 flex flex-col shadow-lg">
+        <div className="pr-2 h-full bg-white dark:bg-gray-800 border-r border-gray-200 flex flex-col shadow-lg">
             <div className="flex items-center justify-between px-4 py-2 border-b-2 border-gray-200">
-                <h2 className="text-lg font-semibold text-black">Edit Histogram</h2>
-                <button onClick={onClose} className="p-2 text-gray-600 hover:bg-gray-100 rounded-md">
+                <h2 className="text-lg font-semibold text-black dark:text-white">Edit Histogram</h2>
+                <button onClick={onClose} className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-700 rounded-md">
                     <X size={16} />
                 </button>
             </div>
@@ -172,13 +172,13 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
             <div className="flex border-b border-gray-200">
                 <button
                     onClick={() => setActiveTab('data')}
-                    className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all ${activeTab === 'data' ? 'text-blue-600 bg-blue-50 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 after:content-[""]' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
+                    className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all ${activeTab === 'data' ? 'text-blue-600 bg-blue-50 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 after:content-[""]' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-700'}`}
                 >
                     Data
                 </button>
                 <button
                     onClick={() => setActiveTab('customize')}
-                    className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all ${activeTab === 'customize' ? 'text-blue-600 bg-blue-50 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 after:content-[""]' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
+                    className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all ${activeTab === 'customize' ? 'text-blue-600 bg-blue-50 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 after:content-[""]' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-700'}`}
                 >
                     Customize
                 </button>
@@ -189,19 +189,19 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
                     <div className="p-4 space-y-4">
                         {/* Chart Title */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-600 mb-2">Chart Title</label>
+                            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Chart Title</label>
                             <input
                                 type="text"
                                 value={graphData.title}
                                 onChange={handleTitleChange}
-                                className="w-full p-2 border border-gray-300 rounded-md text-sm text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                             />
                         </div>
 
                         {/* Data Source Selection */}
-                        <div className="border border-gray-200 rounded-lg p-3 bg-gray-50">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-3 bg-gray-50 dark:bg-gray-700">
                             <div className="flex items-center justify-between mb-3">
-                                <h4 className="font-medium text-gray-700 flex items-center space-x-2">
+                                <h4 className="font-medium text-gray-700 dark:text-gray-200 flex items-center space-x-2">
                                     <Database size={16} className="text-indigo-600" />
                                     <span>Data Source</span>
                                 </h4>
@@ -216,12 +216,12 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
                             </div>
 
                             {isUsingStoredData && selectedDataSet ? (
-                                <div className="bg-white border border-indigo-200 rounded p-2">
+                                <div className="bg-white dark:bg-gray-800 border border-indigo-200 rounded p-2">
                                     <div className="flex items-center space-x-2">
                                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                        <span className="text-sm font-medium text-gray-800">{selectedDataSet.name}</span>
+                                        <span className="text-sm font-medium text-gray-800 dark:text-gray-100">{selectedDataSet.name}</span>
                                     </div>
-                                    <div className="text-xs text-gray-500 mt-1">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                         {selectedDataSet.rowCount} rows • {selectedDataSet.headers.length} columns
                                     </div>
                                 </div>
@@ -233,17 +233,17 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
                                                 <button
                                                     key={dataSet.id}
                                                     onClick={() => handleDataSetSelect(dataSet)}
-                                                    className="w-full text-left p-2 text-sm bg-white border border-gray-200 rounded hover:bg-indigo-50 hover:border-indigo-300 transition-colors"
+                                                    className="w-full text-left p-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded hover:bg-indigo-50 dark:hover:bg-gray-700 hover:border-indigo-300 transition-colors"
                                                 >
-                                                    <div className="font-medium text-gray-800">{dataSet.name}</div>
-                                                    <div className="text-xs text-gray-500">
+                                                    <div className="font-medium text-gray-800 dark:text-gray-100">{dataSet.name}</div>
+                                                    <div className="text-xs text-gray-500 dark:text-gray-400">
                                                         {dataSet.rowCount} rows • {dataSet.headers.length} columns
                                                     </div>
                                                 </button>
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="text-center py-4 text-gray-500">
+                                        <div className="text-center py-4 text-gray-500 dark:text-gray-400">
                                             <Database size={24} className="mx-auto mb-2 text-gray-300" />
                                             <p className="text-sm">No datasets available</p>
                                             <p className="text-xs">Import data using the "Data" tab first</p>
@@ -256,19 +256,19 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
                         {/* Enhanced Column Configuration */}
                         {selectedDataSet && (
                             <div className="space-y-4">
-                                <div className="border border-gray-200 rounded-lg p-4 bg-white">
-                                    <h5 className="font-medium text-gray-700 mb-3">Histogram Configuration</h5>
+                                <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-white">
+                                    <h5 className="font-medium text-gray-700 dark:text-gray-200 mb-3">Histogram Configuration</h5>
                                     
                                     {/* Data Column Selection */}
                                     <div className="mb-4">
-                                        <label className="block text-sm font-medium text-gray-600 mb-2">
+                                        <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                                             <BarChart3 size={16} className="inline mr-1" />
                                             Data Column (Numeric)
                                         </label>
                                         <select
                                             value={dataField}
                                             onChange={(e) => setDataField(e.target.value)}
-                                            className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                         >
                                             <option value="">Select column...</option>
                                             {selectedDataSet.headers.map(column => (
@@ -277,28 +277,28 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
                                                 </option>
                                             ))}
                                         </select>
-                                        <p className="text-xs text-gray-500 mt-1">Select a numeric column to create the histogram</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Select a numeric column to create the histogram</p>
                                     </div>
 
                                     {/* Data Statistics */}
                                     {dataStats && (
-                                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4">
-                                            <h5 className="text-xs font-medium text-gray-700 mb-2">Data Statistics</h5>
+                                        <div className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-3 mb-4">
+                                            <h5 className="text-xs font-medium text-gray-700 dark:text-gray-200 mb-2">Data Statistics</h5>
                                             <div className="grid grid-cols-2 gap-2 text-xs">
                                                 <div>
-                                                    <span className="text-gray-600">Count:</span>
+                                                    <span className="text-gray-600 dark:text-gray-300">Count:</span>
                                                     <span className="ml-1 font-medium text-gray-900">{dataStats.count}</span>
                                                 </div>
                                                 <div>
-                                                    <span className="text-gray-600">Min:</span>
+                                                    <span className="text-gray-600 dark:text-gray-300">Min:</span>
                                                     <span className="ml-1 font-medium text-gray-900">{dataStats.min.toFixed(2)}</span>
                                                 </div>
                                                 <div>
-                                                    <span className="text-gray-600">Average:</span>
+                                                    <span className="text-gray-600 dark:text-gray-300">Average:</span>
                                                     <span className="ml-1 font-medium text-gray-900">{dataStats.avg.toFixed(2)}</span>
                                                 </div>
                                                 <div>
-                                                    <span className="text-gray-600">Max:</span>
+                                                    <span className="text-gray-600 dark:text-gray-300">Max:</span>
                                                     <span className="ml-1 font-medium text-gray-900">{dataStats.max.toFixed(2)}</span>
                                                 </div>
                                             </div>
@@ -307,7 +307,7 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
 
                                     {/* Number of Bins */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-2">
+                                        <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                                             Number of Bins: <span className="text-indigo-600 font-bold">{numberOfBins}</span>
                                         </label>
                                         <input
@@ -318,7 +318,7 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
                                             onChange={(e) => setNumberOfBins(Number(e.target.value))}
                                             className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                                         />
-                                        <p className="text-xs text-gray-500 mt-1">Number of intervals to group the data</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Number of intervals to group the data</p>
                                     </div>
                                 </div>
 
@@ -359,18 +359,18 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
                 {activeTab === 'customize' && (
                     <div className="p-4 space-y-4">
                         {/* Details Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                             <div
                                 className="flex items-center justify-between cursor-pointer"
                                 onClick={() => toggleSection('details')}
                             >
-                                <h3 className="text-sm font-medium text-gray-700">Details</h3>
+                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Details</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.details ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.details && (
                                 <div className="mt-3 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Show Title</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Show Title</span>
                                         <button
                                             onClick={() => setGraphData(prev => ({ ...prev, showTitle: !prev.showTitle }))}
                                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showTitle ? 'bg-indigo-600' : 'bg-gray-200'}`}
@@ -382,12 +382,12 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
                                     </div>
                                     {graphData.showTitle !== false && (
                                         <div>
-                                            <label className="block text-xs text-gray-500 mb-1">Title Text</label>
+                                            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Title Text</label>
                                             <input
                                                 type="text"
                                                 value={graphData.title}
                                                 onChange={handleTitleChange}
-                                                className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
+                                                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black dark:text-white"
                                                 placeholder="Title goes here"
                                             />
                                         </div>
@@ -397,18 +397,18 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
                         </div>
 
                         {/* Appearance Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                             <div
                                 className="flex items-center justify-between cursor-pointer"
                                 onClick={() => toggleSection('appearance')}
                             >
-                                <h3 className="text-sm font-medium text-gray-700">Appearance</h3>
+                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Appearance</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.appearance ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.appearance && (
                                 <div className="mt-3 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Show Data Labels</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Show Data Labels</span>
                                         <button
                                             onClick={() => setGraphData(prev => ({ ...prev, showDataLabels: !prev.showDataLabels }))}
                                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showDataLabels ? 'bg-indigo-600' : 'bg-gray-200'}`}
@@ -423,18 +423,18 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
                         </div>
 
                         {/* Colors Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                             <div
                                 className="flex items-center justify-between cursor-pointer"
                                 onClick={() => toggleSection('colors')}
                             >
-                                <h3 className="text-sm font-medium text-gray-700">Colors</h3>
+                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Colors</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.colors ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.colors && (
                                 <div className="mt-3 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <label className="text-sm text-gray-600">Bar Color</label>
+                                        <label className="text-sm text-gray-600 dark:text-gray-300">Bar Color</label>
                                         <input
                                             type="color"
                                             value={graphData.dataset?.color || '#118DFF'}
@@ -442,7 +442,7 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
                                                 ...prev, 
                                                 dataset: { ...prev.dataset, color: e.target.value }
                                             }))}
-                                            className="w-10 h-10 p-1 border border-gray-300 rounded cursor-pointer"
+                                            className="w-10 h-10 p-1 border border-gray-300 dark:border-gray-600 rounded cursor-pointer"
                                         />
                                     </div>
                                 </div>
@@ -450,18 +450,18 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
                         </div>
 
                         {/* Axes Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                             <div
                                 className="flex items-center justify-between cursor-pointer"
                                 onClick={() => toggleSection('axes')}
                             >
-                                <h3 className="text-sm font-medium text-gray-700">Axes</h3>
+                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Axes</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.axes ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.axes && (
                                 <div className="mt-3 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Show X Axis</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Show X Axis</span>
                                         <button
                                             onClick={() => setGraphData(prev => ({ ...prev, showXAxis: !prev.showXAxis }))}
                                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showXAxis !== false ? 'bg-indigo-600' : 'bg-gray-200'}`}
@@ -474,7 +474,7 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
                                     {graphData.showXAxis !== false && (
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-sm text-gray-600">Show X Axis Title</span>
+                                                <span className="text-sm text-gray-600 dark:text-gray-300">Show X Axis Title</span>
                                                 <button
                                                     onClick={() => setGraphData(prev => ({ ...prev, showXAxisTitle: !prev.showXAxisTitle }))}
                                                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showXAxisTitle ? 'bg-indigo-600' : 'bg-gray-200'}`}
@@ -486,12 +486,12 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
                                             </div>
                                             {graphData.showXAxisTitle && (
                                                 <div>
-                                                    <label className="block text-xs text-gray-500 mb-1">X-Axis Title</label>
+                                                    <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">X-Axis Title</label>
                                                     <input
                                                         type="text"
                                                         value={graphData.xAxisTitle || ''}
                                                         onChange={e => setGraphData(prev => ({ ...prev, xAxisTitle: e.target.value }))}
-                                                        className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
+                                                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black dark:text-white"
                                                         placeholder="X Axis Label"
                                                     />
                                                 </div>
@@ -500,7 +500,7 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
                                     )}
 
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Show Y Axis</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Show Y Axis</span>
                                         <button
                                             onClick={() => setGraphData(prev => ({ ...prev, showYAxis: !prev.showYAxis }))}
                                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showYAxis !== false ? 'bg-indigo-600' : 'bg-gray-200'}`}
@@ -513,7 +513,7 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
                                     {graphData.showYAxis !== false && (
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-sm text-gray-600">Show Y Axis Title</span>
+                                                <span className="text-sm text-gray-600 dark:text-gray-300">Show Y Axis Title</span>
                                                 <button
                                                     onClick={() => setGraphData(prev => ({ ...prev, showYAxisTitle: !prev.showYAxisTitle }))}
                                                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showYAxisTitle ? 'bg-indigo-600' : 'bg-gray-200'}`}
@@ -525,12 +525,12 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
                                             </div>
                                             {graphData.showYAxisTitle && (
                                                 <div>
-                                                    <label className="block text-xs text-gray-500 mb-1">Y-Axis Title</label>
+                                                    <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Y-Axis Title</label>
                                                     <input
                                                         type="text"
                                                         value={graphData.yAxisTitle || ''}
                                                         onChange={e => setGraphData(prev => ({ ...prev, yAxisTitle: e.target.value }))}
-                                                        className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
+                                                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black dark:text-white"
                                                         placeholder="Y Axis Label"
                                                     />
                                                 </div>
@@ -544,7 +544,7 @@ const HistogramSetting = ({ initialData, onUpdate, onClose }) => {
                 )}
             </div>
 
-            <div className="p-4 border-t border-gray-200 bg-gray-50">
+            <div className="p-4 border-t border-gray-200 bg-gray-50 dark:bg-gray-700">
                 <button
                     onClick={() => onUpdate && onUpdate(graphData)}
                     className="w-full py-2 px-3 bg-blue-50 border-2 border-indigo-300 text-indigo-600 rounded-md text-sm font-medium transition-all duration-200 hover:text-white hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600"

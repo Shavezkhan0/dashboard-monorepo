@@ -255,7 +255,7 @@ function TreemapWidget({
 
     // Render logic with a check for both mounting and data
     return (
-        <div className="w-full h-full min-h-[200px] p-4 bg-white rounded-lg">
+        <div className="w-full h-full min-h-[200px] p-4 bg-white dark:bg-gray-800 rounded-lg">
             {isMounted && transformedData && transformedData.length > 0 ? (
                 <ApexChart
                     options={options}

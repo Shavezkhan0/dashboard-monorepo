@@ -5,14 +5,14 @@ import { useCanvasHook } from '../../Context/CanvasContext';
 
 // Column selector component for consistent UI
 const ColumnSelector = ({ header, checked, onChange, name, isNumeric, type = 'checkbox' }) => (
-    <label className="flex items-center cursor-pointer hover:bg-gray-50 px-1 py-1 rounded">
+    <label className="flex items-center cursor-pointer hover:bg-gray-50 dark:bg-gray-700 px-1 py-1 rounded">
         <input
             type={type}
             name={name}
             value={header}
             checked={checked}
             onChange={(e) => onChange(e.target.value)}
-            className="h-4 w-4 border-gray-300 mr-3 text-indigo-600 focus:ring-indigo-500"
+            className="h-4 w-4 border-gray-300 dark:border-gray-600 mr-3 text-indigo-600 focus:ring-indigo-500"
         />
         <div className="flex items-center space-x-2 min-w-0 flex-1">
             {isNumeric && <span className="text-indigo-600 font-semibold text-sm flex-shrink-0">Σ</span>}
@@ -247,17 +247,17 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
 
     if (!mounted || !graphData) {
         return (
-            <div className="w-80 h-full bg-white border-r border-gray-200 flex items-center justify-center">
-                <div className="text-gray-500">Loading...</div>
+            <div className="w-80 h-full bg-white dark:bg-gray-800 border-r border-gray-200 flex items-center justify-center">
+                <div className="text-gray-500 dark:text-gray-400">Loading...</div>
             </div>
         );
     }
 
     return (
-        <div className="pr-2 h-full bg-white border-r border-gray-200 flex flex-col shadow-lg">
+        <div className="pr-2 h-full bg-white dark:bg-gray-800 border-r border-gray-200 flex flex-col shadow-lg">
             <div className="flex items-center justify-between px-4 py-2 border-b-2 border-gray-200">
-                <h2 className="text-lg font-semibold text-black">Edit Bar Chart</h2>
-                <button onClick={onClose} className="p-2 text-gray-600 hover:bg-gray-100 rounded-md"><X size={16} /></button>
+                <h2 className="text-lg font-semibold text-black dark:text-white">Edit Bar Chart</h2>
+                <button onClick={onClose} className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-700 rounded-md"><X size={16} /></button>
             </div>
 
             {/* Tabs */}
@@ -267,7 +267,7 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                     className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all
                     ${activeTab === 'data'
                             ? 'text-blue-600 bg-blue-50 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r after:from-blue-800 after:via-indigo-700 after:to-purple-600 after:content-[""]'
-                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}
+                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-700'}
                     `}
                 >
                     Data
@@ -277,7 +277,7 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                     className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all
                     ${activeTab === 'customize'
                             ? 'text-blue-600 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r from-blue-800 bg-blue-50 after:via-indigo-700 after:to-purple-600 after:content-[""]'
-                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}
+                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-700'}
                     `}
                 >
                     Customize
@@ -288,8 +288,8 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                 {activeTab === 'data' && (
                     <div className="p-4 space-y-4">
                         {/* Data Source Selection */}
-                        <div className="border border-gray-200 rounded-lg p-2 bg-gray-50">
-                            <h4 className="font-medium text-gray-700 mb-3 flex items-center space-x-2">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-2 bg-gray-50 dark:bg-gray-700">
+                            <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-3 flex items-center space-x-2">
                                 <Database size={16} className="text-indigo-600" />
                                 <span>Data Source</span>
                             </h4>
@@ -312,16 +312,16 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                                     ) : (
                                         <div className="space-y-2 max-h-40 overflow-y-auto">
                                             {storedDataSets.map(dataSet => (
-                                                <button key={dataSet.id} onClick={() => handleDataSetSelect(dataSet)} className="w-full text-left p-2 text-sm bg-white border border-gray-200 rounded hover:bg-indigo-50 hover:border-indigo-300 transition-colors">
-                                                    <div className="font-medium text-gray-800">{dataSet.name}</div>
-                                                    <div className="text-xs text-gray-500">{dataSet.rowCount} rows</div>
+                                                <button key={dataSet.id} onClick={() => handleDataSetSelect(dataSet)} className="w-full text-left p-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded hover:bg-indigo-50 dark:hover:bg-gray-700 hover:border-indigo-300 transition-colors">
+                                                    <div className="font-medium text-gray-800 dark:text-gray-100">{dataSet.name}</div>
+                                                    <div className="text-xs text-gray-500 dark:text-gray-400">{dataSet.rowCount} rows</div>
                                                 </button>
                                             ))}
                                         </div>
                                     )}
                                 </div>
                             ) : (
-                                <div className="text-center py-4 text-gray-500">
+                                <div className="text-center py-4 text-gray-500 dark:text-gray-400">
                                     <Database size={24} className="mx-auto mb-2 text-gray-300" />
                                     <p className="text-sm">No datasets available</p>
                                     <p className="text-xs">Import data using the "Data" tab first</p>
@@ -331,10 +331,10 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
 
                         {/* Enhanced Column Configuration */}
                         {selectedDataSet && (
-                            <div className="space-y-4 p-4 border bg-white rounded-lg">
+                            <div className="space-y-4 p-4 border bg-white dark:bg-gray-800 rounded-lg">
                                 {/* X-Axis */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-2">X-Axis (Categories)</label>
+                                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">X-Axis (Categories)</label>
                                     <div className="max-h-36 overflow-y-auto p-2 border rounded">
                                         {availableColumns.map(h => (
                                             <ColumnSelector key={`x-${h}`} header={h} checked={xAxisField === h} onChange={setXAxisField} name="xAxisField" type="checkbox" isNumeric={isNumericColumn(h)} />
@@ -345,7 +345,7 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                                 {/* Y-Axis */}
                                 <div>
                                     <div className="flex justify-between items-center mb-2">
-                                        <label className="block text-sm font-medium text-gray-600">Y-Axis (Values)</label>
+                                        <label className="block text-sm font-medium text-gray-600 dark:text-gray-300">Y-Axis (Values)</label>
                                         <div className="space-x-2">
                                             <button
                                                 onClick={() => setYAxisFields(availableColumns.filter(col => col !== xAxisField && isNumericColumn(col)))}
@@ -367,7 +367,7 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                                         ))}
                                     </div>
                                     {yAxisFields.length > 0 && (
-                                        <div className="mt-2 text-xs text-gray-500">
+                                        <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                                             Selected: {yAxisFields.join(', ')}
                                         </div>
                                     )}
@@ -375,7 +375,7 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                                 
                                 {/* Legend/Grouping */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-2">Legend (Optional Grouping)</label>
+                                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Legend (Optional Grouping)</label>
                                     <div className="max-h-36 overflow-y-auto p-2 border rounded">
                                         <ColumnSelector header="No grouping" checked={legendField === ''} onChange={() => setLegendField('')} name="legendField" type="checkbox" isNumeric={false} />
                                         {availableColumns.filter(h => h !== xAxisField && !yAxisFields.includes(h)).map(h => (
@@ -386,8 +386,8 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                                 
                                 {/* Aggregation */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-2">Value Calculation</label>
-                                    <select value={aggregationType} onChange={(e) => setAggregationType(e.target.value)} className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black">
+                                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Value Calculation</label>
+                                    <select value={aggregationType} onChange={(e) => setAggregationType(e.target.value)} className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white text-black dark:text-white">
                                         <option value="sum">Sum</option>
                                         <option value="count">Count</option>
                                         <option value="average">Average</option>
@@ -422,18 +422,18 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                 {activeTab === 'customize' && (
                     <div className="p-4 space-y-4">
                         {/* Details Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                             <div
                                 className="flex items-center justify-between cursor-pointer"
                                 onClick={() => toggleSection('details')}
                             >
-                                <h3 className="text-sm font-medium text-gray-700">Details</h3>
+                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Details</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.details ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.details && (
                                 <div className="mt-3 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Title</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Title</span>
                                         <button
                                             onClick={() => setGraphData(prev => ({ ...prev, showTitle: !prev.showTitle }))}
                                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showTitle ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
@@ -445,12 +445,12 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                                     </div>
                                     {graphData.showTitle !== false && (
                                         <div>
-                                            <label className="block text-xs text-gray-500 mb-1">Edit Text</label>
+                                            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Edit Text</label>
                                             <input
                                                 type="text"
                                                 value={graphData.title}
                                                 onChange={handleTitleChange}
-                                                className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
+                                                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black dark:text-white"
                                                 placeholder="Title goes here"
                                             />
                                         </div>
@@ -460,18 +460,18 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                         </div>
 
                         {/* X Axis Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                             <div
                                 className="flex items-center justify-between cursor-pointer"
                                 onClick={() => toggleSection('xaxis')}
                             >
-                                <h3 className="text-sm font-medium text-gray-700">X Axis</h3>
+                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">X Axis</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.xaxis ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.xaxis && (
                                 <div className="mt-3 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Axis</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Axis</span>
                                         <button
                                             onClick={() => setGraphData(prev => ({ ...prev, showXAxis: !prev.showXAxis }))}
                                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showXAxis !== false ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
@@ -484,7 +484,7 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                                     {graphData.showXAxis !== false && (
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-sm text-gray-600">Title</span>
+                                                <span className="text-sm text-gray-600 dark:text-gray-300">Title</span>
                                                 <button
                                                     onClick={() => setGraphData(prev => ({ ...prev, showXAxisTitle: !prev.showXAxisTitle }))}
                                                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showXAxisTitle ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
@@ -496,12 +496,12 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                                             </div>
                                             {graphData.showXAxisTitle && (
                                                 <div>
-                                                    <label className="block text-xs text-gray-500 mb-1">Edit Text</label>
+                                                    <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Edit Text</label>
                                                     <input
                                                         type="text"
                                                         value={graphData.xAxisTitle || ''}
                                                         onChange={e => setGraphData(prev => ({ ...prev, xAxisTitle: e.target.value }))}
-                                                        className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
+                                                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black dark:text-white"
                                                         placeholder="X label"
                                                     />
                                                 </div>
@@ -513,18 +513,18 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                         </div>
 
                         {/* Y Axis Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                             <div
                                 className="flex items-center justify-between cursor-pointer"
                                 onClick={() => toggleSection('yaxis')}
                             >
-                                <h3 className="text-sm font-medium text-gray-700">Y Axis</h3>
+                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Y Axis</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.yaxis ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.yaxis && (
                                 <div className="mt-3 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Axis</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Axis</span>
                                         <button
                                             onClick={() => setGraphData(prev => ({ ...prev, showYAxis: !prev.showYAxis }))}
                                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showYAxis !== false ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
@@ -537,7 +537,7 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                                     {graphData.showYAxis !== false && (
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-sm text-gray-600">Title</span>
+                                                <span className="text-sm text-gray-600 dark:text-gray-300">Title</span>
                                                 <button
                                                     onClick={() => setGraphData(prev => ({ ...prev, showYAxisTitle: !prev.showYAxisTitle }))}
                                                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showYAxisTitle ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
@@ -549,42 +549,42 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                                             </div>
                                             {graphData.showYAxisTitle && (
                                                 <div>
-                                                    <label className="block text-xs text-gray-500 mb-1">Edit Text</label>
+                                                    <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Edit Text</label>
                                                     <input
                                                         type="text"
                                                         value={graphData.yAxisTitle || ''}
                                                         onChange={e => setGraphData(prev => ({ ...prev, yAxisTitle: e.target.value }))}
-                                                        className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
+                                                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black dark:text-white"
                                                         placeholder="Y label"
                                                     />
                                                 </div>
                                             )}
                                             <div className="flex items-center space-x-2 mt-2">
                                                 <div>
-                                                    <label className="block text-xs text-gray-500 mb-1">Min</label>
+                                                    <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Min</label>
                                                     <input
                                                         type="number"
                                                         value={graphData.yMin ?? ''}
                                                         onChange={e => setGraphData(prev => ({ ...prev, yMin: parseFloat(e.target.value) }))}
-                                                        className="w-16 p-1 border border-gray-300 rounded text-sm text-black"
+                                                        className="w-16 p-1 border border-gray-300 dark:border-gray-600 rounded text-sm text-black dark:text-white"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-xs text-gray-500 mb-1">Max</label>
+                                                    <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Max</label>
                                                     <input
                                                         type="number"
                                                         value={graphData.yMax ?? ''}
                                                         onChange={e => setGraphData(prev => ({ ...prev, yMax: parseFloat(e.target.value) }))}
-                                                        className="w-16 p-1 border border-gray-300 rounded text-sm text-black"
+                                                        className="w-16 p-1 border border-gray-300 dark:border-gray-600 rounded text-sm text-black dark:text-white"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-xs text-gray-500 mb-1">Step Size</label>
+                                                    <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Step Size</label>
                                                     <input
                                                         type="number"
                                                         value={graphData.yStep ?? ''}
                                                         onChange={e => setGraphData(prev => ({ ...prev, yStep: parseFloat(e.target.value) }))}
-                                                        className="w-16 p-1 border border-gray-300 rounded text-sm text-black"
+                                                        className="w-16 p-1 border border-gray-300 dark:border-gray-600 rounded text-sm text-black dark:text-white"
                                                     />
                                                 </div>
                                             </div>
@@ -595,18 +595,18 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                         </div>
 
                         {/* Properties Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                             <div
                                 className="flex items-center justify-between cursor-pointer"
                                 onClick={() => toggleSection('properties')}
                             >
-                                <h3 className="text-sm font-medium text-gray-700">Properties</h3>
+                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Properties</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.properties ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.properties && (
                                 <div className="mt-3 space-y-3">
                                     <div>
-                                        <label className="block text-xs text-gray-500 mb-1">Bar Width</label>
+                                        <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Bar Width</label>
                                         <input
                                             type="range"
                                             min="0.1"
@@ -618,11 +618,11 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs text-gray-500 mb-1">Bar Style</label>
+                                        <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Bar Style</label>
                                         <select
                                             value={graphData.barStyle || 'solid'}
                                             onChange={e => setGraphData(prev => ({ ...prev, barStyle: e.target.value }))}
-                                            className="w-full p-2 border border-gray-300 rounded text-sm text-black"
+                                            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm text-black dark:text-white"
                                         >
                                             <option value="solid">Solid</option>
                                             <option value="striped">Striped</option>
@@ -630,7 +630,7 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                                         </select>
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Legend</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Legend</span>
                                         <button
                                             onClick={() => setGraphData(prev => ({ ...prev, showLegend: !prev.showLegend }))}
                                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showLegend !== false ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
@@ -641,7 +641,7 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                                         </button>
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Data Labels</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Data Labels</span>
                                         <button
                                             onClick={() => setGraphData(prev => ({ ...prev, showDataLabels: !prev.showDataLabels }))}
                                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showDataLabels !== false ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
@@ -653,11 +653,11 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                                     </div>
                                     {graphData.showDataLabels !== false && (
                                         <div>
-                                            <label className="block text-xs text-gray-500 mb-1">Label Position</label>
+                                            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Label Position</label>
                                             <select
                                                 value={graphData.labelPosition || 'top'}
                                                 onChange={e => setGraphData(prev => ({ ...prev, labelPosition: e.target.value }))}
-                                                className="w-full p-2 border border-gray-300 rounded text-sm text-black"
+                                                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm text-black dark:text-white"
                                             >
                                                 <option value="top">Top</option>
                                                 <option value="center">Center</option>
@@ -672,7 +672,7 @@ const BarChartSetting = ({ initialData, onUpdate, onClose }) => {
                 )}
             </div>
 
-            <div className="p-4 border-t border-gray-200 bg-gray-50">
+            <div className="p-4 border-t border-gray-200 bg-gray-50 dark:bg-gray-700">
                 <button onClick={() => onUpdate && onUpdate(graphData)} className="w-full py-2 px-3 bg-blue-50 border-2 border-indigo-300 text-indigo-600 rounded-md text-sm font-medium transition-all duration-200 hover:text-white hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600">
                     Save Changes
                 </button>

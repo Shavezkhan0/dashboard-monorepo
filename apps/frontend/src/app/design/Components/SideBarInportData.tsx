@@ -46,15 +46,15 @@ const SideBarInportData = () => {
       <Dialog.Root open={popupOpen} onOpenChange={handlePopupClose}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/50 z-40 " />
-          <Dialog.Content className="fixed top-1/2 left-1/2 overflow-y-auto z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-2xl w-[60vw]">
+          <Dialog.Content className="fixed top-1/2 left-1/2 overflow-y-auto z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-[60vw]">
             {popupOpen && (
               <>
                 {activeTab === "getdata" && (
                   <>
                     <div className="flex justify-between items-center p-2 border-b ">
-                      <Dialog.Title className="text-normal text-black font-semibold">Get Data</Dialog.Title>
+                      <Dialog.Title className="text-normal text-black dark:text-white font-semibold">Get Data</Dialog.Title>
                       <Dialog.Close asChild>
-                        <button className="p-1 rounded-full hover:bg-gray-200 text-black" aria-label="Close">
+                        <button className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-black dark:text-white" aria-label="Close">
                           <X size={20} />
                         </button>
                       </Dialog.Close>
@@ -68,9 +68,9 @@ const SideBarInportData = () => {
                 {activeTab === "connectserver" && (
                   <>
                     <div className="flex justify-between items-center p-2 border-b ">
-                      <Dialog.Title className="text-normal font-semibold text-black">Connect to Server</Dialog.Title>
+                      <Dialog.Title className="text-normal font-semibold text-black dark:text-white">Connect to Server</Dialog.Title>
                       <Dialog.Close asChild>
-                        <button className="p-1 rounded-full hover:bg-gray-200 text-black" aria-label="Close">
+                        <button className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-black dark:text-white" aria-label="Close">
                           <X size={20} />
                         </button>
                       </Dialog.Close>

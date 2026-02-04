@@ -56,7 +56,7 @@ export default function Sidebar() {
     };
 
     return (
-        <div className="relative w-[320px] h-[94vh] bg-white border-r-2 border-gray-300 overflow-hidden">
+        <div className="relative w-[320px] h-[94vh] bg-white dark:bg-gray-800 border-r-2 border-gray-300 dark:border-gray-600 overflow-hidden">
 
             <div className="absolute top-0 left-0 w-full h-full transition-transform duration-300 ease-in-out">
                 {/* Show AI Panel */}
@@ -66,11 +66,11 @@ export default function Sidebar() {
                         <div className='px-3 pt-2 flex gap-5 item-center justify-between'>
                             <button
                                 onClick={() => setSelectedAi(false)}
-                                className="p-2 mb-3 text-black bg-gray-200 rounded text-xs cursor-pointer hover:bg-gray-300"
+                                className="p-2 mb-3 text-black dark:text-white bg-gray-200 dark:bg-gray-700 rounded text-xs cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-600"
                             >
                                 ← Back
                             </button>
-                            <h2 className='text-indigo-600 text-center pt-2 font-bold '>Vission AI</h2>
+                            <h2 className='text-indigo-600 dark:text-indigo-400 text-center pt-2 font-bold '>Vission AI</h2>
                         </div>
                         {/* AI Prompt Box */}
                         <AiGenerateSidebar />

@@ -79,7 +79,7 @@ function BarChartWidget({
     // Don't render chart until we're on the client side
     if (!isClient) {
         return (
-            <div className="w-full h-full min-h-[300px] p-6 bg-white rounded-lg shadow-sm flex items-center justify-center" style={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}>
+            <div className="w-full h-full min-h-[300px] p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm flex items-center justify-center" style={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}>
                 <div className="text-gray-500">Loading chart...</div>
             </div>
         );

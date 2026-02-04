@@ -100,10 +100,10 @@ function CanvasEditor() {
                                     key={widget.id}
                                     data-grid={widget.layout}
                                     className={clsx(
-                                        'bg-white ',
+                                        'bg-white dark:bg-gray-800',
                                         'relative group transition-[border-color,box-shadow] duration-200  ',
                                         'cursor-grab active:cursor-grabbing',
-                                        isSelected ? 'border-1 border-indigo-500 shadow-xl z-10' : 'border border-gray-200 hover:border-gray-300 '
+                                        isSelected ? 'border-1 border-indigo-500 shadow-xl z-10' : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 '
                                     )}
                                     onClick={(e) => handleWidgetClick(e, widget.id)}
                                 >

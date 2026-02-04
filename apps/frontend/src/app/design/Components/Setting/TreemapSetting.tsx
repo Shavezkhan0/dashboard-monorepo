@@ -213,17 +213,17 @@ const TreemapSetting = ({ initialData, onUpdate, onClose }) => {
 
     if (!mounted || !graphData) {
         return (
-            <div className="w-80 h-full bg-white border-r border-gray-200 flex items-center justify-center">
+            <div className="w-80 h-full bg-white dark:bg-gray-800 border-r border-gray-200 flex items-center justify-center">
                 <div className="text-gray-500">Loading...</div>
             </div>
         );
     }
 
     return (
-        <div className="pr-2 h-full bg-white border-r border-gray-200 flex flex-col shadow-lg">
+        <div className="pr-2 h-full bg-white dark:bg-gray-800 border-r border-gray-200 flex flex-col shadow-lg">
             <div className="flex items-center justify-between px-4 py-2 border-b-2 border-gray-200">
-                <h2 className="text-lg font-semibold text-black">Edit Treemap</h2>
-                <button onClick={onClose} className="p-2 text-gray-600 hover:bg-gray-100 rounded-md">
+                <h2 className="text-lg font-semibold text-black dark:text-white">Edit Treemap</h2>
+                <button onClick={onClose} className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 rounded-md">
                     <X size={16} />
                 </button>
             </div>
@@ -235,7 +235,7 @@ const TreemapSetting = ({ initialData, onUpdate, onClose }) => {
                     className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all
                     ${activeTab === 'data'
                             ? 'text-blue-600 bg-blue-50 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r after:from-blue-800 after:via-indigo-700 after:to-purple-600 after:content-[""]'
-                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}
+                            : 'text-gray-500 hover:text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-700'}
                     `}
                 >
                     Data
@@ -245,7 +245,7 @@ const TreemapSetting = ({ initialData, onUpdate, onClose }) => {
                     className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all
                     ${activeTab === 'customize'
                             ? 'text-blue-600 bg-blue-50 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r after:from-blue-800 after:via-indigo-700 after:to-purple-600 after:content-[""]'
-                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}
+                            : 'text-gray-500 hover:text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-700'}
                     `}
                 >
                     Customize
@@ -256,8 +256,8 @@ const TreemapSetting = ({ initialData, onUpdate, onClose }) => {
                 {activeTab === 'data' && (
                     <div className="p-4 space-y-4">
                         {/* Data Source Selection */}
-                        <div className="border border-gray-200 rounded-lg p-2 bg-gray-50">
-                            <h4 className="font-medium text-gray-700 mb-3 flex items-center space-x-2">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-2 bg-gray-50 dark:bg-gray-700">
+                            <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-3 flex items-center space-x-2">
                                 <Database size={16} className="text-indigo-600" />
                                 <span>Data Source</span>
                             </h4>
@@ -286,7 +286,7 @@ const TreemapSetting = ({ initialData, onUpdate, onClose }) => {
                                         <button
                                             key={dataSet.id}
                                             onClick={() => handleDataSetSelect(dataSet)}
-                                            className="w-full text-left p-2 text-sm bg-white border border-gray-200 rounded hover:bg-indigo-50 hover:border-indigo-300 transition-colors"
+                                            className="w-full text-left p-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded hover:bg-indigo-50 hover:border-indigo-300 transition-colors"
                                         >
                                             <div className="font-medium text-gray-800">{dataSet.name}</div>
                                                     <div className="text-xs text-gray-500">{dataSet.rowCount} rows</div>
@@ -306,18 +306,18 @@ const TreemapSetting = ({ initialData, onUpdate, onClose }) => {
 
                         {/* Enhanced Column Configuration */}
                         {selectedDataSet && (
-                            <div className="space-y-4 p-4 border bg-white rounded-lg">
+                            <div className="space-y-4 p-4 border bg-white dark:bg-gray-800 rounded-lg">
                                 {/* Field Selection in Grid Layout */}
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                     {/* Category Field */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-2">
+                                        <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                                             Category Field (Labels)
                                         </label>
                                         <select
                                             value={categoryField}
                                             onChange={(e) => setCategoryField(e.target.value)}
-                                            className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black"
+                                            className="w-full p-2 border border-gray-300 rounded text-sm bg-white dark:bg-gray-800 text-black dark:text-white"
                                         >
                                             <option value="">-- Select Field --</option>
                                             {availableColumns.map(h => (
@@ -330,13 +330,13 @@ const TreemapSetting = ({ initialData, onUpdate, onClose }) => {
 
                                     {/* Value Field */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-2">
+                                        <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                                             Value Field (Sizes)
                                         </label>
                                         <select
                                             value={valueField}
                                             onChange={(e) => setValueField(e.target.value)}
-                                            className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black"
+                                            className="w-full p-2 border border-gray-300 rounded text-sm bg-white dark:bg-gray-800 text-black dark:text-white"
                                         >
                                             <option value="">-- Select Field --</option>
                                             {availableColumns.filter(h => h !== categoryField).map(h => (
@@ -352,13 +352,13 @@ const TreemapSetting = ({ initialData, onUpdate, onClose }) => {
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                     {/* Parent Field (Optional) */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-2">
+                                        <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                                             Parent Field (Optional)
                                         </label>
                                         <select
                                             value={parentField}
                                             onChange={(e) => setParentField(e.target.value)}
-                                            className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black"
+                                            className="w-full p-2 border border-gray-300 rounded text-sm bg-white dark:bg-gray-800 text-black dark:text-white"
                                         >
                                             <option value="">No hierarchy</option>
                                             {availableColumns.filter(h => h !== categoryField && h !== valueField).map(h => (
@@ -376,11 +376,11 @@ const TreemapSetting = ({ initialData, onUpdate, onClose }) => {
 
                                     {/* Aggregation */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-2">Value Calculation</label>
+                                        <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Value Calculation</label>
                                         <select
                                             value={aggregationType}
                                             onChange={(e) => setAggregationType(e.target.value)}
-                                            className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black"
+                                            className="w-full p-2 border border-gray-300 rounded text-sm bg-white dark:bg-gray-800 text-black dark:text-white"
                                         >
                                             <option value="sum">Sum</option>
                                             <option value="count">Count</option>
@@ -421,24 +421,24 @@ const TreemapSetting = ({ initialData, onUpdate, onClose }) => {
                 {activeTab === 'customize' && (
                     <div className="p-4 space-y-4">
                         {/* Details Section */}
-                    <div className="border border-gray-200 rounded-lg p-4">
+                    <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                             <div
                                 className="flex items-center justify-between cursor-pointer"
                                 onClick={() => toggleSection('details')}
                             >
-                            <h3 className="text-sm font-medium text-gray-700">Details</h3>
+                            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Details</h3>
                             <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.details ? 'rotate-180' : ''}`} />
                         </div>
                         {expandedSections.details && (
                             <div className="mt-3 space-y-3">
                                 <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Title</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Title</span>
                                         <button
                                             onClick={() => setGraphData(prev => ({ ...prev, showTitle: !prev.showTitle }))}
                                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showTitle ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
                                         >
                                             <span
-                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showTitle ? 'translate-x-6' : 'translate-x-1'}`}
+                                                className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-800 transition-transform ${graphData.showTitle ? 'translate-x-6' : 'translate-x-1'}`}
                                             />
                                     </button>
                                 </div>
@@ -449,7 +449,7 @@ const TreemapSetting = ({ initialData, onUpdate, onClose }) => {
                                                 type="text"
                                                 value={graphData.title}
                                                 onChange={handleTitleChange}
-                                                className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
+                                                className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black dark:text-white"
                                                 placeholder="Title goes here"
                                             />
                             </div>
@@ -459,35 +459,35 @@ const TreemapSetting = ({ initialData, onUpdate, onClose }) => {
             </div>
 
                         {/* Data Labels Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                             <div
                                 className="flex items-center justify-between cursor-pointer"
                                 onClick={() => toggleSection('dataLabels')}
                             >
-                                <h3 className="text-sm font-medium text-gray-700">Data Labels</h3>
+                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Data Labels</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.dataLabels ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.dataLabels && (
                                 <div className="mt-3 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Show Labels</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Show Labels</span>
                                         <button
                                             onClick={() => setGraphData(prev => ({ ...prev, showDataLabels: !prev.showDataLabels }))}
                                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showDataLabels !== false ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
                                         >
                                             <span
-                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showDataLabels !== false ? 'translate-x-6' : 'translate-x-1'}`}
+                                                className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-800 transition-transform ${graphData.showDataLabels !== false ? 'translate-x-6' : 'translate-x-1'}`}
                                             />
                 </button>
             </div>
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Show Values</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Show Values</span>
                                         <button
                                             onClick={() => setGraphData(prev => ({ ...prev, showValues: !prev.showValues }))}
                                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showValues !== false ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
                                         >
                                             <span
-                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showValues !== false ? 'translate-x-6' : 'translate-x-1'}`}
+                                                className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-800 transition-transform ${graphData.showValues !== false ? 'translate-x-6' : 'translate-x-1'}`}
                                             />
                     </button>
                 </div>
@@ -496,12 +496,12 @@ const TreemapSetting = ({ initialData, onUpdate, onClose }) => {
             </div>
             
                         {/* Appearance Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                             <div
                                 className="flex items-center justify-between cursor-pointer"
                                 onClick={() => toggleSection('appearance')}
                             >
-                                <h3 className="text-sm font-medium text-gray-700">Appearance</h3>
+                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Appearance</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.appearance ? 'rotate-180' : ''}`} />
             </div>
                             {expandedSections.appearance && (
@@ -511,7 +511,7 @@ const TreemapSetting = ({ initialData, onUpdate, onClose }) => {
                 <select 
                                             value={graphData.tooltipFormat || 'default'}
                                             onChange={e => setGraphData(prev => ({ ...prev, tooltipFormat: e.target.value }))}
-                    className="w-full p-2 border border-gray-300 rounded text-sm text-black"
+                    className="w-full p-2 border border-gray-300 rounded text-sm text-black dark:text-white"
                 >
                                             <option value="default">Default (1,234)</option>
                                             <option value="compact">Compact (1.2K)</option>
@@ -533,13 +533,13 @@ const TreemapSetting = ({ initialData, onUpdate, onClose }) => {
                                         <span className="text-xs text-gray-500">{graphData.borderRadius ?? 4}px</span>
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600">Enable Shades</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Enable Shades</span>
                                         <button
                                             onClick={() => setGraphData(prev => ({ ...prev, enableShades: !prev.enableShades }))}
                                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.enableShades !== false ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}
                                         >
                                             <span
-                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.enableShades !== false ? 'translate-x-6' : 'translate-x-1'}`}
+                                                className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-800 transition-transform ${graphData.enableShades !== false ? 'translate-x-6' : 'translate-x-1'}`}
                                             />
                                         </button>
                                     </div>
@@ -548,12 +548,12 @@ const TreemapSetting = ({ initialData, onUpdate, onClose }) => {
             </div>
             
                         {/* Colors Section */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                             <div
                                 className="flex items-center justify-between cursor-pointer"
                                 onClick={() => toggleSection('colors')}
                             >
-                                <h3 className="text-sm font-medium text-gray-700">Colors</h3>
+                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Colors</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.colors ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.colors && (
@@ -563,7 +563,7 @@ const TreemapSetting = ({ initialData, onUpdate, onClose }) => {
                 <select 
                                             value={graphData.colorScheme || 'powerbi'}
                                             onChange={e => setGraphData(prev => ({ ...prev, colorScheme: e.target.value }))}
-                    className="w-full p-2 border border-gray-300 rounded text-sm text-black"
+                    className="w-full p-2 border border-gray-300 rounded text-sm text-black dark:text-white"
                 >
                                             <option value="powerbi">Power BI</option>
                                             <option value="default">Default</option>
@@ -591,7 +591,7 @@ const TreemapSetting = ({ initialData, onUpdate, onClose }) => {
                 )}
             </div>
             
-            <div className="p-4 border-t border-gray-200 bg-gray-50">
+            <div className="p-4 border-t border-gray-200 bg-gray-50 dark:bg-gray-700">
             <button 
                     onClick={() => onUpdate && onUpdate(graphData)}
                     className="w-full py-2 px-3 bg-blue-50 border-2 border-indigo-300 text-indigo-600 rounded-md text-sm font-medium transition-all duration-200 hover:text-white hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600"

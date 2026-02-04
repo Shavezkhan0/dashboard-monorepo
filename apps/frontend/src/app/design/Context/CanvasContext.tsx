@@ -23,7 +23,7 @@ interface CanvasContextType {
     addStoredDataSet: (dataSet: any) => string;
     removeStoredDataSet: (dataSetId: string) => void;
     getStoredDataSet: (dataSetId: string) => any;
-    saveDashboard: () => void;
+    saveDashboard: (name?: string) => void;
     isSaving: boolean;
     dashboard?: any; // or specific Dashboard type
 }
@@ -56,16 +56,21 @@ export const CanvasProvider = ({ children, dashboardId, client, onSaveAttempt, i
         }
     }, [dashboard]);
 
-    const saveDashboard = () => {
+    const saveDashboard = (name?: string) => {
         if (isPreviewMode && onSaveAttempt) {
             onSaveAttempt({ widgets });
             return;
         }
-        
+
         if (client && dashboardId) {
+            const updateData: any = { widgets };
+            if (name !== undefined) {
+                updateData.name = name;
+            }
+
             updateMutation.mutate({
                 id: dashboardId,
-                data: { widgets }
+                data: updateData
             }, {
                 onSuccess: () => {
                     toast.success('Dashboard saved successfully');
