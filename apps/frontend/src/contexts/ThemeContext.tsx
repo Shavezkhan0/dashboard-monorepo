@@ -46,42 +46,34 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     return 'light';
   };
 
-  // Update resolved theme when theme changes
+  // Apply theme and listen for system theme changes
   useEffect(() => {
-    let newResolvedTheme: ResolvedTheme;
-    
-    if (theme === 'system') {
-      newResolvedTheme = getSystemTheme();
-    } else {
-      newResolvedTheme = theme;
-    }
-    
-    setResolvedTheme(newResolvedTheme);
-    
-    // Apply dark class to html element
-    const root = window.document.documentElement;
-    if (newResolvedTheme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-  }, [theme]);
+    if (typeof window === 'undefined') return;
 
-  // Listen for system theme changes
-  useEffect(() => {
+    const applyTheme = (newTheme: ResolvedTheme) => {
+      setResolvedTheme(newTheme);
+      
+      const root = window.document.documentElement;
+      if (newTheme === 'dark') {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
+    };
+
+    // Apply initial theme
+    if (theme === 'system') {
+      applyTheme(getSystemTheme());
+    } else {
+      applyTheme(theme);
+    }
+
+    // Listen for system theme changes only when theme is 'system'
     if (theme === 'system') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       
       const handleChange = () => {
-        const systemTheme = mediaQuery.matches ? 'dark' : 'light';
-        setResolvedTheme(systemTheme);
-        
-        const root = window.document.documentElement;
-        if (systemTheme === 'dark') {
-          root.classList.add('dark');
-        } else {
-          root.classList.remove('dark');
-        }
+        applyTheme(mediaQuery.matches ? 'dark' : 'light');
       };
 
       mediaQuery.addEventListener('change', handleChange);
@@ -95,6 +87,20 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       localStorage.setItem('dashboard-theme', newTheme);
     }
   };
+
+  // Sync with localStorage changes across tabs
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'dashboard-theme' && e.newValue) {
+        setThemeState(e.newValue as Theme);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const toggleTheme = () => {
     const themes: Theme[] = ['light', 'dark', 'system'];

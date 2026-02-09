@@ -8,7 +8,7 @@ import DesignHeader from '@/app/design/Components/DesignHeader';
 import { CanvasProvider } from '@/app/design/Context/CanvasContext';
 import Sidebar from '@/app/design/Components/Sidebar';
 import CanvasEditor from '@/app/design/Components/CanvasEditor';
-import AuthDialog from '@/components/AuthDialog';
+import AuthDialog from '@/components/auth/AuthDialog';
 
 export default function PreviewPage() {
   const router = useRouter();

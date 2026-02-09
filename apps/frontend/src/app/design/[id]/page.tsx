@@ -1,23 +1,23 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import DesignHeader from "../Components/DesignHeader";
-import { CanvasProvider } from "../Context/CanvasContext";
-import Sidebar from "../Components/Sidebar";
-import CanvasEditor from "../Components/CanvasEditor";
+import DesignHeader from "@/components/design/header/DesignHeader";
+import { CanvasProvider } from "@/contexts/CanvasContext";
+import Sidebar from "@/components/design/sidebar/Sidebar";
+import CanvasEditor from "@/components/design/canvas/CanvasEditor";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { useAuthContext } from '@/contexts/AuthContext';
 import { ApiClient } from '@dashboard/api-client';
 
 interface DesignPageProps {
-    params: {
+    params: Promise<{
         id: string;
-    };
+    }>;
 }
 
 export default function DesignPage({ params }: DesignPageProps) {
-    const dashboardId = params.id;
+    const { id: dashboardId } = React.use(params);
     const { token } = useAuthContext();
     const [client, setClient] = useState<ApiClient | null>(null);
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';

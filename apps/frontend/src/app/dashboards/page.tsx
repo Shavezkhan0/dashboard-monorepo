@@ -8,10 +8,10 @@ import { useDashboards, useDeleteDashboard } from '@dashboard/api-client';
 import type { Dashboard } from '@dashboard/shared-types';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
-import ConfirmDialog from '@/components/ConfirmDialog';
-import DashboardCard from '@/components/DashboardCard';
-import ProfileDropdown from '@/components/ProfileDropdown';
-import ThemeToggle from '@/components/ThemeToggle';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import DashboardCard from '@/components/dashboard/DashboardCard';
+import ProfileDropdown from '@/components/account/ProfileDropdown';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 import { FaPlus, FaSearch } from 'react-icons/fa';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';

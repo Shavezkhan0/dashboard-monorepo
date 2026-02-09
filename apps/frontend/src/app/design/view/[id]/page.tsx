@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState, use } from "react";
-import { CanvasProvider, useCanvasHook } from "../../Context/CanvasContext";
-import CanvasViewer from "../../Components/CanvasViewer";
+import { CanvasProvider, useCanvasHook } from "@/contexts/CanvasContext";
+import CanvasViewer from "@/components/design/canvas/CanvasViewer";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { useAuthContext } from '@/contexts/AuthContext';

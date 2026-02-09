@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { ApiClient } from '@dashboard/api-client';
 import { useCreateDashboard } from '@dashboard/api-client';
-import DesignHeader from "./Components/DesignHeader";
-import { CanvasProvider } from "./Context/CanvasContext";
-import Sidebar from "./Components/Sidebar";
-import CanvasEditor from "./Components/CanvasEditor";
+import DesignHeader from "@/components/design/header/DesignHeader";
+import { CanvasProvider } from "@/contexts/CanvasContext";
+import Sidebar from "@/components/design/sidebar/Sidebar";
+import CanvasEditor from "@/components/design/canvas/CanvasEditor";
 
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";

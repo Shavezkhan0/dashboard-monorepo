@@ -1,13 +1,10 @@
 export { ApiClient } from './client';
-
-// Dashboard hooks
 export * from './hooks/use-dashboards';
-
-// Auth hooks
 export * from './hooks/use-auth';
-
-// Data Source hooks
 export * from './hooks/use-data-sources';
-
-// Admin hooks
 export * from './hooks/use-admin';
+
+// ADD these 3 new lines:
+export * from './hooks/use-datasets';
+export * from './hooks/use-charts';
+export { useDashboardWithData, usePublicDashboard, useDashboardVersions } from './hooks/use-dashboards-enhanced';
