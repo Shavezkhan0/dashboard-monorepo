@@ -24,8 +24,20 @@ export default function NewDesignPage() {
     const dashboardCreationRef = useRef(false);
 
     useEffect(() => {
+        // Check for temp dashboard data from preview
+        if (typeof window !== 'undefined') {
+            const tempData = sessionStorage.getItem('tempDashboard');
+            if (tempData) {
+                const data = JSON.parse(tempData);
+                // We'll handle this in CanvasProvider initialization
+                sessionStorage.removeItem('tempDashboard');
+            }
+        }
+    }, []);
+
+    useEffect(() => {
         if (!authLoading && !isAuthenticated) {
-            router.push('/auth/login');
+            router.push('/');
         }
     }, [isAuthenticated, authLoading, router]);
 
@@ -56,15 +68,15 @@ export default function NewDesignPage() {
 
     if (authLoading || !dashboardId) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <p>Creating dashboard...</p>
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+                <p className="text-gray-600 dark:text-gray-300">Creating dashboard...</p>
             </div>
         );
     }
 
     return (
         <CanvasProvider dashboardId={dashboardId} client={client}>
-            <main className="flex flex-col h-screen ">
+            <main className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900">
                 <DesignHeader />
                 <div className="flex flex-1 overflow-hidden">
                     <Sidebar />

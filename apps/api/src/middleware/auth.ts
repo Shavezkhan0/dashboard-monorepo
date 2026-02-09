@@ -4,9 +4,13 @@ import { supabaseAdmin } from '../lib/supabase';
 export interface AuthContext extends Context {
   userId?: string;
   userEmail?: string;
+  Variables: {
+    userId?: string;
+    userEmail?: string;
+  };
 }
 
-export async function authMiddleware(c: AuthContext, next: Next) {
+export async function authMiddleware(c: Context<{ Variables: { userId?: string; userEmail?: string } }>, next: Next) {
   const authHeader = c.req.header('Authorization');
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -27,8 +31,6 @@ export async function authMiddleware(c: AuthContext, next: Next) {
 
     c.set('userId', user.id);
     c.set('userEmail', user.email);
-    c.userId = user.id;
-    c.userEmail = user.email;
 
     await next();
   } catch (error) {
@@ -39,7 +41,7 @@ export async function authMiddleware(c: AuthContext, next: Next) {
   }
 }
 
-export async function adminMiddleware(c: AuthContext, next: Next) {
+export async function adminMiddleware(c: Context<{ Variables: { userId?: string; userEmail?: string } }>, next: Next) {
   const authHeader = c.req.header('Authorization');
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -71,8 +73,6 @@ export async function adminMiddleware(c: AuthContext, next: Next) {
 
     c.set('userId', user.id);
     c.set('userEmail', user.email);
-    c.userId = user.id;
-    c.userEmail = user.email;
 
     await next();
   } catch (error) {
