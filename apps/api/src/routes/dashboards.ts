@@ -10,10 +10,309 @@ import type {
   Dashboard,
   CreateDashboardInput,
   UpdateDashboardInput,
-  DashboardWithCharts
+  DashboardWithCharts,
+  DashboardWidget
 } from '@dashboard/shared-types';
+import type { Widget } from '@dashboard/shared-types';
 
 const dashboards = new Hono();
+
+// ============================================================================
+// HELPER FUNCTIONS FOR 4-LAYER ARCHITECTURE
+// ============================================================================
+
+/**
+ * Infer column schema from data array
+ */
+function inferColumns(data: Record<string, any>[]): any[] {
+  if (!data || data.length === 0) return [];
+
+  const firstRow = data[0];
+  return Object.keys(firstRow).map(key => {
+    const value = firstRow[key];
+    let type = 'string';
+
+    if (typeof value === 'number') {
+      type = 'number';
+    } else if (value instanceof Date || !isNaN(Date.parse(value))) {
+      type = 'date';
+    } else if (typeof value === 'boolean') {
+      type = 'boolean';
+    }
+
+    return { name: key, type, nullable: false };
+  });
+}
+
+/**
+ * Extract dataset from old Widget format
+ */
+function extractDatasetFromWidget(widget: Widget): { name: string; data: any[]; columns: any[] } | null {
+  // Check for direct data array (old format)
+  let data = widget.props?.data || widget.props?.dataSet?.data || widget.props?.dataset?.data;
+
+  // Check for labels + datasets format (current format)
+  if (!data && widget.props?.labels && widget.props?.datasets) {
+    const labels = widget.props.labels;
+    const datasets = widget.props.datasets;
+
+    if (!Array.isArray(labels) || labels.length === 0 || !Array.isArray(datasets) || datasets.length === 0) {
+      return null;
+    }
+
+    // Convert labels + datasets into row-based data
+    // Format: [{ "Label": "Item1", "DatasetName1": value1, "DatasetName2": value2 }, ...]
+    data = labels.map((label: string, index: number) => {
+      const row: Record<string, any> = {
+        Label: label
+      };
+
+      datasets.forEach((ds: any) => {
+        const datasetName = ds.name || `Dataset ${ds.id || ''}`;
+        row[datasetName] = ds.dataPoints?.[index] ?? null;
+      });
+
+      return row;
+    });
+  }
+
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    return null;
+  }
+
+  const columns = inferColumns(data);
+  const name = widget.props?.title || widget.props?.name || `Dataset for ${widget.type} chart`;
+
+  return { name, data, columns };
+}
+
+/**
+ * Extract chart configuration from old Widget format
+ */
+function extractChartConfigFromWidget(widget: Widget, datasetId: string): any {
+  const props = widget.props || {};
+
+  // Map old widget type to new chart type
+  const chartTypeMap: Record<string, string> = {
+    'line': 'line',
+    'pie': 'pie',
+    'bar': 'bar',
+    'histogram': 'histogram',
+    'areachart': 'area',
+    'donut': 'donut',
+    'funnel': 'funnel',
+    'scatter': 'scatter',
+    'gauge': 'gauge',
+    'treemap': 'treemap',
+    'bubble': 'bubble',
+    'waterfall': 'waterfall',
+    'kpi': 'kpi'
+  };
+
+  const chartType = chartTypeMap[widget.type] || 'bar';
+
+  // Extract data mapping
+  const data_mapping: any = {};
+
+  // For labels + datasets format
+  if (props.labels && props.datasets) {
+    data_mapping.x = 'Label'; // We use 'Label' as the column name
+
+    // Y-axis: use dataset names
+    if (Array.isArray(props.datasets) && props.datasets.length > 0) {
+      data_mapping.y = props.datasets.map((ds: any) => ds.name || `Dataset ${ds.id || ''}`);
+    }
+  }
+
+  // Fallback to old format mappings
+  if (!data_mapping.x && (props.xAxisKey || props.xKey)) {
+    data_mapping.x = props.xAxisKey || props.xKey;
+  }
+
+  if (!data_mapping.y && (props.yAxisKey || props.yKey || props.dataKey)) {
+    const yKeys = props.yAxisKey || props.yKey || props.dataKey;
+    data_mapping.y = Array.isArray(yKeys) ? yKeys : [yKeys];
+  }
+
+  if (props.groupBy || props.categoryKey) {
+    data_mapping.groupBy = props.groupBy || props.categoryKey;
+  }
+
+  // For pie/donut charts
+  if (widget.type === 'pie' || widget.type === 'donut') {
+    data_mapping.category = props.categoryKey || props.nameKey || props.xKey || 'Label';
+    data_mapping.value = props.dataKey || props.valueKey || props.yKey || (props.datasets?.[0]?.name);
+  }
+
+  // Extract chart config (visual settings)
+  const chart_config: any = {
+    title: props.title || props.chartTitle,
+    subtitle: props.subtitle,
+    colors: props.datasets?.map((ds: any) => ds.color).filter(Boolean) || props.colors || (props.color ? [props.color] : undefined),
+    showLegend: props.showLegend !== false,
+    showGrid: props.showGrid !== false,
+    showTooltip: props.showTooltip !== false,
+    animation: props.animation !== false,
+    orientation: props.orientation,
+    stacked: props.stacked,
+    showDataLabels: props.showDataLabels || props.showValues,
+
+    // Line chart specific
+    strokeWidth: props.strokeWidth,
+    lineStyle: props.lineStyle,
+    showMarkers: props.showMarkers,
+    markerStyle: props.markerStyle,
+    markerSize: props.markerSize,
+
+    // Axis settings
+    showXAxis: props.showXAxis,
+    showYAxis: props.showYAxis,
+    xAxisTitle: props.xAxisTitle,
+    yAxisTitle: props.yAxisTitle,
+    showXAxisTitle: props.showXAxisTitle,
+    showYAxisTitle: props.showYAxisTitle,
+    yMin: props.yMin,
+    yMax: props.yMax,
+    yStep: props.yStep,
+  };
+
+  // Remove undefined values
+  Object.keys(chart_config).forEach(key => {
+    if (chart_config[key] === undefined) {
+      delete chart_config[key];
+    }
+  });
+
+  return {
+    name: props.title || props.name || `${chartType} Chart`,
+    description: props.description,
+    dataset_id: datasetId,
+    type: chartType,
+    data_mapping,
+    chart_config
+  };
+}
+
+/**
+ * Process widgets: Extract datasets/charts and save to DB, return updated widgets with chartIds
+ */
+async function processWidgetsForSave(widgets: any[], userId: string): Promise<DashboardWidget[]> {
+  console.log('🔄 Processing widgets for save. Total widgets:', widgets.length);
+  console.log('🔄 Widget types:', widgets.map(w => `${w.type}(${w.id})`).join(', '));
+
+  const processedWidgets: DashboardWidget[] = [];
+
+  for (const widget of widgets) {
+    // Check if this is an old Widget format that needs conversion
+    const isOldFormat = widget.props && !widget.chartId;
+    const isChartWidget = ['line', 'pie', 'bar', 'histogram', 'areachart', 'donut', 'funnel', 'scatter', 'gauge', 'treemap', 'bubble', 'waterfall', 'kpi'].includes(widget.type);
+
+    console.log(`\n🔍 Processing widget: ${widget.id}, type: ${widget.type}, isChartWidget: ${isChartWidget}, isOldFormat: ${isOldFormat}`);
+
+    if (isChartWidget && isOldFormat) {
+      console.log('🔎 Widget props structure:', JSON.stringify(widget.props, null, 2));
+
+      // Extract dataset
+      const datasetInfo = extractDatasetFromWidget(widget);
+
+      if (!datasetInfo) {
+        console.log('⚠️ extractDatasetFromWidget returned null for widget:', widget.id);
+        console.log('⚠️ Widget has props.data?', !!widget.props?.data);
+        console.log('⚠️ Widget has props.dataSet?.data?', !!widget.props?.dataSet?.data);
+        console.log('⚠️ Widget has props.dataset?.data?', !!widget.props?.dataset?.data);
+      }
+
+      if (datasetInfo) {
+        console.log('📊 Extracting dataset for widget:', widget.id, 'Type:', widget.type);
+        console.log('📊 Dataset info:', { name: datasetInfo.name, rowCount: datasetInfo.data.length });
+
+        // Save dataset to database
+        const { data: savedDataset, error: datasetError } = await supabase
+          .from('datasets')
+          .insert({
+            user_id: userId,
+            name: datasetInfo.name,
+            data: datasetInfo.data,
+            columns: datasetInfo.columns
+          })
+          .select()
+          .single();
+
+        if (datasetError || !savedDataset) {
+          console.error('❌ Error saving dataset:', datasetError);
+          // Skip this widget if dataset save fails
+          continue;
+        }
+
+        console.log('✅ Dataset saved successfully! ID:', savedDataset.id);
+
+        // Extract chart config
+        const chartConfig = extractChartConfigFromWidget(widget, savedDataset.id);
+        console.log('📈 Chart config extracted:', { name: chartConfig.name, type: chartConfig.type, datasetId: savedDataset.id });
+
+        // Save chart to database
+        const { data: savedChart, error: chartError } = await supabase
+          .from('charts')
+          .insert({
+            user_id: userId,
+            ...chartConfig
+          })
+          .select()
+          .single();
+
+        if (chartError || !savedChart) {
+          console.error('❌ Error saving chart:', chartError);
+          continue;
+        }
+
+        console.log('✅ Chart saved successfully! ID:', savedChart.id);
+
+        // Convert to new DashboardWidget format
+        processedWidgets.push({
+          id: widget.id,
+          type: 'chart',
+          chartId: savedChart.id,
+          position: {
+            x: widget.layout?.x || 0,
+            y: widget.layout?.y || 0,
+            w: widget.layout?.w || 6,
+            h: widget.layout?.h || 4
+          }
+        });
+      }
+    } else if (widget.chartId) {
+      // Already in new format with chartId
+      processedWidgets.push({
+        id: widget.id,
+        type: widget.type || 'chart',
+        chartId: widget.chartId,
+        position: widget.position || {
+          x: widget.layout?.x || 0,
+          y: widget.layout?.y || 0,
+          w: widget.layout?.w || 6,
+          h: widget.layout?.h || 4
+        },
+        overrides: widget.overrides
+      });
+    } else {
+      // Non-chart widget (text, image, header)
+      processedWidgets.push({
+        id: widget.id,
+        type: widget.type,
+        position: widget.position || {
+          x: widget.layout?.x || 0,
+          y: widget.layout?.y || 0,
+          w: widget.layout?.w || 6,
+          h: widget.layout?.h || 2
+        },
+        content: widget.content || widget.props?.content,
+        config: widget.config || widget.props
+      });
+    }
+  }
+
+  return processedWidgets;
+}
 
 // ============================================================================
 // ROUTES
@@ -178,14 +477,14 @@ dashboards.post('/', authMiddleware, async (c) => {
       return c.json({ error: 'Dashboard name is required' }, 400);
     }
 
-    // Validate widgets are in new format (must have chartId for chart widgets)
+    // Process widgets: extract and save datasets/charts if needed
+    let processedWidgets: DashboardWidget[] = [];
     if (widgets && Array.isArray(widgets)) {
-      for (const widget of widgets) {
-        if (widget.type === 'chart' && !widget.chartId) {
-          return c.json({
-            error: 'Invalid widget format. Chart widgets must have chartId. Please save charts first.'
-          }, 400);
-        }
+      try {
+        processedWidgets = await processWidgetsForSave(widgets, userId);
+      } catch (error) {
+        console.error('Error processing widgets:', error);
+        return c.json({ error: 'Failed to process dashboard widgets' }, 500);
       }
     }
 
@@ -195,7 +494,7 @@ dashboards.post('/', authMiddleware, async (c) => {
         user_id: userId,
         name,
         description,
-        widgets: widgets || [],
+        widgets: processedWidgets,
         layout_config: layout_config || { type: 'grid', columns: 12, rowHeight: 100 },
         theme: theme || {},
         global_filters: global_filters || [],
@@ -232,18 +531,19 @@ dashboards.put('/:id', authMiddleware, async (c) => {
     if (body.name !== undefined) updateData.name = body.name;
     if (body.description !== undefined) updateData.description = body.description;
 
-    // Validate widgets if provided
+    // Process widgets if provided
     if (body.widgets !== undefined) {
       if (Array.isArray(body.widgets)) {
-        for (const widget of body.widgets) {
-          if (widget.type === 'chart' && !widget.chartId) {
-            return c.json({
-              error: 'Invalid widget format. Chart widgets must have chartId. Please save charts first.'
-            }, 400);
-          }
+        try {
+          const processedWidgets = await processWidgetsForSave(body.widgets, userId);
+          updateData.widgets = processedWidgets;
+        } catch (error) {
+          console.error('Error processing widgets:', error);
+          return c.json({ error: 'Failed to process dashboard widgets' }, 500);
         }
+      } else {
+        updateData.widgets = body.widgets;
       }
-      updateData.widgets = body.widgets;
     }
 
     if (body.layout_config !== undefined) updateData.layout_config = body.layout_config;
