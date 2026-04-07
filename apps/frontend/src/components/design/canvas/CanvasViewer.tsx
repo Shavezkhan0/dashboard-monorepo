@@ -43,7 +43,7 @@ function CanvasViewer() {
 
     return (
         <div className="w-full flex-1 bg-gray-100 p-4 flex justify-center items-center overflow-auto">
-            <div className="bg-white shadow-lg relative w-full h-full">
+            <div className="bg-card shadow-lg relative w-full h-full">
                 <div className="w-full h-full relative overflow-auto">
                     <ResponsiveGridLayout
                         layouts={{ lg: widgets.map(w => w.layout) }}
@@ -64,8 +64,8 @@ function CanvasViewer() {
                                     key={widget.id}
                                     data-grid={widget.layout}
                                     className={clsx(
-                                        'bg-white',
-                                        'relative group border border-gray-200 shadow-sm'
+                                        'bg-card',
+                                        'relative group border border-border shadow-sm'
                                     )}
                                 >
                                     <div className="w-full h-full">

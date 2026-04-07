@@ -57,43 +57,43 @@ export default function HeaderSetting({ initialData, onUpdate, onClose }) {
         setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
     };
 
-    if (!headerData) return <div className="p-4 text-gray-500 dark:text-gray-400">Loading settings...</div>;
+    if (!headerData) return <div className="p-4 text-muted-foreground">Loading settings...</div>;
 
     return (
-        <div className="w-80 h-full bg-white dark:bg-gray-800 border-r border-gray-200 flex flex-col shadow-lg text-black dark:text-white">
+        <div className="w-80 h-full bg-background border-r border-gray-200 flex flex-col shadow-lg text-foreground">
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-2 border-b-2 border-gray-200">
                 <h2 className="text-lg font-semibold">Edit Header</h2>
-                <button onClick={onClose} className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-700 rounded-md"><X size={16} /></button>
+                <button onClick={onClose} className="p-2 text-foreground hover:bg-muted rounded-md"><X size={16} /></button>
             </div>
 
             {/* Settings Body */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {/* General Settings */}
-                <div className="border border-gray-200 dark:border-gray-600 rounded-lg">
+                <div className="border border-border rounded-lg">
                     <button className="flex items-center justify-between w-full p-3" onClick={() => toggleSection('general')}>
-                        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">General</h3>
-                        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.general ? 'rotate-180' : ''}`} />
+                        <h3 className="text-sm font-medium text-foreground">General</h3>
+                        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${expandedSections.general ? 'rotate-180' : ''}`} />
                     </button>
                     {expandedSections.general && (
                         <div className="p-4 border-t border-gray-200 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Header Title</label>
+                                <label className="block text-sm font-medium text-foreground mb-2">Header Title</label>
                                 <input
                                     type="text"
                                     value={headerData.title || ''}
                                     onChange={(e) => handleDataChange('title', e.target.value)}
-                                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-indigo-500"
+                                    className="w-full p-2 border border-border rounded-md text-sm focus:ring-2 focus:ring-indigo-500"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Logo</label>
+                                <label className="block text-sm font-medium text-foreground mb-2">Logo</label>
                                 <div className="flex items-center gap-4">
-                                    <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md flex items-center justify-center overflow-hidden">
+                                    <div className="w-16 h-16 bg-muted border border-border rounded-md flex items-center justify-center overflow-hidden">
                                         {headerData.logoUrl ? (
                                             <img src={headerData.logoUrl} alt="logo" className="w-full h-full object-contain" />
                                         ) : (
-                                            <ImageUp size={24} className="text-gray-400" />
+                                            <ImageUp size={24} className="text-muted-foreground" />
                                         )}
                                     </div>
                                     <div className="flex flex-col">
@@ -104,7 +104,7 @@ export default function HeaderSetting({ initialData, onUpdate, onClose }) {
                                             accept="image/*"
                                             onChange={handleLogoUpload}
                                         />
-                                        <label htmlFor="logo-upload" className="px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md cursor-pointer hover:bg-gray-50 dark:bg-gray-700">
+                                        <label htmlFor="logo-upload" className="px-3 py-1.5 bg-background border border-border text-sm font-medium rounded-md cursor-pointer hover:bg-muted">
                                             Upload
                                         </label>
                                          <button onClick={() => handleDataChange('logoUrl', '')} className="text-xs text-red-500 hover:underline mt-2 text-left">
@@ -118,17 +118,17 @@ export default function HeaderSetting({ initialData, onUpdate, onClose }) {
                 </div>
 
                 {/* Metrics Settings */}
-                <div className="border border-gray-200 dark:border-gray-600 rounded-lg">
+                <div className="border border-border rounded-lg">
                     <button className="flex items-center justify-between w-full p-3" onClick={() => toggleSection('metrics')}>
-                        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Metrics</h3>
+                        <h3 className="text-sm font-medium text-foreground">Metrics</h3>
                         <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.metrics ? 'rotate-180' : ''}`} />
                     </button>
                     {expandedSections.metrics && (
                         <div className="p-4 border-t border-gray-200 space-y-3">
                             {(headerData.metrics || []).map((metric, index) => (
-                                <div key={metric.id || index} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-600 space-y-2">
+                                <div key={metric.id || index} className="p-3 bg-muted rounded-md border border-border space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Metric {index + 1}</span>
+                                        <span className="text-sm font-medium text-muted-foreground">Metric {index + 1}</span>
                                         <button onClick={() => removeMetric(index)} className="p-1 text-red-500 hover:bg-red-100 rounded">
                                             <Trash2 size={14} />
                                         </button>
@@ -138,20 +138,20 @@ export default function HeaderSetting({ initialData, onUpdate, onClose }) {
                                         placeholder="Title"
                                         value={metric.title}
                                         onChange={(e) => handleMetricChange(index, 'title', e.target.value)}
-                                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm"
+                                        className="w-full p-2 border border-border rounded-md text-sm"
                                     />
                                     <input
                                         type="text"
                                         placeholder="Value"
                                         value={metric.value}
                                         onChange={(e) => handleMetricChange(index, 'value', e.target.value)}
-                                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm"
+                                        className="w-full p-2 border border-border rounded-md text-sm"
                                     />
                                 </div>
                             ))}
                             <button
                                 onClick={addMetric}
-                                className="w-full flex items-center justify-center gap-2 mt-2 p-2 text-sm text-indigo-600 bg-indigo-50 border-2 border-dashed border-indigo-200 rounded-md hover:bg-indigo-100"
+                                className="w-full flex items-center justify-center gap-2 mt-2 p-2 text-sm text-indigo-600 bg-muted border-2 border-dashed border-border rounded-md hover:bg-muted"
                             >
                                 <Plus size={16} /> Add Metric
                             </button>

@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 // Dynamic import with a loading fallback
 const ApexChart = dynamic(() => import('react-apexcharts'), {
     ssr: false,
-    loading: () => <div className="flex items-center justify-center h-full text-gray-500">Loading Treemap...</div>,
+    loading: () => <div className="flex items-center justify-center h-full text-muted-foreground">Loading Treemap...</div>,
 });
 
 function TreemapWidget({
@@ -255,7 +255,7 @@ function TreemapWidget({
 
     // Render logic with a check for both mounting and data
     return (
-        <div className="w-full h-full min-h-[200px] p-4 bg-white dark:bg-gray-800 rounded-lg">
+        <div className="w-full h-full min-h-[200px] p-4 bg-card rounded-lg">
             {isMounted && transformedData && transformedData.length > 0 ? (
                 <ApexChart
                     options={options}

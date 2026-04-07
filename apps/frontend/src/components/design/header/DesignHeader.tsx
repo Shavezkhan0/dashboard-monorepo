@@ -357,8 +357,8 @@ export default function DesignHeader() {
         flex items-center justify-center gap-1
        px-[4px] py-[2px]
        border-2 border-indigo-300
-       text-indigo-600
-       bg-blue-50
+       text-indigo-600 dark:text-indigo-400
+       bg-blue-50 dark:bg-blue-900/20
        rounded-md
        text-sm font-medium
        hover:border-transparent
@@ -369,20 +369,20 @@ export default function DesignHeader() {
 
     return (
         <>
-            <header className="flex justify-between items-center px-3 py-1 border-b-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 z-10">
+            <header className="flex justify-between items-center px-3 py-1 border-b-2 border-border bg-background z-10">
                 <div className="ml-4">
-                    <Image
+                    {/* <Image
                         className="cursor-pointer"
                         title="Indian Navy"
                         alt="logo"
                         src="/logo.png"
                         width={35}
                         height={35}
-                    />
+                    /> */}
                 </div>
 
                 <div className="flex items-center space-x-4">
-                    <h3 className="text-sm font-medium text-indigo-600">Your Project:</h3>
+                    <h3 className="text-sm font-medium text-indigo-600 dark:text-indigo-400">Your Project:</h3>
                     {isEditing ? (
                         <input
                             ref={inputRef}
@@ -391,12 +391,12 @@ export default function DesignHeader() {
                             onChange={(e) => setProjectName(e.target.value)}
                             onBlur={handleNameSave}
                             onKeyDown={handleKeyDown}
-                            className="px-[4px] py-[2px] border-2 border-indigo-300 text-indigo-600 bg-blue-50 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="px-[4px] py-[2px] border-2 border-indigo-300 text-indigo-600 dark:text-indigo-400 bg-blue-50 dark:bg-blue-900/20 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400"
                             maxLength={50}
                         />
                     ) : (
                         <div
-                            className="flex items-center justify-center gap-1 px-[4px] py-[2px] border-2 border-indigo-300 text-indigo-600 bg-blue-50 rounded-md text-sm font-medium cursor-pointer hover:bg-indigo-50 transition-colors"
+                            className="flex items-center justify-center gap-1 px-[4px] py-[2px] border-2 border-indigo-300 text-indigo-600 dark:text-indigo-400 bg-blue-50 dark:bg-blue-900/20 rounded-md text-sm font-medium cursor-pointer hover:bg-indigo-50 dark:hover:bg-blue-900/30 transition-colors"
                             onClick={() => setIsEditing(true)}
                             title="Click to edit project name"
                         >
@@ -424,28 +424,28 @@ export default function DesignHeader() {
                         <button className={baseBtnClass}>
                             <BiExport size={18} /> Export
                         </button>
-                        <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-100">
+                        <div className="absolute right-0 mt-2 w-56 bg-background border border-border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-100">
                             <button
                                 onClick={handleShareLink}
-                                className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-md"
+                                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted rounded-t-md"
                             >
                                 Publish (Create Link To Share)
                             </button>
                             <button
                                 onClick={() => handleExportToCSV('single')}
-                                className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-md"
+                                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted rounded-t-md"
                             >
                                 Export Dashboard Layout (CSV)
                             </button>
                             <button
                                 onClick={() => handleExportToCSV('separate')}
-                                className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted"
                             >
                                 Export All Charts Data (CSV)
                             </button>
                             <button
                                 onClick={handleDownloadPBIT}
-                                className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted rounded-b-md disabled:opacity-50 disabled:cursor-not-allowed"
                                 disabled={isExporting || widgets.length === 0}
                             >
                                 {isExporting ? 'Generating...' : 'Export to Power BI (.pbit)'}
@@ -467,13 +467,13 @@ export default function DesignHeader() {
             <Dialog.Root open={shareDialogOpen} onOpenChange={handleShareDialogClose}>
                 <Dialog.Portal>
                     <Dialog.Overlay className="fixed inset-0 bg-black/50 z-40" />
-                    <Dialog.Content className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-[500px] max-w-[90vw]">
+                    <Dialog.Content className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-background rounded-lg shadow-2xl w-[500px] max-w-[90vw]">
                         <div className="flex justify-between items-center p-4 border-b">
-                            <Dialog.Title className="text-xl text-black dark:text-white font-semibold">
+                            <Dialog.Title className="text-xl text-foreground font-semibold">
                                 Share Dashboard
                             </Dialog.Title>
                             <Dialog.Close asChild>
-                                <button className="p-1 rounded-full text-black dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700" aria-label="Close">
+                                <button className="p-1 rounded-full text-foreground hover:bg-muted" aria-label="Close">
                                     <X size={20} />
                                 </button>
                             </Dialog.Close>
@@ -483,7 +483,7 @@ export default function DesignHeader() {
                             {shareStatus === 'loading' && (
                                 <div className="flex items-center justify-center py-8">
                                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-                                    <span className="ml-3 text-gray-600 dark:text-gray-400">Creating shareable link...</span>
+                                    <span className="ml-3 text-muted-foreground">Creating shareable link...</span>
                                 </div>
                             )}
 
@@ -495,7 +495,7 @@ export default function DesignHeader() {
                                     </div>
 
                                     <div className="space-y-3">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        <label className="block text-sm font-medium text-foreground">
                                             Shareable Link:
                                         </label>
                                         <div className="flex items-center space-x-2">
@@ -503,7 +503,7 @@ export default function DesignHeader() {
                                                 type="text"
                                                 value={shareLink}
                                                 readOnly
-                                                className="flex-1 text-black dark:text-white px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                className="flex-1 text-foreground px-3 py-2 border border-border rounded-md bg-muted text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                             />
                                             <button
                                                 onClick={handleCopyLink}

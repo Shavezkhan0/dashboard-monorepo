@@ -26,9 +26,9 @@ function KpiWidget({
     comparisonColor = 'auto' // 'auto' uses semantic colors based on direction
 }) {
     const ComparisonIcon = {
-        increase: <ArrowUpRight size={16} className="text-green-500" />,
-        decrease: <ArrowDownRight size={16} className="text-red-500" />,
-        neutral: <Minus size={16} className="text-gray-500" />
+        increase: <ArrowUpRight size={16} className="text-green-500 dark:text-green-400" />,
+        decrease: <ArrowDownRight size={16} className="text-red-500 dark:text-red-400" />,
+        neutral: <Minus size={16} className="text-muted-foreground" />
     }[comparisonDirection];
 
     const getComparisonColor = () => {
@@ -42,7 +42,7 @@ function KpiWidget({
 
     return (
         <div 
-            className="w-full h-full p-4 flex flex-col justify-between rounded-lg"
+            className="w-full h-full p-4 flex flex-col justify-between rounded-lg bg-card"
             style={{ backgroundColor }}
         >
             {/* Title */}
@@ -72,7 +72,7 @@ function KpiWidget({
                         {ComparisonIcon}
                         {Math.abs(comparisonValue)}%
                     </span>
-                    <span className="text-gray-500 truncate">{comparisonLabel}</span>
+                    <span className="text-muted-foreground truncate">{comparisonLabel}</span>
                 </div>
             )}
         </div>

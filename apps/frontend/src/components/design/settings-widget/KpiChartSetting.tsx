@@ -126,29 +126,29 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
 
     if (!mounted || !kpiData) {
         return (
-            <div className="w-80 h-full bg-white border-r border-gray-200 flex items-center justify-center">
-                <div className="text-gray-500">Loading...</div>
+            <div className="w-80 h-full bg-background border-r border-gray-200 flex items-center justify-center">
+                <div className="text-muted-foreground">Loading...</div>
             </div>
         );
     }
 
     return (
-        <div className="pr-2 h-full bg-white border-r border-gray-200 flex flex-col shadow-lg">
-            <div className="flex items-center justify-between px-4 py-2 border-b-2 border-gray-200">
-                <h2 className="text-lg font-semibold text-black">Edit KPI Widget</h2>
-                <button onClick={onClose} className="p-2 text-gray-600 hover:bg-gray-100 rounded-md">
+        <div className="pr-2 h-full bg-background border-r border-border flex flex-col shadow-lg">
+            <div className="flex items-center justify-between px-4 py-2 border-b-2 border-border">
+                <h2 className="text-lg font-semibold text-foreground">Edit KPI Widget</h2>
+                <button onClick={onClose} className="p-2 text-muted-foreground hover:bg-muted rounded-md">
                     <X size={16} />
                 </button>
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-gray-200">
+            <div className="flex border-b border-border">
                 <button
                     onClick={() => setActiveTab('data')}
                     className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all
                     ${activeTab === 'data'
-                            ? 'text-blue-600 bg-blue-50 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r after:from-blue-800 after:via-indigo-700 after:to-purple-600 after:content-[""]'
-                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}
+                            ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r after:from-blue-800 after:via-indigo-700 after:to-purple-600 after:content-[""]'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'}
                     `}
                 >
                     Data
@@ -158,8 +158,8 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
                     onClick={() => setActiveTab('customize')}
                     className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all
                     ${activeTab === 'customize'
-                            ? 'text-blue-600 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r after:from-blue-800 bg-blue-50 after:via-indigo-700 after:to-purple-600 after:content-[""]'
-                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}
+                            ? 'text-blue-600 dark:text-blue-400 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r after:from-blue-800 bg-blue-50 dark:bg-blue-900/20 after:via-indigo-700 after:to-purple-600 after:content-[""]'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'}
                     `}
                 >
                     Customize
@@ -171,19 +171,19 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
                     <div className="p-4 space-y-4">
                         {/* KPI Title */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">KPI Title</label>
+<label className="block text-sm font-medium text-foreground mb-2">KPI Title</label>
                             <input
                                 type="text"
                                 value={kpiData.title}
                                 onChange={handleTitleChange}
-                                className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
+                                className="w-full p-2 border border-border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-foreground bg-background"
                                 placeholder="Enter KPI title"
                             />
                         </div>
 
                         {/* Data Source Selection */}
-                        <div className="border border-gray-200 rounded-lg p-2 bg-gray-50">
-                            <h4 className="font-medium text-gray-700 mb-3 flex items-center space-x-2">
+                        <div className="border border-border rounded-lg p-2 bg-muted">
+                            <h4 className="font-medium text-muted-foreground mb-3 flex items-center space-x-2">
                                 <Database size={16} className="text-indigo-600" />
                                 <span>Data Source</span>
                             </h4>
@@ -191,11 +191,11 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
                             {storedDataSets.length > 0 ? (
                                 <div className="space-y-2">
                                     {selectedDataSet && (
-                                        <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-3">
+                                        <div className="bg-muted border border-border rounded-md p-3 mb-3">
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <div className="font-medium text-green-800 text-sm">{selectedDataSet.name}</div>
-                                                    <div className="text-xs text-green-600">
+                                                    <div className="font-medium text-foreground text-sm">{selectedDataSet.name}</div>
+                                                    <div className="text-xs text-muted-foreground">
                                                         {selectedDataSet.rowCount} rows • {selectedDataSet.headers.length} columns
                                                     </div>
                                                 </div>
@@ -205,7 +205,7 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
                                                         setIsUsingStoredData(false);
                                                         setPrimaryColumn('');
                                                     }}
-                                                    className="text-green-600 hover:text-green-800 text-sm underline"
+                                                    className="text-muted-foreground hover:text-foreground text-sm underline"
                                                 >
                                                     Change
                                                 </button>
@@ -219,10 +219,10 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
                                                 <button
                                                     key={dataSet.id}
                                                     onClick={() => handleDataSetSelect(dataSet)}
-                                                    className="w-full text-left p-2 text-sm bg-white border border-gray-200 rounded hover:bg-indigo-50 hover:border-indigo-300 transition-colors"
+                                                    className="w-full text-left p-2 text-sm bg-background border border-gray-200 rounded hover:bg-indigo-500/10 hover:border-indigo-300 transition-colors"
                                                 >
-                                                    <div className="font-medium text-gray-800">{dataSet.name}</div>
-                                                    <div className="text-xs text-gray-500">
+                                                    <div className="font-medium text-foreground">{dataSet.name}</div>
+                                                    <div className="text-xs text-muted-foreground">
                                                         {dataSet.rowCount} rows • {dataSet.headers.join(', ').substring(0, 30)}...
                                                     </div>
                                                 </button>
@@ -231,8 +231,8 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
                                     )}
                                 </div>
                             ) : (
-                                <div className="text-center py-4 text-gray-500">
-                                    <Database size={24} className="mx-auto mb-2 text-gray-300" />
+                                <div className="text-center py-4 text-muted-foreground">
+                                    <Database size={24} className="mx-auto mb-2" />
                                     <p className="text-sm">No datasets available</p>
                                     <p className="text-xs">Import data using the "Data" tab first</p>
                                 </div>
@@ -242,17 +242,17 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
                         {/* Primary Metric Configuration */}
                         {selectedDataSet && (
                             <div className="space-y-4">
-                                <div className="border border-gray-200 rounded-lg p-4 bg-white">
-                                    <h5 className="font-medium text-gray-700 mb-3">Primary Metric</h5>
+                                <div className="border border-border rounded-lg p-4 bg-muted">
+                                    <h5 className="font-medium text-muted-foreground mb-3">Primary Metric</h5>
                                     
                                     {/* Field Selection in Grid Layout */}
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-600 mb-2">Value Column</label>
+                                            <label className="block text-sm font-medium text-muted-foreground mb-2">Value Column</label>
                                             <select
                                                 value={primaryColumn}
                                                 onChange={(e) => setPrimaryColumn(e.target.value)}
-                                                className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black"
+                                                className="w-full p-2 border border-border rounded text-sm bg-background text-foreground"
                                             >
                                                 <option value="">Select column...</option>
                                                 {availableColumns.map(column => {
@@ -267,11 +267,11 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-600 mb-2">Calculation Method</label>
+                                            <label className="block text-sm font-medium text-muted-foreground mb-2">Calculation Method</label>
                                             <select
                                                 value={aggregationType}
                                                 onChange={(e) => setAggregationType(e.target.value)}
-                                                className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black"
+                                                className="w-full p-2 border border-border rounded text-sm bg-background text-foreground"
                                             >
                                                 <option value="sum">Sum</option>
                                                 <option value="average">Average</option>
@@ -284,12 +284,12 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
 
                                     {/* Value Preview */}
                                     {primaryColumn && (
-                                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-3">
-                                            <div className="text-sm font-medium text-blue-800">Calculated Value</div>
-                                            <div className="text-2xl font-bold text-blue-900 mt-1">
+                                        <div className="bg-muted border border-border rounded-lg p-3 mt-3">
+                                            <div className="text-sm font-medium text-foreground">Calculated Value</div>
+                                            <div className="text-2xl font-bold text-foreground mt-1">
                                                 {kpiData.primaryValuePrefix || ''}{calculateValue().toLocaleString()}{kpiData.primaryValueSuffix || ''}
                                             </div>
-                                            <div className="text-xs text-blue-600 mt-1">
+                                            <div className="text-xs text-muted-foreground mt-1">
                                                 From {selectedDataSet.rowCount} rows
                                             </div>
                                         </div>
@@ -310,9 +310,9 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
 
                         {/* Current Configuration Summary */}
                         {isUsingStoredData && kpiData.primaryValue !== undefined && (
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                                <h5 className="font-medium text-blue-800 text-sm mb-2">Current Configuration</h5>
-                                <div className="text-xs text-blue-700 space-y-1">
+                            <div className="bg-muted border border-border rounded-lg p-3">
+                                <h5 className="font-medium text-foreground text-sm mb-2">Current Configuration</h5>
+                                <div className="text-xs text-muted-foreground space-y-1">
                                     <div>📊 Data Source: {selectedDataSet?.name}</div>
                                     <div>📈 Value Column: {primaryColumn}</div>
                                     <div>🔢 Calculation: {aggregationType}</div>
@@ -354,7 +354,7 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
                                                 type="text"
                                                 value={kpiData.title}
                                                 onChange={handleTitleChange}
-                                                className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
+                                                className="w-full p-2 border border-border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-foreground bg-background"
                                                 placeholder="KPI title"
                                             />
                                         </div>
@@ -381,7 +381,7 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
                                                 type="text"
                                                 value={kpiData.primaryValuePrefix || ''}
                                                 onChange={e => setKpiData(prev => ({ ...prev, primaryValuePrefix: e.target.value }))}
-                                                className="w-full p-2 border border-gray-300 rounded-md text-sm text-black"
+                                                className="w-full p-2 border border-border rounded-md text-sm text-foreground bg-background"
                                                 placeholder="$"
                                             />
                                         </div>
@@ -391,7 +391,7 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
                                                 type="text"
                                                 value={kpiData.primaryValueSuffix || ''}
                                                 onChange={e => setKpiData(prev => ({ ...prev, primaryValueSuffix: e.target.value }))}
-                                                className="w-full p-2 border border-gray-300 rounded-md text-sm text-black"
+                                                className="w-full p-2 border border-border rounded-md text-sm text-foreground bg-background"
                                                 placeholder="%"
                                             />
                                         </div>
@@ -430,27 +430,27 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
                                                     type="text"
                                                     value={kpiData.comparisonLabel || ''}
                                                     onChange={e => setKpiData(prev => ({ ...prev, comparisonLabel: e.target.value }))}
-                                                    className="w-full p-2 border border-gray-300 rounded-md text-sm text-black"
+                                                    className="w-full p-2 border border-border rounded-md text-sm text-foreground bg-background"
                                                     placeholder="vs last month"
                                                 />
                                             </div>
                                             <div className="grid grid-cols-2 gap-2">
                                                 <div>
                                                     <label className="block text-xs text-gray-500 mb-1">Value (%)</label>
-                                                    <input
-                                                        type="number"
-                                                        value={kpiData.comparisonValue || ''}
-                                                        onChange={e => setKpiData(prev => ({ ...prev, comparisonValue: parseFloat(e.target.value) || 0 }))}
-                                                        className="w-full p-2 border border-gray-300 rounded text-sm text-black"
-                                                        step="0.1"
-                                                    />
+                                    <input
+                                        type="number"
+                                        value={kpiData.comparisonValue || ''}
+                                        onChange={e => setKpiData(prev => ({ ...prev, comparisonValue: parseFloat(e.target.value) || 0 }))}
+                                        className="w-full p-2 border border-gray-300 rounded text-sm bg-background text-foreground"
+                                        step="0.1"
+                                    />
                                                 </div>
                                                 <div>
                                                     <label className="block text-xs text-gray-500 mb-1">Direction</label>
                                                     <select
                                                         value={kpiData.comparisonDirection || 'neutral'}
                                                         onChange={e => setKpiData(prev => ({ ...prev, comparisonDirection: e.target.value }))}
-                                                        className="w-full p-2 border border-gray-300 rounded text-sm text-black"
+                                                        className="w-full p-2 border border-gray-300 rounded text-sm bg-background text-foreground"
                                                     >
                                                         <option value="increase">Increase</option>
                                                         <option value="decrease">Decrease</option>
@@ -482,7 +482,7 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
                                                 type="color"
                                                 value={kpiData.backgroundColor || '#ffffff'}
                                                 onChange={e => setKpiData(prev => ({ ...prev, backgroundColor: e.target.value }))}
-                                                className="w-full h-8 border border-gray-300 rounded"
+                                                className="w-full h-8 border border-border rounded bg-background"
                                             />
                                         </div>
                                         <div>
@@ -491,7 +491,7 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
                                                 type="color"
                                                 value={kpiData.titleColor || '#6B7280'}
                                                 onChange={e => setKpiData(prev => ({ ...prev, titleColor: e.target.value }))}
-                                                className="w-full h-8 border border-gray-300 rounded"
+                                                className="w-full h-8 border border-border rounded bg-background"
                                             />
                                         </div>
                                     </div>
@@ -501,7 +501,7 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
                                             type="color"
                                             value={kpiData.valueColor || '#1F2937'}
                                             onChange={e => setKpiData(prev => ({ ...prev, valueColor: e.target.value }))}
-                                            className="w-full h-8 border border-gray-300 rounded"
+                                            className="w-full h-8 border border-border rounded bg-background"
                                         />
                                     </div>
                                 </div>
@@ -511,7 +511,7 @@ const KpiChartSetting = ({ initialData, onUpdate, onClose }) => {
                 )}
             </div>
 
-            <div className="p-4 border-t border-gray-200 bg-gray-50">
+            <div className="p-4 border-t border-border bg-muted">
                 <button onClick={() => onUpdate && onUpdate(kpiData)} className="w-full py-2 px-3 bg-blue-50 border-2 border-indigo-300 text-indigo-600 rounded-md text-sm font-medium transition-all duration-200 hover:text-white hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600">
                     Save Changes
                 </button>

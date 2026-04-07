@@ -56,7 +56,7 @@ export default function Sidebar() {
     };
 
     return (
-        <div className="relative w-[320px] h-[94vh] bg-white dark:bg-gray-800 border-r-2 border-gray-300 dark:border-gray-600 overflow-hidden">
+        <div className="relative w-[320px] h-[94vh] bg-background border-r-2 border-border overflow-hidden">
 
             <div className="absolute top-0 left-0 w-full h-full transition-transform duration-300 ease-in-out">
                 {/* Show AI Panel */}
@@ -66,7 +66,7 @@ export default function Sidebar() {
                         <div className='px-3 pt-2 flex gap-5 item-center justify-between'>
                             <button
                                 onClick={() => setSelectedAi(false)}
-                                className="p-2 mb-3 text-black dark:text-white bg-gray-200 dark:bg-gray-700 rounded text-xs cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-600"
+                                className="p-2 mb-3 text-foreground bg-muted rounded text-xs cursor-pointer hover:bg-muted/80"
                             >
                                 ← Back
                             </button>
@@ -192,12 +192,12 @@ export default function Sidebar() {
                         )}
                     </div>
                 ) : (
-                    <aside className="w-full h-full border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto">
+                    <aside className="w-full h-full border-r border-border bg-background overflow-y-auto">
                         {/* Main Element List */}
                         <div className='px-3 pt-2 w-full grid grid-cols-1 gap-2 justify-center item-center rounded'>
                             <button
                                 onClick={() => setSelectedAi(true)}
-                                className={`p-2 text-black dark:text-white bg-gray-100 dark:bg-gray-700 rounded text-xs cursor-pointer hover:bg-white dark:hover:bg-gray-600 hover:border hover:border-2 hover:border-gray hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 hover:text-white`}>
+                                className={`p-2 text-foreground bg-muted rounded text-xs cursor-pointer hover:bg-muted/80 hover:border hover:border-2 hover:border-gray bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 text-white`}>
                                 Create With Ai
                             </button>
                         </div>
@@ -209,10 +209,10 @@ export default function Sidebar() {
                                 <div
                                     key={index}
                                     onClick={() => handleElementClick(element)}
-                                    className="flex flex-col justify-center items-center py-2 rounded-sm border cursor-pointer group bg-white dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-indigo-900 border-gray-200 dark:border-gray-700"
+                                    className="flex flex-col justify-center items-center py-2 rounded-sm border cursor-pointer group bg-card hover:bg-indigo-50 dark:hover:bg-indigo-900 border-border"
                                 >
                                     <div className="text-indigo-600 dark:text-indigo-400 text-2xl">{element.icon}</div>
-                                    <div className="text-[13px] font-medium text-center text-gray-700 dark:text-gray-300">{element.name}</div>
+                                    <div className="text-[13px] font-medium text-center text-foreground">{element.name}</div>
                                 </div>
                             ))}
                         </div>
@@ -224,11 +224,11 @@ export default function Sidebar() {
             <Dialog.Root open={popupOpen} onOpenChange={handlePopupClose}>
                 <Dialog.Portal>
                     <Dialog.Overlay className="fixed inset-0 bg-black/50 z-40 " />
-                    <Dialog.Content className="fixed top-1/2 left-1/2 overflow-y-auto z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-[40vw]">
-                        <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
-                            <Dialog.Title className="text-xl text-black dark:text-white font-semibold">{selectedOption?.name}</Dialog.Title>
+                    <Dialog.Content className="fixed top-1/2 left-1/2 overflow-y-auto z-50 transform -translate-x-1/2 -translate-y-1/2 bg-background rounded-lg shadow-2xl w-[40vw]">
+                        <div className="flex justify-between items-center p-4 border-b border-border">
+                            <Dialog.Title className="text-xl text-foreground font-semibold">{selectedOption?.name}</Dialog.Title>
                             <Dialog.Close asChild>
-                                <button className="p-1 rounded-full text-black dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700" aria-label="Close"><X size={20} /></button>
+                                <button className="p-1 rounded-full text-foreground hover:bg-muted" aria-label="Close"><X size={20} /></button>
                             </Dialog.Close>
                         </div>
                         <div className="p-6 overflow-y-auto max-h-[80vh]">

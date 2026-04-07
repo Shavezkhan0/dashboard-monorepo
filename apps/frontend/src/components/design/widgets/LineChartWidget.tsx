@@ -252,7 +252,7 @@ function LineChartWidget({
     };
 
     return (
-        <div className="w-full h-full min-h-[200px] p-4 bg-white dark:bg-gray-800 rounded-lg">
+        <div className="w-full h-full min-h-[200px] p-4 bg-card rounded-lg">
             <Line data={data} options={options} />
         </div>
     );

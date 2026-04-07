@@ -343,7 +343,7 @@ function PieChartWidget({
             {/* Custom title positioned like Power BI */}
             {showTitle && title && (
                 <div className="absolute top-0 left-0 z-10">
-                    <h3 className="text-xm font-semibold text-gray-800 dark:text-gray-100 bg-white/90 dark:bg-gray-800/90 px-1 rounded">
+                    <h3 className="text-xm font-semibold text-card-foreground bg-card/90 px-1 rounded">
                         {title}
                     </h3>
                 </div>

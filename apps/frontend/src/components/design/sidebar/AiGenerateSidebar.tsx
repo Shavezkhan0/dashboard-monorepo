@@ -86,24 +86,24 @@ export default function AiGenerateSidebar() {
   // };
 
   return (
-    <div className="w-[305px] bg-white border border-gray-200 rounded-lg shadow p-4 m-1">
+    <div className="w-[305px] bg-background border border-gray-200 rounded-lg shadow p-4 m-1">
       <div className="flex justify-between items-center mb-2">
-        <h2 className="text-sm font-semibold text-gray-700">Write A Prompt</h2>
+        <h2 className="text-sm font-semibold text-foreground">Write A Prompt</h2>
       </div>
 
-      <div className="w-full bg-gray-100 rounded-md px-3 py-2 mb-3 flex justify-start gap-2">
+      <div className="w-full bg-muted rounded-md px-3 py-2 mb-3 flex justify-start gap-2">
         <HiRectangleGroup className="text-indigo-600" />
-        <span className="text-sm font-medium text-gray-700">Create Dashboard Screen</span>
+        <span className="text-sm font-medium text-foreground">Create Dashboard Screen</span>
       </div>
 
       <textarea
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
         placeholder="Enter your prompt here..."
-        className="w-full h-28 text-black border border-gray-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+        className="w-full h-28 text-foreground bg-background border border-gray-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
       />
 
-      <div className="flex justify-between text-xs text-gray-500 mt-1">
+      <div className="flex justify-between text-xs text-muted-foreground mt-1">
         {!isValid && <span className="text-red-500">Min words: {minWords}</span>}
         <span>{wordCount}/5000 words</span>
       </div>
@@ -114,13 +114,13 @@ export default function AiGenerateSidebar() {
         className={`w-full hover:text-white
          px-[4px] py-[4px] border-2 border-indigo-300
         
-        bg-blue-50
+        bg-muted
         rounded-md
         text-sm font-medium
         transition-all duration-200
         hover:text-white ${isValid && !loading
             ? "text-indigo-600 hover:bg-indigo-800 hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600"
-            : "bg-gray-400 cursor-not-allowed text-gray"
+            : "bg-muted-foreground/30 cursor-not-allowed text-muted-foreground"
           }`}
       >
         {loading ? "Generating..." : "Create Screen"}
@@ -128,7 +128,7 @@ export default function AiGenerateSidebar() {
 
       <div className="mt-2 max-h-[50vh] overflow-y-auto">
         {result && (
-          <div className="mt-4 p-2 border rounded-md bg-gray-50 text-sm text-black whitespace-pre-wrap">
+          <div className="mt-4 p-2 border rounded-md bg-muted text-sm text-foreground whitespace-pre-wrap">
             {result}
           </div>
         )}

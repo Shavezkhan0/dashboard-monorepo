@@ -30,7 +30,7 @@ export default function DesignPage({ params }: DesignPageProps) {
 
     return (
         <CanvasProvider dashboardId={dashboardId} client={client}>
-            <main className="flex flex-col h-screen ">
+            <main className="flex flex-col h-screen bg-background text-foreground">
                 <DesignHeader />
                 <div className="flex flex-1 overflow-hidden">
                     <Sidebar />

@@ -113,12 +113,12 @@ const GetData = ({ onClose }: { onClose: () => void }) => {
                 {file ? (
                     <div className="space-y-4 p-4 border bg-gray-100 rounded-lg">
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700">Dataset Name</label>
+                            <label className="block text-sm font-medium text-foreground">Dataset Name</label>
                             <input
                                 type="text"
                                 value={dataSetName}
                                 onChange={(e) => setDataSetName(e.target.value)}
-                                className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2  text-black focus:ring-indigo-500"
+                                className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2  text-foreground focus:ring-indigo-500"
                                 placeholder="Enter a name for this dataset"
                             />
                         </div>
@@ -137,10 +137,10 @@ const GetData = ({ onClose }: { onClose: () => void }) => {
                         </div>
 
                         {dataPreview && dataPreview.data && dataPreview.data.length > 0 && (
-                            <div className="overflow-x-auto  rounded-md border border-gray-300 bg-white text-black">
+                            <div className="overflow-x-auto  rounded-md border border-gray-300 bg-background text-foreground">
                                 <table className="min-w-full text-xs">
                                     <thead>
-                                        <tr className="bg-gray-200 text-gray-700 uppercase">
+                                        <tr className="bg-gray-200 text-foreground uppercase">
                                             {dataPreview.meta.fields.map((field: any) => (
                                                 <th key={field} className="px-4 py-2 text-left">{field}</th>
                                             ))}
@@ -148,7 +148,7 @@ const GetData = ({ onClose }: { onClose: () => void }) => {
                                     </thead>
                                     <tbody>
                                         {dataPreview.data.map((row: any, index: number) => (
-                                            <tr key={index} className="border-t border-gray-200 hover:bg-gray-50">
+                                            <tr key={index} className="border-t border-gray-200 hover:bg-muted">
                                                 {dataPreview.meta.fields.map((field: any) => (
                                                     <td key={field} className="px-4 py-2">{String(row[field])}</td>
                                                 ))}
@@ -156,7 +156,7 @@ const GetData = ({ onClose }: { onClose: () => void }) => {
                                         ))}
                                     </tbody>
                                 </table>
-                                <div className="px-4 py-2 bg-gray-50 text-xs text-gray-500 border-t">
+                                <div className="px-4 py-2 bg-muted text-xs text-muted-foreground border-t">
                                     Showing preview (first 5 rows of {dataPreview.data.length} total rows)
                                 </div>
                             </div>
@@ -173,7 +173,7 @@ const GetData = ({ onClose }: { onClose: () => void }) => {
                 ) : (
                     <label
                         htmlFor='csv-upload-dialog'
-                        className='flex flex-col items-center justify-center py-6 px-4 text-sm font-medium text-gray-600 border-2 border-dashed border-gray-300 rounded-md cursor-pointer hover:bg-gray-50 transition-colors'
+                        className='flex flex-col items-center justify-center py-6 px-4 text-sm font-medium text-muted-foreground border-2 border-dashed border-border rounded-md cursor-pointer hover:bg-muted transition-colors'
                     >
                         <UploadCloud size={32} className="text-gray-400 mb-2" />
                         <span>Click or drag file to upload</span>
@@ -206,7 +206,7 @@ const GetData = ({ onClose }: { onClose: () => void }) => {
                             <div className="space-y-3">
                                 <div className="flex items-center space-x-2">
                                     <Server size={16} className="text-blue-500" />
-                                    <h4 className="font-medium text-gray-700">From Database</h4>
+                                    <h4 className="font-medium text-foreground">From Database</h4>
                                     <span className="text-xs text-gray-500 bg-blue-50 px-2 py-1 rounded-full">
                                         {databaseDatasets.length}
                                     </span>
@@ -255,11 +255,11 @@ const GetData = ({ onClose }: { onClose: () => void }) => {
                                         </div>
 
                                         {expandedDataSet === dataSet.id && (
-                                            <div className="border-t border-blue-200 p-4 bg-white">
-                                                <div className="overflow-x-auto rounded-md border border-gray-200 bg-white">
+                                            <div className="border-t border-blue-200 p-4 bg-muted">
+                                                <div className="overflow-x-auto rounded-md border border-border bg-background">
                                                     <table className="min-w-full text-xs">
                                                         <thead>
-                                                            <tr className="bg-gray-100 text-gray-700 uppercase">
+                                                            <tr className="bg-gray-100 text-foreground uppercase">
                                                                 {dataSet.headers.map((header: any) => (
                                                                     <th key={header} className="px-4 py-2 text-left">{header}</th>
                                                                 ))}
@@ -267,15 +267,15 @@ const GetData = ({ onClose }: { onClose: () => void }) => {
                                                         </thead>
                                                         <tbody>
                                                             {dataSet.data.slice(0, 5).map((row: any, index: number) => (
-                                                                <tr key={index} className="border-t border-gray-200 hover:bg-gray-50">
+                                                                <tr key={index} className="border-t border-gray-200 hover:bg-muted">
                                                                     {dataSet.headers.map((header: any) => (
-                                                                        <td key={header} className="px-4 py-2 text-black">{String(row[header])}</td>
+                                                                        <td key={header} className="px-4 py-2 text-foreground">{String(row[header])}</td>
                                                                     ))}
                                                                 </tr>
                                                             ))}
                                                         </tbody>
                                                     </table>
-                                                    <div className="px-4 py-2 bg-gray-50 text-xs text-gray-500 border-t">
+                                                    <div className="px-4 py-2 bg-muted text-xs text-muted-foreground border-t">
                                                         Showing first 5 rows of {dataSet.rowCount} total rows
                                                     </div>
                                                 </div>
@@ -291,13 +291,13 @@ const GetData = ({ onClose }: { onClose: () => void }) => {
                             <div className="space-y-3">
                                 <div className="flex items-center space-x-2">
                                     <UploadCloud size={16} className="text-green-500" />
-                                    <h4 className="font-medium text-gray-700">From Files</h4>
+                                    <h4 className="font-medium text-foreground">From Files</h4>
                                     <span className="text-xs text-gray-500 bg-green-50 px-2 py-1 rounded-full">
                                         {fileDatasets.length}
                                     </span>
                                 </div>
                                 {fileDatasets.map(dataSet => (
-                                    <div key={dataSet.id} className="border border-gray-200 rounded-lg bg-white">
+                                    <div key={dataSet.id} className="border border-gray-200 rounded-lg bg-muted">
                                         <div className="p-4">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex-1">
@@ -340,11 +340,11 @@ const GetData = ({ onClose }: { onClose: () => void }) => {
                                         </div>
 
                                         {expandedDataSet === dataSet.id && (
-                                            <div className="border-t border-gray-200 p-4 bg-gray-50">
-                                                <div className="overflow-x-auto rounded-md border border-gray-200 bg-white">
+                                            <div className="border-t border-border p-4 bg-muted">
+                                                <div className="overflow-x-auto rounded-md border border-border bg-background">
                                                     <table className="min-w-full text-xs">
                                                         <thead>
-                                                            <tr className="bg-gray-100 text-gray-700 uppercase">
+                                                            <tr className="bg-gray-100 text-foreground uppercase">
                                                                 {dataSet.headers.map((header: any) => (
                                                                     <th key={header} className="px-4 py-2 text-left">{header}</th>
                                                                 ))}
@@ -352,15 +352,15 @@ const GetData = ({ onClose }: { onClose: () => void }) => {
                                                         </thead>
                                                         <tbody>
                                                             {dataSet.data.slice(0, 5).map((row: any, index: number) => (
-                                                                <tr key={index} className="border-t border-gray-200 hover:bg-gray-50">
+                                                                <tr key={index} className="border-t border-gray-200 hover:bg-muted">
                                                                     {dataSet.headers.map((header: any) => (
-                                                                        <td key={header} className="px-4 py-2 text-black">{String(row[header])}</td>
+                                                                        <td key={header} className="px-4 py-2 text-foreground">{String(row[header])}</td>
                                                                     ))}
                                                                 </tr>
                                                             ))}
                                                         </tbody>
                                                     </table>
-                                                    <div className="px-4 py-2 bg-gray-50 text-xs text-gray-500 border-t">
+                                                    <div className="px-4 py-2 bg-muted text-xs text-muted-foreground border-t">
                                                         Showing first 5 rows of {dataSet.rowCount} total rows
                                                     </div>
                                                 </div>

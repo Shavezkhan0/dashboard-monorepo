@@ -82,18 +82,18 @@ export default function ProfileDropdown({ userName, userEmail }: ProfileDropdown
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
           
           {/* Dropdown */}
-          <div className="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50">
+          <div className="absolute top-full right-0 mt-2 w-64 bg-background border border-border rounded-xl shadow-xl z-50">
             {/* User Info */}
-            <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+            <div className="px-4 py-3 border-b border-border">
               <div className="flex items-center space-x-3">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${getAvatarColor(userName)}`}>
                   {getInitials(userName)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                  <p className="text-sm font-medium text-foreground truncate">
                     {userName || 'User'}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                  <p className="text-xs text-muted-foreground truncate">
                     {userEmail || 'user@example.com'}
                   </p>
                 </div>
@@ -101,54 +101,54 @@ export default function ProfileDropdown({ userName, userEmail }: ProfileDropdown
             </div>
 
             {/* Theme Selection Section */}
-            <div className="py-1 border-b border-gray-200 dark:border-gray-700">
-              <div className="px-4 py-2 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+            <div className="py-1 border-b border-border">
+              <div className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Theme
               </div>
               
               <button
                 onClick={() => setTheme('light')}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="w-full flex items-center justify-between px-4 py-3 text-sm text-foreground hover:bg-muted transition-colors"
               >
                 <div className="flex items-center">
                   <Sun size={16} className="mr-3" />
                   Light
                 </div>
-                {theme === 'light' && <Check size={16} className="text-indigo-600 dark:text-indigo-400" />}
+                {theme === 'light' && <Check size={16} className="text-foreground" />}
               </button>
 
               <button
                 onClick={() => setTheme('dark')}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="w-full flex items-center justify-between px-4 py-3 text-sm text-foreground hover:bg-muted transition-colors"
               >
                 <div className="flex items-center">
                   <Moon size={16} className="mr-3" />
                   Dark
                 </div>
-                {theme === 'dark' && <Check size={16} className="text-indigo-600 dark:text-indigo-400" />}
+                {theme === 'dark' && <Check size={16} className="text-foreground" />}
               </button>
 
               <button
                 onClick={() => setTheme('system')}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="w-full flex items-center justify-between px-4 py-3 text-sm text-foreground hover:bg-muted transition-colors"
               >
                 <div className="flex items-center">
                   <Monitor size={16} className="mr-3" />
                   System
                 </div>
-                {theme === 'system' && <Check size={16} className="text-indigo-600 dark:text-indigo-400" />}
+                {theme === 'system' && <Check size={16} className="text-foreground" />}
               </button>
             </div>
 
             {/* Menu Items */}
             <div className="py-1">
-              <button className="w-full flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+              <button className="w-full flex items-center px-4 py-3 text-sm text-foreground hover:bg-muted transition-colors">
                 <User size={16} className="mr-3" />
                 Account Settings
               </button>
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center px-4 py-3 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                className="w-full flex items-center px-4 py-3 text-sm text-red-600 hover:bg-muted transition-colors"
               >
                 <LogOut size={16} className="mr-3" />
                 Logout

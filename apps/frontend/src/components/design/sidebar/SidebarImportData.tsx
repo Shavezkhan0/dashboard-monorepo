@@ -36,12 +36,12 @@ const SidebarImportData = () => {
           onClick={handleChangeData}
           className={`
     p-2 rounded text-xs cursor-pointer
-    border border-gray-300 dark:border-gray-700
-    hover:bg-white dark:hover:bg-gray-700
+    border-border
+    hover:bg-background dark:hover:bg-muted
     hover:border-gray-400 dark:hover:border-gray-600
     ${activeTab === "getdata"
-              ? "bg-white dark:bg-gray-700 text-black dark:text-white border-gray-400 dark:border-gray-500"
-              : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
+              ? "bg-background text-foreground border-gray-400 dark:border-gray-500"
+              : "bg-muted text-muted-foreground"
             }
   `}
         >
@@ -52,12 +52,12 @@ const SidebarImportData = () => {
           onClick={handleChangeConnectserver}
           className={`
     p-2 rounded text-xs cursor-pointer
-    border border-gray-300 dark:border-gray-700
-    hover:bg-white dark:hover:bg-gray-700
+    border-border
+    hover:bg-background dark:hover:bg-muted
     hover:border-gray-400 dark:hover:border-gray-600
     ${activeTab === "connectserver"
-              ? "bg-white dark:bg-gray-700 text-black dark:text-white border-gray-400 dark:border-gray-500"
-              : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
+              ? "bg-background text-foreground border-gray-400 dark:border-gray-500"
+              : "bg-muted text-muted-foreground"
             }
   `}
         >
@@ -70,15 +70,15 @@ const SidebarImportData = () => {
       <Dialog.Root open={popupOpen} onOpenChange={handlePopupClose}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/50 z-40 " />
-          <Dialog.Content className="fixed top-1/2 left-1/2 overflow-y-auto z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-[60vw]">
+          <Dialog.Content className="fixed top-1/2 left-1/2 overflow-y-auto z-50 transform -translate-x-1/2 -translate-y-1/2 bg-background rounded-lg shadow-2xl w-[60vw]">
             {popupOpen && (
               <>
                 {activeTab === "getdata" && (
                   <>
-                    <div className="flex justify-between items-center p-2 border-b dark:border-gray-700">
-                      <Dialog.Title className="text-normal text-black dark:text-white font-semibold">Get Data</Dialog.Title>
+                    <div className="flex justify-between items-center p-2 border-b border-border">
+                      <Dialog.Title className="text-normal text-foreground font-semibold">Get Data</Dialog.Title>
                       <Dialog.Close asChild>
-                        <button className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-black dark:text-white" aria-label="Close">
+                        <button className="p-1 rounded-full hover:bg-muted text-foreground" aria-label="Close">
                           <X size={20} />
                         </button>
                       </Dialog.Close>
@@ -91,10 +91,10 @@ const SidebarImportData = () => {
 
                 {activeTab === "connectserver" && (
                   <>
-                    <div className="flex justify-between items-center p-2 border-b dark:border-gray-700">
-                      <Dialog.Title className="text-normal font-semibold text-black dark:text-white">Connect to Server</Dialog.Title>
+                    <div className="flex justify-between items-center p-2 border-b border-border">
+                      <Dialog.Title className="text-normal font-semibold text-foreground">Connect to Server</Dialog.Title>
                       <Dialog.Close asChild>
-                        <button className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-black dark:text-white" aria-label="Close">
+                        <button className="p-1 rounded-full hover:bg-muted text-foreground" aria-label="Close">
                           <X size={20} />
                         </button>
                       </Dialog.Close>

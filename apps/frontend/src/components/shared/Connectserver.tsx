@@ -183,15 +183,15 @@ const SqlServerConnector = () => {
     <div className="min-h-[45vh] bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900 p-5 rounded-2xl">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 mb-5">
+        <div className="bg-background rounded-xl shadow-lg p-3 mb-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Server className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-              <h1 className="text-3xl font-bold text-gray-800 dark:text-white">MySQL Server Explorer</h1>
+              <h1 className="text-3xl font-bold text-foreground">MySQL Server Explorer</h1>
             </div>
             <div className="flex items-center space-x-1">
               {serverStatus === null ? (
-                <Loader2 className="h-5 w-5 animate-spin text-gray-500 dark:text-gray-400" />
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
               ) : serverStatus ? (
                 <div className="flex items-center space-x-1 text-green-600 dark:text-green-400">
                   <CheckCircle className="h-5 w-5" />
@@ -220,13 +220,13 @@ const SqlServerConnector = () => {
         {/* Controls */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Database Selection */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+          <div className="bg-background rounded-xl shadow-lg p-6">
             <div className="flex items-center space-x-1 mb-4">
               <Database className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-              <label className="text-lg font-semibold text-gray-700 dark:text-gray-200">Select Database</label>
+              <label className="text-lg font-semibold text-foreground">Select Database</label>
             </div>
             <select
-              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-black dark:text-white"
+              className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-background text-foreground"
               value={selectedDB}
               onChange={(e) => handleDatabaseChange(e.target.value)}
               disabled={loading}
@@ -238,19 +238,19 @@ const SqlServerConnector = () => {
                 </option>
               ))}
             </select>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               {databases.length} database(s) available
             </p>
           </div>
 
           {/* Table Selection */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+          <div className="bg-background rounded-xl shadow-lg p-6">
             <div className="flex items-center space-x-1 mb-4">
               <Table className="h-6 w-6 text-green-600 dark:text-green-400" />
-              <label className="text-lg font-semibold text-gray-700 dark:text-gray-200">Select Table</label>
+              <label className="text-lg font-semibold text-foreground">Select Table</label>
             </div>
             <select
-              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all disabled:bg-gray-100 dark:disabled:bg-gray-900 bg-white dark:bg-gray-700 text-black dark:text-white"
+              className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all disabled:bg-muted bg-background text-foreground"
               value={selectedTable}
               onChange={(e) => handleTableChange(e.target.value)}
               disabled={!selectedDB || loading}
@@ -262,7 +262,7 @@ const SqlServerConnector = () => {
                 </option>
               ))}
             </select>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               {tables.length} table(s) in {selectedDB || "selected database"}
             </p>
           </div>
@@ -270,11 +270,11 @@ const SqlServerConnector = () => {
 
         {/* Load Data Button */}
         {selectedTable && selectedDB && rows.length > 0 && !loading && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
+          <div className="bg-background rounded-xl shadow-lg p-6 mb-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">Load Data for Charts</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                <h3 className="text-lg font-semibold text-foreground mb-2">Load Data for Charts</h3>
+                <p className="text-muted-foreground text-sm">
                   Load this table data into your datasets to create charts and visualizations.
                   The data will be available in the "Get Data" section under "Stored Datasets".
                 </p>
@@ -310,13 +310,13 @@ const SqlServerConnector = () => {
         {loading && (
           <div className="flex justify-center items-center py-8">
             <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
-            <span className="ml-2 text-gray-600 dark:text-gray-400">Loading...</span>
+            <span className="ml-2 text-muted-foreground">Loading...</span>
           </div>
         )}
 
         {/* Data Table */}
         {selectedTable && rows.length > 0 && !loading && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+          <div className="bg-background rounded-xl shadow-lg overflow-hidden">
             <div className="bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 px-4 py-2">
               <h2 className="text-xl font-semibold text-white flex items-center space-x-1">
                 <Table className="h-6 w-6" />
@@ -329,36 +329,36 @@ const SqlServerConnector = () => {
 
             <div className="overflow-x-auto max-h-96">
               <table className="w-full">
-                <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0">
+                <thead className="bg-muted sticky top-0">
                   <tr>
                     {rows.length > 0 &&
                       Object.keys(rows[0]).map((col, index) => (
                         <th
                           key={index}
-                          className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider border-b dark:border-gray-600"
+                          className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider border-b border-border"
                         >
                           {col}
                         </th>
                       ))}
                   </tr>
                 </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody className="bg-background divide-y divide-gray-200 dark:divide-gray-700">
                   {rows.map((row, rowIndex) => (
                     <tr
                       key={rowIndex}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      className="hover:bg-muted transition-colors"
                     >
                       {Object.values(row).map((val, colIndex) => (
                         <td
                           key={colIndex}
-                          className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 border-b dark:border-gray-700"
+                          className="px-4 py-3 text-sm text-foreground border-b border-border"
                         >
                           {val !== null ? (
                             <span className="max-w-xs truncate block">
                               {val.toString()}
                             </span>
                           ) : (
-                            <span className="text-gray-400 dark:text-gray-500 italic">NULL</span>
+                            <span className="text-muted-foreground italic">NULL</span>
                           )}
                         </td>
                       ))}
@@ -372,19 +372,19 @@ const SqlServerConnector = () => {
 
         {/* Empty State */}
         {selectedTable && rows.length === 0 && !loading && !error && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-12 text-center">
-            <Table className="h-16 w-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Data Found</h3>
-            <p className="text-gray-500 dark:text-gray-400">The selected table appears to be empty.</p>
+          <div className="bg-background rounded-xl shadow-lg p-12 text-center">
+            <Table className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-foreground mb-2">No Data Found</h3>
+            <p className="text-muted-foreground">The selected table appears to be empty.</p>
           </div>
         )}
 
         {/* Instructions */}
         {!selectedDB && !loading && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
+          <div className="bg-background rounded-xl shadow-lg p-8 text-center">
             <Database className="h-16 w-16 text-blue-400 dark:text-blue-500 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">Get Started</h3>
-            <p className="text-gray-600 dark:text-gray-400">
+            <h3 className="text-xl font-semibold text-foreground mb-2">Get Started</h3>
+            <p className="text-muted-foreground">
               Select a database from the dropdown above to explore its tables and data.
               Once you find the data you need, click "Load Data" to add it to your stored datasets.
             </p>

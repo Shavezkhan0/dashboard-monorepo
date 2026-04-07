@@ -74,24 +74,24 @@ const GetData: React.FC<GetDataProps> = ({ onClose }) => {
         <div className="min-h-[45vh] bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-800 dark:to-gray-900 p-5 rounded-2xl">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
+                <div className="bg-background rounded-xl shadow-lg p-6 mb-6">
                     <div className="flex items-center space-x-3 mb-4">
                         <FileSpreadsheet className="h-8 w-8 text-purple-600 dark:text-purple-400" />
-                        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Get Data</h1>
+                        <h1 className="text-3xl font-bold text-foreground">Get Data</h1>
                     </div>
-                    <p className="text-gray-600 dark:text-gray-400">
+                    <p className="text-muted-foreground">
                         Upload CSV or Excel files, or use data from connected databases
                     </p>
                 </div>
 
                 {/* Upload Section */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
-                    <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                <div className="bg-background rounded-xl shadow-lg p-6 mb-6">
+                    <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center">
                         <Upload className="h-6 w-6 mr-2 text-purple-600 dark:text-purple-400" />
                         Upload File
                     </h2>
 
-                    <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-purple-500 dark:hover:border-purple-400 transition-colors">
+                    <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-purple-500 dark:hover:border-purple-400 transition-colors">
                         <input
                             type="file"
                             id="file-upload"
@@ -111,10 +111,10 @@ const GetData: React.FC<GetDataProps> = ({ onClose }) => {
                             ) : uploadStatus === 'error' ? (
                                 <AlertCircle className="h-16 w-16 text-red-600 dark:text-red-400 mb-4" />
                             ) : (
-                                <Upload className="h-16 w-16 text-gray-400 dark:text-gray-500 mb-4" />
+                                <Upload className="h-16 w-16 text-muted-foreground mb-4" />
                             )}
 
-                            <p className="text-lg font-medium text-gray-700 dark:text-gray-200 mb-2">
+                            <p className="text-lg font-medium text-foreground mb-2">
                                 {uploadStatus === 'loading' ? 'Processing...' :
                                     uploadStatus === 'success' ? 'File uploaded successfully!' :
                                         uploadStatus === 'error' ? 'Upload failed' :
@@ -122,7 +122,7 @@ const GetData: React.FC<GetDataProps> = ({ onClose }) => {
                             </p>
 
                             {uploadStatus === 'idle' && (
-                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                <p className="text-sm text-muted-foreground">
                                     CSV or Excel files (Max 10MB)
                                 </p>
                             )}
@@ -138,8 +138,8 @@ const GetData: React.FC<GetDataProps> = ({ onClose }) => {
 
                 {/* Stored Datasets */}
                 {storedDataSets && storedDataSets.length > 0 && (
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-                        <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                    <div className="bg-background rounded-xl shadow-lg p-6">
+<h2 className="text-xl font-semibold text-foreground mb-4 flex items-center">
                             <Database className="h-6 w-6 mr-2 text-purple-600 dark:text-purple-400" />
                             Stored Datasets ({storedDataSets.length})
                         </h2>
@@ -148,13 +148,13 @@ const GetData: React.FC<GetDataProps> = ({ onClose }) => {
                             {storedDataSets.map((dataset) => (
                                 <div
                                     key={dataset.id}
-                                    className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                                    className="flex items-center justify-between p-4 bg-muted rounded-lg hover:bg-muted transition-colors"
                                 >
                                     <div className="flex items-center space-x-3">
                                         <FileSpreadsheet className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                                         <div>
-                                            <p className="font-medium text-gray-800 dark:text-white">{dataset.name}</p>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                            <p className="font-medium text-foreground">{dataset.name}</p>
+                                            <p className="text-sm text-muted-foreground">
                                                 {dataset.rowCount} rows • {dataset.headers.length} columns
                                                 {dataset.source && ` • ${dataset.source}`}
                                             </p>
@@ -169,10 +169,10 @@ const GetData: React.FC<GetDataProps> = ({ onClose }) => {
 
                 {/* Instructions */}
                 {(!storedDataSets || storedDataSets.length === 0) && uploadStatus === 'idle' && (
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
+                    <div className="bg-background rounded-xl shadow-lg p-8 text-center">
                         <Database className="h-16 w-16 text-purple-400 dark:text-purple-500 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">No Datasets Yet</h3>
-                        <p className="text-gray-600 dark:text-gray-400">
+                        <h3 className="text-xl font-semibold text-foreground mb-2">No Datasets Yet</h3>
+<p className="text-muted-foreground">
                             Upload a CSV file or connect to a database server to get started with your data.
                         </p>
                     </div>

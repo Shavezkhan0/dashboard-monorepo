@@ -114,9 +114,9 @@ const AddDonutChart = ({ onClose }) => {
 
             {/* Chart Preview */}
 
-            <div className="h-[300px] w-full rounded-lg shadow-inner relative border border-gray-200 dark:border-gray-600 overflow-hidden">
+            <div className="h-[300px] w-full rounded-lg shadow-inner relative border border-border overflow-hidden">
 
-                <div className="bg-white h-full">
+                <div className="bg-background h-full">
 
                     <DonutChartWidget {...chartProps} />
 
@@ -146,7 +146,7 @@ const AddDonutChart = ({ onClose }) => {
 
                         <div>
 
-                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Chart Title</label>
+                            <label className="block text-xs font-medium text-muted-foreground mb-1">Chart Title</label>
 
                             <input
 
@@ -156,7 +156,7 @@ const AddDonutChart = ({ onClose }) => {
 
                                 onChange={(e) => setChartProps(p => ({ ...p, title: e.target.value }))}
 
-                                className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white"
+                                className="w-full p-2 text-sm border border-border rounded text-foreground"
 
                                 placeholder="Enter chart title"
 
@@ -168,9 +168,9 @@ const AddDonutChart = ({ onClose }) => {
 
 
 
-                    <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
+                    <div className="border border-border rounded-lg p-4 bg-muted">
 
-                        <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-3">Data Source</h4>
+                        <h4 className="font-medium text-foreground mb-3">Data Source</h4>
 
 
 
@@ -178,7 +178,7 @@ const AddDonutChart = ({ onClose }) => {
 
                             <div className="space-y-2">
 
-                                <div className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                                <div className="flex items-center space-x-2 text-sm font-medium text-foreground">
 
                                     <Database size={16} className="text-indigo-600" />
 
@@ -196,19 +196,19 @@ const AddDonutChart = ({ onClose }) => {
 
                                             onClick={() => handleStoredDataSelect(dataSet)}
 
-                                            className="w-full text-left p-3 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded hover:bg-indigo-50 dark:hover:bg-gray-700 hover:border-indigo-300 transition-colors"
+                                            className="w-full text-left p-3 text-sm bg-background border border-border rounded hover:bg-indigo-500/10 hover:bg-muted hover:border-border transition-colors"
 
                                         >
 
-                                            <div className="font-medium text-gray-800 dark:text-gray-100">{dataSet.name}</div>
+                                            <div className="font-medium text-foreground">{dataSet.name}</div>
 
-                                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                            <div className="text-xs text-muted-foreground mt-1">
 
                                                 📊 {dataSet.rowCount} rows • {dataSet.headers.length} columns
 
                                             </div>
 
-                                            <div className="text-xs text-gray-400 mt-1">
+                                            <div className="text-xs text-muted-foreground mt-1">
 
                                                 Columns: {dataSet.headers.slice(0, 3).join(', ')}
 
@@ -226,7 +226,7 @@ const AddDonutChart = ({ onClose }) => {
 
                         ) : (
 
-                            <div className="text-center py-6 text-gray-500 dark:text-gray-400">
+                            <div className="text-center py-6 text-muted-foreground">
 
                                 <Database size={32} className="mx-auto mb-3 text-gray-300" />
 
@@ -244,17 +244,17 @@ const AddDonutChart = ({ onClose }) => {
 
                     {chartProps.isEmpty ? (
 
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        <div className="bg-muted border border-border rounded-lg p-3">
 
                              <div className="flex items-center space-x-2">
 
                                 <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
 
-                                <span className="text-sm font-medium text-blue-800">Preview Mode</span>
+                                <span className="text-sm font-medium text-foreground">Preview Mode</span>
 
                             </div>
 
-                            <p className="text-xs text-blue-700 mt-1">
+                            <p className="text-xs text-muted-foreground mt-1">
 
                                 Select a dataset to configure your donut chart.
 
@@ -264,17 +264,17 @@ const AddDonutChart = ({ onClose }) => {
 
                     ) : (
 
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                        <div className="bg-muted border border-border rounded-lg p-3">
 
                             <div className="flex items-center space-x-2">
 
                                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
 
-                                <span className="text-sm font-medium text-green-800">Data Configured</span>
+                                <span className="text-sm font-medium text-foreground">Data Configured</span>
 
                             </div>
 
-                            <p className="text-xs text-green-700 mt-1">
+                            <p className="text-xs text-muted-foreground mt-1">
 
                                 Your chart is ready to be added to the canvas.
 
@@ -286,15 +286,15 @@ const AddDonutChart = ({ onClose }) => {
 
                     {/* Advanced Customization Options */}
                     {!chartProps.isEmpty && (
-                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
-                            <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-3">Chart Customization</h4>
+                        <div className="border border-border rounded-lg p-4 bg-muted">
+                            <h4 className="font-medium text-foreground mb-3">Chart Customization</h4>
                             
                             {/* Display Options */}
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <span className="text-sm text-gray-600 dark:text-gray-300">Show Legend</span>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Display legend on the right side of chart</p>
+                                        <span className="text-sm text-muted-foreground">Show Legend</span>
+                                        <p className="text-xs text-muted-foreground mt-1">Display legend on the right side of chart</p>
                                     </div>
                                     <button 
                                         onClick={() => setChartProps(prev => ({ 
@@ -303,14 +303,14 @@ const AddDonutChart = ({ onClose }) => {
                                         }))} 
                                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${chartProps.showLegend ? 'bg-indigo-600' : 'bg-gray-200'}`}
                                     >
-                                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${chartProps.showLegend ? 'translate-x-6' : 'translate-x-1'}`} />
+                                        <span className={`inline-block h-4 w-4 transform rounded-full bg-background transition-transform ${chartProps.showLegend ? 'translate-x-6' : 'translate-x-1'}`} />
                                     </button>
                                 </div>
                                 
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <span className="text-sm text-gray-600 dark:text-gray-300">Show Values</span>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Display values on chart segments</p>
+                                        <span className="text-sm text-muted-foreground">Show Values</span>
+                                        <p className="text-xs text-muted-foreground mt-1">Display values on chart segments</p>
                                     </div>
                                     <button 
                                         onClick={() => setChartProps(prev => ({ 
@@ -319,12 +319,12 @@ const AddDonutChart = ({ onClose }) => {
                                         }))} 
                                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${chartProps.showValues ? 'bg-indigo-600' : 'bg-gray-200'}`}
                                     >
-                                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${chartProps.showValues ? 'translate-x-6' : 'translate-x-1'}`} />
+                                        <span className={`inline-block h-4 w-4 transform rounded-full bg-background transition-transform ${chartProps.showValues ? 'translate-x-6' : 'translate-x-1'}`} />
                                     </button>
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-sm text-gray-600 dark:text-gray-300 mb-2">Inner Radius</label>
+                                    <label className="block text-sm text-muted-foreground mb-2">Inner Radius</label>
                                     <input
                                         type="range"
                                         min="0"
@@ -333,7 +333,7 @@ const AddDonutChart = ({ onClose }) => {
                                         onChange={e => setChartProps(prev => ({ ...prev, innerRadius: parseInt(e.target.value) }))}
                                         className="w-full"
                                     />
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{chartProps.innerRadius ?? 50}%</div>
+                                    <div className="text-xs text-muted-foreground mt-1">{chartProps.innerRadius ?? 50}%</div>
                                 </div>
                             </div>
                         </div>
@@ -354,9 +354,9 @@ const AddDonutChart = ({ onClose }) => {
 
                     chartProps.isEmpty
 
-                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 border-2 border-gray-200 cursor-not-allowed'
+                        ? 'bg-muted text-muted-foreground border-2 border-border cursor-not-allowed'
 
-                        : 'bg-blue-50 text-indigo-600 hover:text-white border-2 border-indigo-300 hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer'
+                        : 'bg-muted text-indigo-600 hover:text-white border-2 border-border hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer'
 
                 }`}
 
@@ -600,13 +600,13 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
     return (
 
-        <div className="space-y-4 p-4 border bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <div className="space-y-4 p-4 border bg-muted rounded-lg">
 
             <div className="flex items-center justify-between">
 
-                <h4 className="font-semibold text-gray-700 dark:text-gray-200">Configure Chart Data</h4>
+                <h4 className="font-semibold text-foreground">Configure Chart Data</h4>
 
-                <button onClick={onBack} className="text-xs text-indigo-600 hover:text-indigo-800 underline">
+                <button onClick={onBack} className="text-xs text-indigo-600 hover:text-foreground underline">
 
                     ← Back to Data Selection
 
@@ -626,7 +626,7 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
                         <Info size={16} className="text-indigo-600" />
 
-                        <span className="text-sm font-medium text-indigo-800">Generated Title Preview</span>
+                        <span className="text-sm font-medium text-foreground">Generated Title Preview</span>
 
                     </div>
 
@@ -648,9 +648,9 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
                 <div>
 
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Legend (Categories)</label>
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">Legend (Categories)</label>
 
-                    <div className="max-h-36 overflow-y-auto p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white">
+                    <div className="max-h-36 overflow-y-auto p-2 border border-border rounded text-sm bg-background">
 
                         {headers.map(h => <ColumnSelector key={`leg-${h}`} header={h} checked={legendField === h} onChange={setLegendField} name="legendField" isNumeric={isNumericColumn(h)} />)}
 
@@ -660,9 +660,9 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
                 <div>
 
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Values (Slice Sizes)</label>
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">Values (Slice Sizes)</label>
 
-                    <div className="max-h-36 overflow-y-auto p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white">
+                    <div className="max-h-36 overflow-y-auto p-2 border border-border rounded text-sm bg-background">
 
                         {headers.map(h => <ColumnSelector key={`val-${h}`} header={h} checked={valueField === h} onChange={setValueField} name="valueField" isNumeric={isNumericColumn(h)} />)}
 
@@ -678,7 +678,7 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
             <div>
 
-                 <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Value Calculation</label>
+                 <label className="block text-sm font-medium text-muted-foreground mb-2">Value Calculation</label>
 
                  <select
 
@@ -686,7 +686,7 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
                     onChange={(e) => setAggregationType(e.target.value)}
 
-                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white text-black dark:text-white"
+                    className="w-full p-2 border border-border rounded text-sm bg-background text-foreground"
 
                  >
 
@@ -714,7 +714,7 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
                 disabled={!legendField || !valueField}
 
-                className="w-full py-2 px-4 bg-blue-50 text-indigo-600 hover:text-white transition-all duration-200 border-2 border-indigo-300 rounded-md font-medium hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-2 px-4 bg-muted text-indigo-600 hover:text-white transition-all duration-200 border-2 border-border rounded-md font-medium hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
 
             >
 
@@ -732,7 +732,7 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
 const ColumnSelector = ({ header, checked, onChange, name, isNumeric }) => (
 
-    <label className="flex items-center cursor-pointer hover:bg-gray-50 dark:bg-gray-700 px-1 py-1 rounded">
+    <label className="flex items-center cursor-pointer hover:bg-muted px-1 py-1 rounded">
 
         <input
 
@@ -746,7 +746,7 @@ const ColumnSelector = ({ header, checked, onChange, name, isNumeric }) => (
 
             onChange={(e) => onChange(e.target.value)}
 
-            className="h-4 w-4 border-gray-300 dark:border-gray-600 mr-3 text-indigo-600 focus:ring-indigo-500"
+            className="h-4 w-4 border-border mr-3 text-indigo-600 focus:ring-indigo-500"
 
         />
 
@@ -754,7 +754,7 @@ const ColumnSelector = ({ header, checked, onChange, name, isNumeric }) => (
 
             {isNumeric && <span className="text-indigo-600 font-semibold text-sm flex-shrink-0">Σ</span>}
 
-            <span className={`text-sm text-gray-900 truncate ${!isNumeric && 'pl-6'}`}>{header}</span>
+            <span className={`text-sm text-foreground truncate ${!isNumeric && 'pl-6'}`}>{header}</span>
 
         </div>
 

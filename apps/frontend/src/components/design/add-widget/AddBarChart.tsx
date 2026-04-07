@@ -125,8 +125,8 @@ const AddBarChart = ({ onClose }) => {
     return (
         <div className="space-y-4">
             {/* Chart Preview */}
-            <div className="h-[300px] w-full rounded-lg shadow-inner relative border border-gray-200 dark:border-gray-600 overflow-hidden">
-                <div className="bg-white h-full">
+            <div className="h-[300px] w-full rounded-lg shadow-inner relative border border-border overflow-hidden">
+                <div className="bg-background h-full">
                     <BarChartWidget 
                         {...chartProps} 
                         yMin={yAxisRange.min} 
@@ -150,12 +150,12 @@ const AddBarChart = ({ onClose }) => {
                     {/* Title Input - only show when data is configured */}
                     {!chartProps.isEmpty && (
                         <div>
-                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Chart Title</label>
+                            <label className="block text-xs font-medium text-muted-foreground mb-1">Chart Title</label>
                             <input 
                                 type="text" 
                                 value={chartProps.title} 
                                 onChange={(e) => handleTitleChange(e.target.value)}
-                                className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                                className="w-full p-2 text-sm border border-border rounded text-foreground focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
                                 placeholder="Enter chart title"
                             />
                         </div>
@@ -163,8 +163,8 @@ const AddBarChart = ({ onClose }) => {
 
                     {/* Chart Style Controls - only show when data is configured */}
                     {!chartProps.isEmpty && (
-                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
-                            <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-3">Chart Options</h4>
+                        <div className="border border-border rounded-lg p-4 bg-muted">
+                            <h4 className="font-medium text-foreground mb-3">Chart Options</h4>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="flex items-center space-x-2">
@@ -172,9 +172,9 @@ const AddBarChart = ({ onClose }) => {
                                             type="checkbox"
                                             checked={chartProps.showLegend}
                                             onChange={(e) => setChartProps(p => ({ ...p, showLegend: e.target.checked }))}
-                                            className="rounded border-gray-300 dark:border-gray-600"
+                                            className="rounded border-border"
                                         />
-                                        <span className="text-sm text-gray-700 dark:text-gray-200">Show Legend</span>
+                                        <span className="text-sm text-foreground">Show Legend</span>
                                     </label>
                                 </div>
                                 <div>
@@ -183,9 +183,9 @@ const AddBarChart = ({ onClose }) => {
                                             type="checkbox"
                                             checked={chartProps.showXAxisTitle}
                                             onChange={(e) => setChartProps(p => ({ ...p, showXAxisTitle: e.target.checked }))}
-                                            className="rounded border-gray-300 dark:border-gray-600"
+                                            className="rounded border-border"
                                         />
-                                        <span className="text-sm text-gray-700 dark:text-gray-200">Show X-Axis Title</span>
+                                        <span className="text-sm text-foreground">Show X-Axis Title</span>
                                     </label>
                                 </div>
                                 <div>
@@ -194,9 +194,9 @@ const AddBarChart = ({ onClose }) => {
                                             type="checkbox"
                                             checked={chartProps.showYAxisTitle}
                                             onChange={(e) => setChartProps(p => ({ ...p, showYAxisTitle: e.target.checked }))}
-                                            className="rounded border-gray-300 dark:border-gray-600"
+                                            className="rounded border-border"
                                         />
-                                        <span className="text-sm text-gray-700 dark:text-gray-200">Show Y-Axis Title</span>
+                                        <span className="text-sm text-foreground">Show Y-Axis Title</span>
                                     </label>
                                 </div>
                             </div>
@@ -204,12 +204,12 @@ const AddBarChart = ({ onClose }) => {
                     )}
 
                     {/* Data Source Selection */}
-                    <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
-                        <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-3">Data Source</h4>
+                    <div className="border border-border rounded-lg p-4 bg-muted">
+                        <h4 className="font-medium text-foreground mb-3">Data Source</h4>
                         
                         {storedDataSets.length > 0 ? (
                             <div className="space-y-2">
-                                <div className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                                <div className="flex items-center space-x-2 text-sm font-medium text-foreground">
                                     <Database size={16} className="text-indigo-600" />
                                     <span>Available Datasets</span>
                                 </div>
@@ -218,13 +218,13 @@ const AddBarChart = ({ onClose }) => {
                                         <button
                                             key={dataSet.id}
                                             onClick={() => handleStoredDataSelect(dataSet)}
-                                            className="w-full text-left p-3 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded hover:bg-indigo-50 dark:hover:bg-gray-700 hover:border-indigo-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                            className="w-full text-left p-3 text-sm bg-background border border-border rounded hover:bg-indigo-500/10 hover:bg-muted hover:border-border transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                         >
-                                            <div className="font-medium text-gray-800 dark:text-gray-100">{dataSet.name}</div>
-                                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                            <div className="font-medium text-foreground">{dataSet.name}</div>
+                                            <div className="text-xs text-muted-foreground mt-1">
                                                 📊 {dataSet.rowCount} rows • {dataSet.headers.length} columns
                                             </div>
-                                            <div className="text-xs text-gray-400 mt-1">
+                                            <div className="text-xs text-muted-foreground mt-1">
                                                 Columns: {dataSet.headers.slice(0, 3).join(', ')}
                                                 {dataSet.headers.length > 3 && ` +${dataSet.headers.length - 3} more`}
                                             </div>
@@ -233,7 +233,7 @@ const AddBarChart = ({ onClose }) => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="text-center py-6 text-gray-500 dark:text-gray-400">
+                            <div className="text-center py-6 text-muted-foreground">
                                 <Database size={32} className="mx-auto mb-3 text-gray-300" />
                                 <p className="text-sm font-medium">No datasets available</p>
                                 <p className="text-xs mt-1">Import data using the "Data" tab first</p>
@@ -243,22 +243,22 @@ const AddBarChart = ({ onClose }) => {
 
                     {/* Status Information */}
                     {chartProps.isEmpty ? (
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        <div className="bg-muted border border-border rounded-lg p-3">
                             <div className="flex items-center space-x-2">
                                 <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                                <span className="text-sm font-medium text-blue-800">Preview Mode</span>
+                                <span className="text-sm font-medium text-foreground">Preview Mode</span>
                             </div>
-                            <p className="text-xs text-blue-700 mt-1">
+                            <p className="text-xs text-muted-foreground mt-1">
                                 Select a dataset to configure your bar chart with Power BI styling.
                             </p>
                         </div>
                     ) : (
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                        <div className="bg-muted border border-border rounded-lg p-3">
                             <div className="flex items-center space-x-2">
                                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                                <span className="text-sm font-medium text-green-800">Data Configured</span>
+                                <span className="text-sm font-medium text-foreground">Data Configured</span>
                             </div>
-                            <p className="text-xs text-green-700 mt-1">
+                            <p className="text-xs text-muted-foreground mt-1">
                                 Your Power BI-style chart is ready to be added to the canvas.
                             </p>
                         </div>
@@ -272,8 +272,8 @@ const AddBarChart = ({ onClose }) => {
                 disabled={chartProps.isEmpty}
                 className={`w-full py-2 px-4 rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
                     chartProps.isEmpty 
-                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 border-2 border-gray-200 cursor-not-allowed' 
-                        : 'bg-blue-50 text-indigo-600 hover:text-white border-2 border-indigo-300 hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer'
+                        ? 'bg-muted text-muted-foreground border-2 border-border cursor-not-allowed' 
+                        : 'bg-muted text-indigo-600 hover:text-white border-2 border-border hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer'
                 }`}
             >
                 {chartProps.isEmpty ? 'Select Data to Continue' : 'Add Chart to Canvas'}
@@ -479,12 +479,12 @@ const DataMapper = ({ data, onMap, onBack }) => {
     }, [data.data, xAxisField, yAxisFields, legendField, aggregationType, generateTitle, onMap]);
 
     return (
-        <div className="space-y-4 p-4 border bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <div className="space-y-4 p-4 border bg-muted rounded-lg">
             <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-gray-700 dark:text-gray-200">Configure Bar Chart</h4>
+                <h4 className="font-semibold text-foreground">Configure Bar Chart</h4>
                 <button 
                     onClick={onBack}
-                    className="text-xs text-indigo-600 hover:text-indigo-800 underline focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
+                    className="text-xs text-indigo-600 hover:text-foreground underline focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
                 >
                     ← Back to Data Selection
                 </button>
@@ -495,7 +495,7 @@ const DataMapper = ({ data, onMap, onBack }) => {
                 <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
                     <div className="flex items-center space-x-2">
                         <Info size={16} className="text-indigo-600" />
-                        <span className="text-sm font-medium text-indigo-800">Generated Title Preview</span>
+                        <span className="text-sm font-medium text-foreground">Generated Title Preview</span>
                     </div>
                     <p className="text-sm text-indigo-700 mt-1 font-medium">
                         "{generateTitle(xAxisField, yAxisFields, legendField, aggregationType)}"
@@ -506,11 +506,11 @@ const DataMapper = ({ data, onMap, onBack }) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* X-Axis Selection */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
                         <TrendingUp size={16} className="inline mr-1" />
                         X-Axis (Categories)
                     </label>
-                    <div className="max-h-36 overflow-y-auto p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white">
+                    <div className="max-h-36 overflow-y-auto p-2 border border-border rounded text-sm bg-background">
                         {headers.map(h => (
                             <ColumnSelector 
                                 key={`x-${h}`} 
@@ -526,21 +526,21 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
                 {/* Y-Axis Selection */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
                         Y-Axis (Values - Multiple Selection)
                     </label>
-                    <div className="max-h-36 overflow-y-auto p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white">
+                    <div className="max-h-36 overflow-y-auto p-2 border border-border rounded text-sm bg-background">
                         {headers.filter(h => h !== xAxisField).map(h => (
-                            <label key={`y-${h}`} className="flex items-center cursor-pointer hover:bg-gray-50 dark:bg-gray-700 px-1 py-1 rounded">
+                            <label key={`y-${h}`} className="flex items-center cursor-pointer hover:bg-muted px-1 py-1 rounded">
                                 <input
                                     type="checkbox"
                                     checked={yAxisFields.includes(h)}
                                     onChange={() => handleYAxisToggle(h)}
-                                    className="h-4 w-4 border-gray-300 dark:border-gray-600 mr-3 text-indigo-600 focus:ring-indigo-500"
+                                    className="h-4 w-4 border-border mr-3 text-indigo-600 focus:ring-indigo-500"
                                 />
                                 <div className="flex items-center space-x-2 min-w-0 flex-1">
                                     {isNumericColumn(h) && <span className="text-indigo-600 font-semibold text-sm flex-shrink-0">Σ</span>}
-                                    <span className={`text-sm text-gray-900 truncate ${!isNumericColumn(h) && 'pl-6'}`}>{h}</span>
+                                    <span className={`text-sm text-foreground truncate ${!isNumericColumn(h) && 'pl-6'}`}>{h}</span>
                                 </div>
                             </label>
                         ))}
@@ -551,18 +551,18 @@ const DataMapper = ({ data, onMap, onBack }) => {
             <div className="grid grid-rows-1 lg:grid-rows-1 gap-4">
                 {/* Legend/Grouping Selection */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
                         Legend (Optional Grouping)
                     </label>
-                    <div className="max-h-36 overflow-y-auto p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white">
-                        <label className="flex items-center cursor-pointer hover:bg-gray-50 dark:bg-gray-700 px-1 py-1 rounded">
+                    <div className="max-h-36 overflow-y-auto p-2 border border-border rounded text-sm bg-background">
+                        <label className="flex items-center cursor-pointer hover:bg-muted px-1 py-1 rounded">
                             <input
                                 type="checkbox"
                                 checked={legendField === ''}
                                 onChange={() => setLegendField('')}
-                                className="h-4 w-4 border-gray-300 dark:border-gray-600 mr-3 text-indigo-600 focus:ring-indigo-500"
+                                className="h-4 w-4 border-border mr-3 text-indigo-600 focus:ring-indigo-500"
                             />
-                            <span className="text-sm text-gray-500 dark:text-gray-400 italic">No grouping</span>
+                            <span className="text-sm text-muted-foreground italic">No grouping</span>
                         </label>
                         {headers.filter(h => h !== xAxisField && !yAxisFields.includes(h)).map(h => (
                             <ColumnSelector 
@@ -580,11 +580,11 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
             {/* Aggregation Selection */}
             <div>
-                <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Value Calculation</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-2">Value Calculation</label>
                 <select
                     value={aggregationType}
                     onChange={(e) => setAggregationType(e.target.value)}
-                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full p-2 border border-border rounded text-sm bg-background text-foreground focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 >
                     <option value="sum">Sum</option>
                     <option value="count">Count</option>
@@ -598,7 +598,7 @@ const DataMapper = ({ data, onMap, onBack }) => {
             <button
                 onClick={handleGenerate}
                 disabled={!xAxisField || yAxisFields.length === 0}
-                className="w-full py-2 px-4 bg-blue-50 text-indigo-600 hover:text-white transition-all duration-200 border-2 border-indigo-300 rounded-md font-medium hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full py-2 px-4 bg-muted text-indigo-600 hover:text-white transition-all duration-200 border-2 border-border rounded-md font-medium hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
                 Generate  Chart
             </button>
@@ -607,18 +607,18 @@ const DataMapper = ({ data, onMap, onBack }) => {
 };
 
 const ColumnSelector = ({ header, checked, onChange, name, isNumeric }) => (
-    <label className="flex items-center cursor-pointer hover:bg-gray-50 dark:bg-gray-700 px-1 py-1 rounded">
+    <label className="flex items-center cursor-pointer hover:bg-muted px-1 py-1 rounded">
         <input
             type="checkbox"
             name={name}
             value={header}
             checked={checked}
             onChange={(e) => onChange(e.target.value)}
-            className="h-4 w-4 border-gray-300 dark:border-gray-600 mr-3 text-indigo-600 focus:ring-indigo-500"
+            className="h-4 w-4 border-border mr-3 text-indigo-600 focus:ring-indigo-500"
         />
         <div className="flex items-center space-x-2 min-w-0 flex-1">
             {isNumeric && <span className="text-indigo-600 font-semibold text-sm flex-shrink-0">Σ</span>}
-            <span className={`text-sm text-gray-900 truncate ${!isNumeric && 'pl-6'}`}>{header}</span>
+            <span className={`text-sm text-foreground truncate ${!isNumeric && 'pl-6'}`}>{header}</span>
         </div>
     </label>
 );

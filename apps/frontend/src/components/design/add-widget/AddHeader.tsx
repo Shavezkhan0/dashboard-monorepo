@@ -31,14 +31,14 @@ export default function AddHeader({ onClose }) {
     return (
         <div className="space-y-4">
             {/* Preview */}
-            <div className="h-[60px] w-full rounded-lg shadow-inner relative border border-gray-200 overflow-hidden bg-white">
-                <div className="w-full h-full bg-white flex items-center px-3 py-2 border-b border-gray-200 text-black">
+            <div className="h-[60px] w-full rounded-lg shadow-inner relative border border-gray-200 overflow-hidden bg-background">
+                <div className="w-full h-full bg-background flex items-center px-3 py-2 border-b border-border text-foreground">
                     {/* Logo Section */}
                     <div className="flex items-center gap-2 flex-shrink-0">
-                        <div className="h-5 w-12 bg-gray-100 flex items-center justify-center text-gray-400 rounded text-[10px]">
+                        <div className="h-5 w-12 bg-muted flex items-center justify-center text-muted-foreground rounded text-[10px]">
                             Logo
                         </div>
-                        <h1 className="text-sm font-bold text-gray-800 whitespace-nowrap">
+                        <h1 className="text-sm font-bold text-foreground whitespace-nowrap">
                             DASHBOARD TITLE
                         </h1>
                     </div>
@@ -49,14 +49,14 @@ export default function AddHeader({ onClose }) {
                     {/* Metrics Section */}
                     <div className="flex items-center gap-2">
                         <div className="flex items-center gap-1">
-                            <span className="text-[10px] font-medium text-gray-500">Title 1:</span>
-                            <div className="px-1.5 py-0.5 bg-gray-50 border border-gray-200 rounded text-[10px] text-gray-800 font-semibold">
+                            <span className="text-[10px] font-medium text-muted-foreground">Title 1:</span>
+                            <div className="px-1.5 py-0.5 bg-muted border border-border rounded text-[10px] text-foreground font-semibold">
                                 Metric 1
                             </div>
                         </div>
                         <div className="flex items-center gap-1">
-                            <span className="text-[10px] font-medium text-gray-500">Title 2:</span>
-                            <div className="px-1.5 py-0.5 bg-gray-50 border border-gray-200 rounded text-[10px] text-gray-800 font-semibold">
+                            <span className="text-[10px] font-medium text-muted-foreground">Title 2:</span>
+                            <div className="px-1.5 py-0.5 bg-muted border border-border rounded text-[10px] text-foreground font-semibold">
                                 Metric 2
                             </div>
                         </div>

@@ -75,8 +75,8 @@ const AddKpiChart = ({ onClose }) => {
 
     return (
         <div className="space-y-4">
-            <div className="h-[200px] w-full rounded-lg shadow-inner relative border border-gray-200 dark:border-gray-600 overflow-hidden">
-                <div className="bg-white h-full">
+            <div className="h-[200px] w-full rounded-lg shadow-inner relative border border-border overflow-hidden">
+                <div className="bg-background h-full">
                     <KpiWidget {...kpiProps} />
                 </div>
             </div>
@@ -92,12 +92,12 @@ const AddKpiChart = ({ onClose }) => {
                     {/* Title Input - only show when data is configured */}
                     {!kpiProps.isEmpty && (
                         <div>
-                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">KPI Title</label>
+                            <label className="block text-xs font-medium text-muted-foreground mb-1">KPI Title</label>
                             <input
                                 type="text"
                                 value={kpiProps.title}
                                 onChange={(e) => handleTitleChange(e.target.value)}
-                                className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                className="w-full p-2 text-sm border border-border rounded text-foreground focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 placeholder="Enter KPI title"
                             />
                         </div>
@@ -105,26 +105,26 @@ const AddKpiChart = ({ onClose }) => {
 
                     {/* Format Options - only show when data is configured */}
                     {!kpiProps.isEmpty && (
-                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
-                            <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-3">Format Options</h4>
+                        <div className="border border-border rounded-lg p-4 bg-muted">
+                            <h4 className="font-medium text-foreground mb-3">Format Options</h4>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Prefix</label>
+                                    <label className="block text-xs text-muted-foreground mb-1">Prefix</label>
                                     <input
                                         type="text"
                                         value={kpiProps.primaryValuePrefix}
                                         onChange={(e) => setKpiProps(p => ({ ...p, primaryValuePrefix: e.target.value }))}
-                                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm text-black dark:text-white"
+                                        className="w-full p-2 border border-border rounded text-sm text-foreground"
                                         placeholder="e.g., $"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Suffix</label>
+                                    <label className="block text-xs text-muted-foreground mb-1">Suffix</label>
                                     <input
                                         type="text"
                                         value={kpiProps.primaryValueSuffix}
                                         onChange={(e) => setKpiProps(p => ({ ...p, primaryValueSuffix: e.target.value }))}
-                                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm text-black dark:text-white"
+                                        className="w-full p-2 border border-border rounded text-sm text-foreground"
                                         placeholder="e.g., %"
                                     />
                                 </div>
@@ -133,12 +133,12 @@ const AddKpiChart = ({ onClose }) => {
                     )}
 
                     {/* Data Source Selection */}
-                    <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
-                        <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-3">Data Source</h4>
+                    <div className="border border-border rounded-lg p-4 bg-muted">
+                        <h4 className="font-medium text-foreground mb-3">Data Source</h4>
                         
                         {storedDataSets.length > 0 ? (
                             <div className="space-y-2">
-                                <div className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                                <div className="flex items-center space-x-2 text-sm font-medium text-foreground">
                                     <Database size={16} className="text-indigo-600" />
                                     <span>Available Datasets</span>
                                 </div>
@@ -147,13 +147,13 @@ const AddKpiChart = ({ onClose }) => {
                                         <button
                                             key={dataSet.id}
                                             onClick={() => handleStoredDataSelect(dataSet)}
-                                            className="w-full text-left p-3 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded hover:bg-indigo-50 dark:hover:bg-gray-700 hover:border-indigo-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                            className="w-full text-left p-3 text-sm bg-background border border-border rounded hover:bg-indigo-500/10 hover:bg-muted hover:border-border transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                         >
-                                            <div className="font-medium text-gray-800 dark:text-gray-100">{dataSet.name}</div>
-                                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                            <div className="font-medium text-foreground">{dataSet.name}</div>
+                                            <div className="text-xs text-muted-foreground mt-1">
                                                 📊 {dataSet.rowCount} rows • {dataSet.headers.length} columns
                                             </div>
-                                            <div className="text-xs text-gray-400 mt-1">
+                                            <div className="text-xs text-muted-foreground mt-1">
                                                 Columns: {dataSet.headers.slice(0, 3).join(', ')}
                                                 {dataSet.headers.length > 3 && ` +${dataSet.headers.length - 3} more`}
                                             </div>
@@ -162,7 +162,7 @@ const AddKpiChart = ({ onClose }) => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="text-center py-6 text-gray-500 dark:text-gray-400">
+                            <div className="text-center py-6 text-muted-foreground">
                                 <Database size={32} className="mx-auto mb-3 text-gray-300" />
                                 <p className="text-sm font-medium">No datasets available</p>
                                 <p className="text-xs mt-1">Import data using the "Data" tab first</p>
@@ -172,22 +172,22 @@ const AddKpiChart = ({ onClose }) => {
 
                     {/* Status Information */}
                     {kpiProps.isEmpty ? (
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        <div className="bg-muted border border-border rounded-lg p-3">
                             <div className="flex items-center space-x-2">
                                 <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                                <span className="text-sm font-medium text-blue-800">Preview Mode</span>
+                                <span className="text-sm font-medium text-foreground">Preview Mode</span>
                             </div>
-                            <p className="text-xs text-blue-700 mt-1">
+                            <p className="text-xs text-muted-foreground mt-1">
                                 Select a dataset to configure your KPI widget with real data.
                             </p>
                         </div>
                     ) : (
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                        <div className="bg-muted border border-border rounded-lg p-3">
                             <div className="flex items-center space-x-2">
                                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                                <span className="text-sm font-medium text-green-800">Data Configured</span>
+                                <span className="text-sm font-medium text-foreground">Data Configured</span>
                             </div>
-                            <p className="text-xs text-green-700 mt-1">
+                            <p className="text-xs text-muted-foreground mt-1">
                                 Your KPI is ready to be added to the canvas.
                             </p>
                         </div>
@@ -200,8 +200,8 @@ const AddKpiChart = ({ onClose }) => {
                 disabled={kpiProps.isEmpty}
                 className={`w-full py-2 px-4 rounded-md font-medium transition-all duration-200 ${
                     kpiProps.isEmpty
-                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 border-2 border-gray-200 cursor-not-allowed'
-                        : 'bg-blue-50 text-indigo-600 hover:text-white border-2 border-indigo-300 hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer'
+                        ? 'bg-muted text-muted-foreground border-2 border-border cursor-not-allowed'
+                        : 'bg-muted text-indigo-600 hover:text-white border-2 border-border hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer'
                 }`}
             >
                 {kpiProps.isEmpty ? 'Select Data to Continue' : 'Add KPI Widget to Canvas'}
@@ -280,12 +280,12 @@ const DataMapper = ({ data, onMap, onBack }) => {
     };
 
     return (
-        <div className="space-y-4 p-4 border bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <div className="space-y-4 p-4 border bg-muted rounded-lg">
             <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-gray-700 dark:text-gray-200">Configure KPI Data</h4>
+                <h4 className="font-semibold text-foreground">Configure KPI Data</h4>
                 <button
                     onClick={onBack}
-                    className="text-xs text-indigo-600 hover:text-indigo-800 underline focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
+                    className="text-xs text-indigo-600 hover:text-foreground underline focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
                 >
                     ← Back to Data Selection
                 </button>
@@ -296,7 +296,7 @@ const DataMapper = ({ data, onMap, onBack }) => {
                 <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
                     <div className="flex items-center space-x-2">
                         <Info size={16} className="text-indigo-600" />
-                        <span className="text-sm font-medium text-indigo-800">KPI Title Preview</span>
+                        <span className="text-sm font-medium text-foreground">KPI Title Preview</span>
                     </div>
                     <p className="text-sm text-indigo-700 mt-1 font-medium">
                         "{title || `${aggregation.charAt(0).toUpperCase() + aggregation.slice(1)} of ${primaryColumn}`}"
@@ -307,14 +307,14 @@ const DataMapper = ({ data, onMap, onBack }) => {
             {/* Field Selection in Grid Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
                         <TrendingUp size={16} className="inline mr-1" />
                         Value Column
                     </label>
                     <select
                         value={primaryColumn}
                         onChange={(e) => setPrimaryColumn(e.target.value)}
-                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full p-2 border border-border rounded text-sm bg-background text-foreground focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
                         {headers.map(header => {
                             const isNumeric = isNumericColumn(header, data);
@@ -328,11 +328,11 @@ const DataMapper = ({ data, onMap, onBack }) => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Calculation Method</label>
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">Calculation Method</label>
                     <select
                         value={aggregation}
                         onChange={(e) => setAggregation(e.target.value)}
-                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full p-2 border border-border rounded text-sm bg-background text-foreground focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
                         <option value="sum">Sum</option>
                         <option value="average">Average</option>
@@ -346,40 +346,40 @@ const DataMapper = ({ data, onMap, onBack }) => {
             {/* Format Options */}
             <div className="grid grid-cols-3 gap-2">
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Title (Optional)</label>
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">Title (Optional)</label>
                     <input
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="Auto-generated"
-                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white text-black dark:text-white focus:ring-2 focus:ring-indigo-500"
+                        className="w-full p-2 border border-border rounded text-sm bg-background text-foreground focus:ring-2 focus:ring-indigo-500"
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Prefix</label>
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">Prefix</label>
                     <input
                         type="text"
                         value={prefix}
                         onChange={(e) => setPrefix(e.target.value)}
                         placeholder="e.g., $"
-                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white text-black dark:text-white focus:ring-2 focus:ring-indigo-500"
+                        className="w-full p-2 border border-border rounded text-sm bg-background text-foreground focus:ring-2 focus:ring-indigo-500"
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Suffix</label>
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">Suffix</label>
                     <input
                         type="text"
                         value={suffix}
                         onChange={(e) => setSuffix(e.target.value)}
                         placeholder="e.g., %"
-                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white text-black dark:text-white focus:ring-2 focus:ring-indigo-500"
+                        className="w-full p-2 border border-border rounded text-sm bg-background text-foreground focus:ring-2 focus:ring-indigo-500"
                     />
                 </div>
             </div>
 
             {/* Value Preview */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <div className="text-sm font-medium text-blue-800">Calculated Value Preview</div>
+            <div className="bg-muted border border-border rounded-lg p-3">
+                <div className="text-sm font-medium text-foreground">Calculated Value Preview</div>
                 <div className="text-2xl font-bold text-blue-900 mt-1">
                     {prefix}{calculateValue().toLocaleString()}{suffix}
                 </div>
@@ -391,7 +391,7 @@ const DataMapper = ({ data, onMap, onBack }) => {
             <button
                 onClick={handleGenerate}
                 disabled={!primaryColumn}
-                className="w-full py-2 px-4 bg-blue-50 text-indigo-600 hover:text-white transition-all duration-200 border-2 border-indigo-300 rounded-md font-medium hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full py-2 px-4 bg-muted text-indigo-600 hover:text-white transition-all duration-200 border-2 border-border rounded-md font-medium hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
                 Generate KPI Widget
             </button>

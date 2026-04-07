@@ -79,8 +79,8 @@ const AddTreemap = ({ onClose }) => {
     return (
         <div className="space-y-4">
             {/* Chart Preview */}
-            <div className="h-[300px] w-full rounded-lg shadow-inner relative border border-gray-200 dark:border-gray-600 overflow-hidden">
-                <div className="bg-white dark:bg-gray-800 h-full">
+            <div className="h-[300px] w-full rounded-lg shadow-inner relative border border-border overflow-hidden">
+                <div className="bg-background h-full">
                     <TreemapWidget {...chartProps} />
                 </div>
             </div>
@@ -96,12 +96,12 @@ const AddTreemap = ({ onClose }) => {
                     {/* Title Input - only show when data is configured */}
                     {!chartProps.isEmpty && (
                         <div>
-                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Chart Title</label>
+                            <label className="block text-xs font-medium text-muted-foreground mb-1">Chart Title</label>
                             <input
                                 type="text"
                                 value={chartProps.title}
                                 onChange={(e) => handleTitleChange(e.target.value)}
-                                className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                className="w-full p-2 text-sm border border-border rounded text-foreground focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 placeholder="Enter chart title"
                             />
                         </div>
@@ -109,8 +109,8 @@ const AddTreemap = ({ onClose }) => {
 
                     {/* Chart Options - only show when data is configured */}
                     {!chartProps.isEmpty && (
-                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
-                            <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-3">Chart Options</h4>
+                        <div className="border border-border rounded-lg p-4 bg-muted">
+                            <h4 className="font-medium text-foreground mb-3">Chart Options</h4>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="flex items-center space-x-2">
@@ -120,7 +120,7 @@ const AddTreemap = ({ onClose }) => {
                                             onChange={(e) => setChartProps(p => ({ ...p, showDataLabels: e.target.checked }))}
                                             className="rounded border-gray-300"
                                         />
-                                        <span className="text-sm text-gray-700 dark:text-gray-200">Show Labels</span>
+                                        <span className="text-sm text-foreground">Show Labels</span>
                                     </label>
                                 </div>
                                 <div>
@@ -131,7 +131,7 @@ const AddTreemap = ({ onClose }) => {
                                             onChange={(e) => setChartProps(p => ({ ...p, showValues: e.target.checked }))}
                                             className="rounded border-gray-300"
                                         />
-                                        <span className="text-sm text-gray-700 dark:text-gray-200">Show Values</span>
+                                        <span className="text-sm text-foreground">Show Values</span>
                                     </label>
                                 </div>
                             </div>
@@ -139,12 +139,12 @@ const AddTreemap = ({ onClose }) => {
                     )}
 
                     {/* Data Source Selection */}
-                    <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
-                        <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-3">Data Source</h4>
+                    <div className="border border-border rounded-lg p-4 bg-muted">
+                        <h4 className="font-medium text-foreground mb-3">Data Source</h4>
                         
                         {storedDataSets.length > 0 ? (
                             <div className="space-y-2">
-                                <div className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                                <div className="flex items-center space-x-2 text-sm font-medium text-foreground">
                                     <Database size={16} className="text-indigo-600" />
                                     <span>Available Datasets</span>
                                 </div>
@@ -153,13 +153,13 @@ const AddTreemap = ({ onClose }) => {
                                         <button
                                             key={dataSet.id}
                                             onClick={() => handleStoredDataSelect(dataSet)}
-                                            className="w-full text-left p-3 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded hover:bg-indigo-50 hover:border-indigo-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                            className="w-full text-left p-3 text-sm bg-background border border-border rounded hover:bg-indigo-500/10 hover:border-indigo-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                         >
-                                            <div className="font-medium text-gray-800">{dataSet.name}</div>
+                                            <div className="font-medium text-foreground">{dataSet.name}</div>
                                             <div className="text-xs text-gray-500 mt-1">
                                                 📊 {dataSet.rowCount} rows • {dataSet.headers.length} columns
                                             </div>
-                                            <div className="text-xs text-gray-400 mt-1">
+                                            <div className="text-xs text-muted-foreground mt-1">
                                                 Columns: {dataSet.headers.slice(0, 3).join(', ')}
                                                 {dataSet.headers.length > 3 && ` +${dataSet.headers.length - 3} more`}
                                             </div>
@@ -178,20 +178,20 @@ const AddTreemap = ({ onClose }) => {
 
                     {/* Status Information */}
                     {chartProps.isEmpty ? (
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        <div className="bg-muted border border-border rounded-lg p-3">
                             <div className="flex items-center space-x-2">
                                 <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                                <span className="text-sm font-medium text-blue-800">Preview Mode</span>
+                                <span className="text-sm font-medium text-foreground">Preview Mode</span>
                             </div>
                             <p className="text-xs text-blue-700 mt-1">
                                 Select a dataset to configure your treemap with hierarchical data visualization.
                             </p>
                         </div>
                     ) : (
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                        <div className="bg-muted border border-border rounded-lg p-3">
                             <div className="flex items-center space-x-2">
                                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                                <span className="text-sm font-medium text-green-800">Data Configured</span>
+                                <span className="text-sm font-medium text-foreground">Data Configured</span>
                             </div>
                             <p className="text-xs text-green-700 mt-1">
                                 Your treemap is ready to be added to the canvas.
@@ -207,7 +207,7 @@ const AddTreemap = ({ onClose }) => {
                 disabled={chartProps.isEmpty}
                 className={`w-full py-2 px-4 rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
                     chartProps.isEmpty
-                        ? 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed'
+                        ? 'bg-muted text-muted-foreground border-2 border-border cursor-not-allowed'
                         : 'bg-blue-50 text-indigo-600 hover:text-white border-2 border-indigo-300 hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer'
                 }`}
             >
@@ -384,7 +384,7 @@ const DataMapper = ({ data, onMap, onBack }) => {
         return (
             <div className="space-y-4 p-4 border bg-gray-100 rounded-lg">
                 <div className="flex justify-between items-center">
-                    <h4 className="font-semibold text-gray-700 dark:text-gray-200">Map Data</h4>
+                    <h4 className="font-semibold text-foreground">Map Data</h4>
                     <button onClick={onBack} className="text-xs text-indigo-600 hover:text-indigo-800 underline">
                         ← Back
                     </button>
@@ -395,9 +395,9 @@ const DataMapper = ({ data, onMap, onBack }) => {
     }
 
     return (
-        <div className="space-y-4 p-4 border bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <div className="space-y-4 p-4 border bg-muted rounded-lg">
             <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-gray-700 dark:text-gray-200">Configure Treemap</h4>
+                <h4 className="font-semibold text-foreground">Configure Treemap</h4>
                 <button
                     onClick={onBack}
                     className="text-xs text-indigo-600 hover:text-indigo-800 underline focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
@@ -423,14 +423,14 @@ const DataMapper = ({ data, onMap, onBack }) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Category Field */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
                         <TrendingUp size={16} className="inline mr-1" />
                         Category Field (Labels)
                     </label>
                     <select
                         value={categoryField}
                         onChange={(e) => setCategoryField(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded text-sm bg-white dark:bg-gray-800 text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full p-2 border border-gray-300 rounded text-sm bg-background text-foreground focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
                         <option value="">-- Select Field --</option>
                         {headers.map(h => (
@@ -443,13 +443,13 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
                 {/* Value Field */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
                         Value Field (Sizes)
                     </label>
                     <select
                         value={valueField}
                         onChange={(e) => setValueField(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded text-sm bg-white dark:bg-gray-800 text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full p-2 border border-gray-300 rounded text-sm bg-background text-foreground focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
                         <option value="">-- Select Field --</option>
                         {headers.filter(h => h !== categoryField).map(h => (
@@ -465,13 +465,13 @@ const DataMapper = ({ data, onMap, onBack }) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Parent Field (Optional) */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
                         Parent Field (Optional)
                     </label>
                     <select
                         value={parentField}
                         onChange={(e) => setParentField(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded text-sm bg-white dark:bg-gray-800 text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full p-2 border border-gray-300 rounded text-sm bg-background text-foreground focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
                         <option value="">No hierarchy</option>
                         {headers.filter(h => h !== categoryField && h !== valueField).map(h => (
@@ -489,11 +489,11 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
                 {/* Aggregation Selection */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Value Calculation</label>
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">Value Calculation</label>
                     <select
                         value={aggregationType}
                         onChange={(e) => setAggregationType(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded text-sm bg-white dark:bg-gray-800 text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full p-2 border border-gray-300 rounded text-sm bg-background text-foreground focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
                         <option value="sum">Sum</option>
                         <option value="count">Count</option>
@@ -506,7 +506,7 @@ const DataMapper = ({ data, onMap, onBack }) => {
             </div>
 
             {/* Data Info */}
-            <div className="text-xs text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 p-2 rounded border border-gray-200 dark:border-gray-600">
+            <div className="text-xs text-muted-foreground bg-background p-2 rounded border border-border">
                 <span className="font-medium">Data Preview:</span> {data.data?.length || 0} rows found
             </div>
 

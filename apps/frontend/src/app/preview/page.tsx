@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { LogIn } from 'lucide-react';
-import DesignHeader from '@/app/design/Components/DesignHeader';
-import { CanvasProvider } from '@/app/design/Context/CanvasContext';
-import Sidebar from '@/app/design/Components/Sidebar';
-import CanvasEditor from '@/app/design/Components/CanvasEditor';
+import DesignHeader from '@/components/design/header/DesignHeader';
+import { CanvasProvider } from '@/contexts/CanvasContext';
+import Sidebar from '@/components/design/sidebar/Sidebar';
+import CanvasEditor from '@/components/design/canvas/CanvasEditor';
 import AuthDialog from '@/components/auth/AuthDialog';
 
 export default function PreviewPage() {
@@ -38,8 +38,8 @@ export default function PreviewPage() {
         client={null}
         onSaveAttempt={handleSaveAttempt}
       >
-        <main className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900">
-          <header className="bg-white dark:bg-gray-800 shadow-sm border-b px-6 py-4 flex justify-between items-center">
+        <main className="flex flex-col h-screen bg-background">
+          <header className="bg-background shadow-sm border-b px-6 py-4 flex justify-between items-center">
             <h1 className="text-xl font-bold text-indigo-600">Dashboard Preview</h1>
             <button
               onClick={() => setShowAuthDialog(true)}

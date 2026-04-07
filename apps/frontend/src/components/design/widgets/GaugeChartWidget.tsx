@@ -109,9 +109,9 @@ function GaugeChartWidget({
     }
 
     return (
-        <div className="w-full h-full box-border flex flex-col items-center justify-center relative bg-white dark:bg-gray-800">
+        <div className="w-full h-full box-border flex flex-col items-center justify-center relative bg-card">
             {showTitle && (
-                <div className="absolute top-2 left-4 text-sm font-semibold text-gray-800 truncate max-w-[80%]">{title}</div>
+                    <div className="absolute top-2 left-4 text-sm font-semibold text-card-foreground truncate max-w-[80%]">{title}</div>
             )}
             <div className="relative w-full h-[75%]">
                 <Doughnut data={data} options={options} />
@@ -141,7 +141,7 @@ function GaugeChartWidget({
 
                 {/* Min/Max Labels */}
                 {showLabels && (
-                    <div className="absolute w-full bottom-0 flex justify-between px-[12%] text-xs text-gray-500">
+                    <div className="absolute w-full bottom-0 flex justify-between px-[12%] text-xs text-muted-foreground">
                         <span className="font-medium max-w-[10%] truncate inline-block">{formatValue(minValue)}{unit}</span>
                         <span className="font-medium max-w-[10%] truncate inline-block">{formatValue(maxValue)}{unit}</span>
                     </div>
@@ -149,11 +149,11 @@ function GaugeChartWidget({
                 
                 {/* Value Display - Inside Gauge at Bottom */}
                 <div className="absolute bottom-[15%] left-1/2 transform -translate-x-1/2 text-center z-[5] px-2 w-full">
-                    <div className="text-xl font-bold text-slate-800 truncate overflow-hidden whitespace-nowrap">
+                    <div className="text-xl font-bold text-slate-800 dark:text-slate-200 truncate overflow-hidden whitespace-nowrap">
                         {formatValue(value)}{unit}
                     </div>
                     {showTarget && (
-                        <div className="text-xs text-white bg-slate-800 px-2 py-0.5 rounded-full mt-1 inline-block shadow-md truncate overflow-hidden whitespace-nowrap max-w-[90%]">
+                        <div className="text-xs text-white bg-slate-800 dark:bg-slate-700 px-2 py-0.5 rounded-full mt-1 inline-block shadow-md truncate overflow-hidden whitespace-nowrap max-w-[90%]">
                             Target: {formatValue(target)}{unit}
                         </div>
                     )}

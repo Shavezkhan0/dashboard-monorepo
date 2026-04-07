@@ -50,7 +50,7 @@ export default function AuthDialog({
     <Dialog.Root open={isOpen} onOpenChange={onClose}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
-        <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-md z-50">
+        <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background rounded-xl shadow-2xl p-6 w-full max-w-md z-50">
           <div className="flex justify-between items-center mb-6">
             <Dialog.Title className="text-2xl font-bold">
               {activeTab === 'login' ? 'Welcome Back' : 'Create Account'}
@@ -63,13 +63,13 @@ export default function AuthDialog({
           </div>
           
           {/* Tab Switcher */}
-          <div className="flex gap-2 mb-6 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
+          <div className="flex gap-2 mb-6 bg-muted p-1 rounded-lg">
             <button
               onClick={() => setActiveTab('login')}
               className={`flex-1 py-2 px-4 rounded-md transition ${
                 activeTab === 'login'
-                  ? 'bg-white dark:bg-gray-600 shadow-sm'
-                  : 'hover:bg-gray-200 dark:hover:bg-gray-600'
+                  ? 'bg-background shadow-sm'
+                  : 'hover:bg-muted'
               }`}
             >
               Login
@@ -78,8 +78,8 @@ export default function AuthDialog({
               onClick={() => setActiveTab('signup')}
               className={`flex-1 py-2 px-4 rounded-md transition ${
                 activeTab === 'signup'
-                  ? 'bg-white dark:bg-gray-600 shadow-sm'
-                  : 'hover:bg-gray-200 dark:hover:bg-gray-600'
+                  ? 'bg-background shadow-sm'
+                  : 'hover:bg-muted'
               }`}
             >
               Sign Up

@@ -81,14 +81,14 @@ const BubbleChartSetting = ({ initialData, onUpdate, onClose }) => {
     };
 
     if (!mounted || !graphData) {
-        return <div className="p-4 text-gray-500 dark:text-gray-400">Loading settings...</div>;
+        return <div className="p-4 text-muted-foreground">Loading settings...</div>;
     }
 
     return (
-        <div className="pr-2 h-full bg-white dark:bg-gray-800 border-r border-gray-200 flex flex-col shadow-lg">
+        <div className="pr-2 h-full bg-background border-r border-gray-200 flex flex-col shadow-lg">
             <div className="flex items-center justify-between px-4 py-2 border-b-2 border-gray-200">
-                <h2 className="text-lg font-semibold text-black dark:text-white">Edit Bubble Chart</h2>
-                <button onClick={onClose} className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-700 rounded-md"><X size={16} /></button>
+                <h2 className="text-lg font-semibold text-foreground">Edit Bubble Chart</h2>
+                <button onClick={onClose} className="p-2 text-muted-foreground hover:bg-muted rounded-md"><X size={16} /></button>
             </div>
 
             {/* Tabs */}
@@ -98,7 +98,7 @@ const BubbleChartSetting = ({ initialData, onUpdate, onClose }) => {
                     className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all
                     ${activeTab === 'data'
                             ? 'text-blue-600 bg-blue-50 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r after:from-blue-800 after:via-indigo-700 after:to-purple-600 after:content-[""]'
-                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-700'}
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'}
                     `}
                 >
                     Data
@@ -109,7 +109,7 @@ const BubbleChartSetting = ({ initialData, onUpdate, onClose }) => {
                     className={`relative flex-1 py-3 px-4 text-sm font-medium transition-all
                     ${activeTab === 'customize'
                             ? 'text-blue-600 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-gradient-to-r after:from-blue-800 bg-blue-50 after:via-indigo-700 after:to-purple-600 after:content-[""]'
-                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-700'}
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'}
                     `}
                 >
                     Customize
@@ -125,8 +125,8 @@ const BubbleChartSetting = ({ initialData, onUpdate, onClose }) => {
                             onBack={handleBackToDataSelection}
                         />
                     ) : (
-                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-2 bg-gray-50 dark:bg-gray-700">
-                            <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-3 flex items-center space-x-2">
+                        <div className="border border-border rounded-lg p-2 bg-muted">
+                            <h4 className="font-medium text-foreground mb-3 flex items-center space-x-2">
                                 <Database size={16} className="text-indigo-600" />
                                 <span>Data Source</span>
                             </h4>
@@ -136,18 +136,18 @@ const BubbleChartSetting = ({ initialData, onUpdate, onClose }) => {
                                         <button
                                             key={dataSet.id}
                                             onClick={() => handleDataSetSelect(dataSet)}
-                                            className="w-full text-left p-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded hover:bg-indigo-50 dark:hover:bg-gray-700 hover:border-indigo-300 transition-colors"
+                                            className="w-full text-left p-2 text-sm bg-background border border-border rounded hover:bg-indigo-500/10 hover:border-indigo-300 transition-colors"
                                         >
-                                            <div className="font-medium text-gray-800 dark:text-gray-100">{dataSet.name}</div>
-                                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                                            <div className="font-medium text-foreground">{dataSet.name}</div>
+                                            <div className="text-xs text-muted-foreground">
                                                 {dataSet.rowCount} rows • {dataSet.headers.length} columns
                                             </div>
                                         </button>
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-4 text-gray-500 dark:text-gray-400">
-                                    <Database size={24} className="mx-auto mb-2 text-gray-300" />
+                                <div className="text-center py-4 text-muted-foreground">
+                                    <Database size={24} className="mx-auto mb-2" />
                                     <p className="text-sm">No datasets available</p>
                                     <p className="text-xs">Import data using the "Data" tab first</p>
                                 </div>
@@ -159,95 +159,95 @@ const BubbleChartSetting = ({ initialData, onUpdate, onClose }) => {
                 
  {activeTab === 'customize' && (
                     <div className="space-y-2">
-                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                        <div className="border border-border rounded-lg p-4">
                             <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('details')}>
-                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Details</h3>
-                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.details ? 'rotate-180' : ''}`} />
+                                <h3 className="text-sm font-medium text-foreground">Details</h3>
+                                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${expandedSections.details ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.details && (
                                 <div className="mt-3 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600 dark:text-gray-300">Show Title</span>
+                                        <span className="text-sm text-muted-foreground">Show Title</span>
                                         <button onClick={() => handlePropChange('showTitle', !graphData.showTitle)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showTitle ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}>
                                             <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showTitle ? 'translate-x-6' : 'translate-x-1'}`} />
                                         </button>
                                     </div>
                                     {graphData.showTitle && (
                                         <div>
-                                            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Title Text</label>
-                                            <input type="text" value={graphData.title} onChange={(e) => handlePropChange('title', e.target.value)} className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-black dark:text-white" />
+                                            <label className="block text-xs text-muted-foreground mb-1">Title Text</label>
+                                            <input type="text" value={graphData.title} onChange={(e) => handlePropChange('title', e.target.value)} className="w-full p-2 border border-border rounded-md text-sm text-foreground" />
                                         </div>
                                     )}
                                 </div>
                             )}
                         </div>
 
-                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                        <div className="border border-border rounded-lg p-4">
                             <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('xaxis')}>
-                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">X-Axis</h3>
+                                <h3 className="text-sm font-medium text-foreground">X-Axis</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.xaxis ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.xaxis && (
                                 <div className="mt-3 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600 dark:text-gray-300">Show X-Axis Title</span>
+                                        <span className="text-sm text-muted-foreground">Show X-Axis Title</span>
                                         <button onClick={() => handlePropChange('showXAxisTitle', !graphData.showXAxisTitle)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showXAxisTitle ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}>
                                             <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showXAxisTitle ? 'translate-x-6' : 'translate-x-1'}`} />
                                         </button>
                                     </div>
                                     {graphData.showXAxisTitle && (
                                         <div>
-                                            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">X-Axis Title</label>
-                                            <input type="text" value={graphData.xAxisTitle} onChange={(e) => handlePropChange('xAxisTitle', e.target.value)} className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-black dark:text-white" />
+                                            <label className="block text-xs text-muted-foreground mb-1">X-Axis Title</label>
+                                            <input type="text" value={graphData.xAxisTitle} onChange={(e) => handlePropChange('xAxisTitle', e.target.value)} className="w-full p-2 border border-border rounded-md text-sm text-foreground" />
                                         </div>
                                     )}
                                     <div className="grid grid-cols-2 gap-2">
-                                        <div><label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">X Min</label><input type="text" value={graphData.xMin} onChange={(e) => handleNumericPropChange('xMin', e.target.value)} className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white" /></div>
-                                        <div><label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">X Max</label><input type="text" value={graphData.xMax} onChange={(e) => handleNumericPropChange('xMax', e.target.value)} className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white" /></div>
+                                        <div><label className="block text-xs text-muted-foreground mb-1">X Min</label><input type="text" value={graphData.xMin} onChange={(e) => handleNumericPropChange('xMin', e.target.value)} className="w-full p-2 text-sm border border-border rounded text-foreground" /></div>
+                                        <div><label className="block text-xs text-muted-foreground mb-1">X Max</label><input type="text" value={graphData.xMax} onChange={(e) => handleNumericPropChange('xMax', e.target.value)} className="w-full p-2 text-sm border border-border rounded text-foreground" /></div>
                                     </div>
                                 </div>
                             )}
                         </div>
 
-                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                        <div className="border border-border rounded-lg p-4">
                             <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('yaxis')}>
-                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Y-Axis</h3>
+                                <h3 className="text-sm font-medium text-foreground">Y-Axis</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.yaxis ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.yaxis && (
                                 <div className="mt-3 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-600 dark:text-gray-300">Show Y-Axis Title</span>
+                                        <span className="text-sm text-muted-foreground">Show Y-Axis Title</span>
                                         <button onClick={() => handlePropChange('showYAxisTitle', !graphData.showYAxisTitle)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${graphData.showYAxisTitle ? 'bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600' : 'bg-gray-200'}`}>
                                             <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${graphData.showYAxisTitle ? 'translate-x-6' : 'translate-x-1'}`} />
                                         </button>
                                     </div>
                                     {graphData.showYAxisTitle && (
                                         <div>
-                                            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Y-Axis Title</label>
-                                            <input type="text" value={graphData.yAxisTitle} onChange={(e) => handlePropChange('yAxisTitle', e.target.value)} className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-black dark:text-white" />
+                                            <label className="block text-xs text-muted-foreground mb-1">Y-Axis Title</label>
+                                            <input type="text" value={graphData.yAxisTitle} onChange={(e) => handlePropChange('yAxisTitle', e.target.value)} className="w-full p-2 border border-border rounded-md text-sm text-foreground" />
                                         </div>
                                     )}
                                     <div className="grid grid-cols-2 gap-2">
-                                        <div><label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Y Min</label><input type="text" value={graphData.yMin} onChange={(e) => handleNumericPropChange('yMin', e.target.value)} className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white" /></div>
-                                        <div><label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Y Max</label><input type="text" value={graphData.yMax} onChange={(e) => handleNumericPropChange('yMax', e.target.value)} className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white" /></div>
+                                        <div><label className="block text-xs text-muted-foreground mb-1">Y Min</label><input type="text" value={graphData.yMin} onChange={(e) => handleNumericPropChange('yMin', e.target.value)} className="w-full p-2 text-sm border border-border rounded text-foreground" /></div>
+                                        <div><label className="block text-xs text-muted-foreground mb-1">Y Max</label><input type="text" value={graphData.yMax} onChange={(e) => handleNumericPropChange('yMax', e.target.value)} className="w-full p-2 text-sm border border-border rounded text-foreground" /></div>
                                     </div>
                                 </div>
                             )}
                         </div>
 
                         {/* Display Options Section */}
-                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                        <div className="border border-border rounded-lg p-4">
                             <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('display')}>
-                                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Display Options</h3>
+                                <h3 className="text-sm font-medium text-foreground">Display Options</h3>
                                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSections.display ? 'rotate-180' : ''}`} />
                             </div>
                             {expandedSections.display && (
                                 <div className="mt-3 space-y-3">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <span className="text-sm text-gray-600 dark:text-gray-300">Show Legend</span>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Display legend on the top of chart</p>
+                                            <span className="text-sm text-muted-foreground">Show Legend</span>
+                                            <p className="text-xs text-muted-foreground mt-1">Display legend on the top of chart</p>
                                         </div>
                                         <button 
                                             onClick={() => setGraphData(prev => ({ 
@@ -261,8 +261,8 @@ const BubbleChartSetting = ({ initialData, onUpdate, onClose }) => {
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <span className="text-sm text-gray-600 dark:text-gray-300">Show Values</span>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Display coordinate values on data points</p>
+                                            <span className="text-sm text-muted-foreground">Show Values</span>
+                                            <p className="text-xs text-muted-foreground mt-1">Display coordinate values on data points</p>
                                         </div>
                                         <button 
                                             onClick={() => setGraphData(prev => ({ 
@@ -281,7 +281,7 @@ const BubbleChartSetting = ({ initialData, onUpdate, onClose }) => {
                 )}
             </div>
 
-            <div className="p-4 border-t bg-gray-50 dark:bg-gray-700">
+            <div className="p-4 border-t bg-muted">
                 <button onClick={() => onUpdate && onUpdate(graphData)} className="w-full py-2 px-3 bg-blue-50 border-2 border-indigo-300 text-indigo-600 rounded-md text-sm font-medium transition-all duration-200 hover:text-white hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600">
                     Save Changes
                 </button>
@@ -343,9 +343,9 @@ const DataMapper = ({ data, onMap, onBack }) => {
     };
 
     return (
-        <div className="space-y-4 p-4 border bg-white dark:bg-gray-800 rounded-lg">
+        <div className="space-y-4 p-4 border bg-background rounded-lg">
             <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-gray-700 dark:text-gray-200">Configure Chart Data</h4>
+                <h4 className="font-semibold text-foreground">Configure Chart Data</h4>
                 <button
                     onClick={onBack}
                     className="text-xs text-indigo-600 hover:text-indigo-800 underline"
@@ -355,20 +355,20 @@ const DataMapper = ({ data, onMap, onBack }) => {
             </div>
             <div className="grid grid-cols-3 gap-2">
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">X-Axis</label>
-                    <select value={xAxisField} onChange={(e) => setXAxisField(e.target.value)} className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm text-black dark:text-white">
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">X-Axis</label>
+                    <select value={xAxisField} onChange={(e) => setXAxisField(e.target.value)} className="w-full p-2 border border-border rounded text-sm text-foreground">
                         {headers.map(h => <option key={`x-${h}`} value={h}>{h}</option>)}
                     </select>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Y-Axis</label>
-                    <select value={yAxisField} onChange={(e) => setYAxisField(e.target.value)} className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm text-black dark:text-white">
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">Y-Axis</label>
+                    <select value={yAxisField} onChange={(e) => setYAxisField(e.target.value)} className="w-full p-2 border border-border rounded text-sm text-foreground">
                         {headers.map(h => <option key={`y-${h}`} value={h}>{h}</option>)}
                     </select>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Radius (R)</label>
-                    <select value={rAxisField} onChange={(e) => setRAxisField(e.target.value)} className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm text-black dark:text-white">
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">Radius (R)</label>
+                    <select value={rAxisField} onChange={(e) => setRAxisField(e.target.value)} className="w-full p-2 border border-border rounded text-sm text-foreground">
                         {headers.map(h => <option key={`r-${h}`} value={h}>{h}</option>)}
                     </select>
                 </div>
@@ -376,24 +376,24 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
             {/* Preview of generated title */}
             {xAxisField && yAxisField && rAxisField && (
-                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
-                    <div className="flex items-center space-x-2">
-                        <Info size={16} className="text-indigo-600" />
-                        <span className="text-sm font-medium text-indigo-800">Generated Title Preview</span>
-                    </div>
-                    <p className="text-sm text-indigo-700 mt-1 font-medium">
-                        "{generateTitle(xAxisField, yAxisField, rAxisField, aggregationType)}"
-                    </p>
+            <div className="bg-muted border border-border rounded-lg p-3">
+                <div className="flex items-center space-x-2">
+                    <Info size={16} className="text-indigo-600" />
+                    <span className="text-sm font-medium text-foreground">Generated Title Preview</span>
                 </div>
+                <p className="text-sm text-muted-foreground mt-1 font-medium">
+                    "{generateTitle(xAxisField, yAxisField, rAxisField, aggregationType)}"
+                </p>
+            </div>
             )}
 
             {/* Aggregation Selection */}
             <div>
-                <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Data Processing</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-2">Data Processing</label>
                 <select
                     value={aggregationType}
                     onChange={(e) => setAggregationType(e.target.value)}
-                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white text-black dark:text-white"
+                    className="w-full p-2 border border-border rounded text-sm bg-background text-foreground"
                 >
                     <option value="sum">Sum</option>
                     <option value="count">Count</option>

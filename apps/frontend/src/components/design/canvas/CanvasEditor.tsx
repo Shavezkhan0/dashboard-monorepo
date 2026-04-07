@@ -62,20 +62,20 @@ function CanvasEditor() {
 
     const FloatingToolbar = ({ widgetId }: { widgetId: string }) => (
         <div
-            className="absolute top-[-40px] left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 p-1 bg-slate-800 text-white rounded-md shadow-lg"
+            className="absolute top-[-40px] left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 p-1 bg-slate-800 dark:bg-slate-900 text-white rounded-md shadow-lg"
             onClick={(e) => e.stopPropagation()}
         >
-            <button title="Duplicate" onClick={() => duplicateWidget(widgetId)} className="p-1.5 hover:bg-slate-700 rounded"><Copy size={16} /></button>
-            <button title="Bring to Front" onClick={() => bringToFront(widgetId)} className="p-1.5 hover:bg-slate-700 rounded"><BringToFront size={16} /></button>
-            <div className="w-px h-4 bg-slate-600 mx-1"></div>
-            <button title="Delete" onClick={() => deleteWidget(widgetId)} className="p-1.5 text-red-400 hover:bg-slate-700 rounded"><Trash2 size={16} /></button>
+            <button title="Duplicate" onClick={() => duplicateWidget(widgetId)} className="p-1.5 hover:bg-slate-700 dark:hover:bg-slate-600 rounded"><Copy size={16} /></button>
+            <button title="Bring to Front" onClick={() => bringToFront(widgetId)} className="p-1.5 hover:bg-slate-700 dark:hover:bg-slate-600 rounded"><BringToFront size={16} /></button>
+            <div className="w-px h-4 bg-slate-600 dark:bg-slate-500 mx-1"></div>
+            <button title="Delete" onClick={() => deleteWidget(widgetId)} className="p-1.5 text-red-400 hover:bg-slate-700 dark:hover:bg-slate-600 rounded"><Trash2 size={16} /></button>
         </div>
     );
 
     return (
-        <div className="w-full flex-1 bg-gray-100 dark:bg-gray-700 p-4 flex justify-center items-center overflow-auto">
+        <div className="w-full flex-1 bg-muted p-4 flex justify-center items-center overflow-auto">
             <div
-                className="bg-white dark:bg-gray-800 shadow-lg relative w-full h-full"
+                className="bg-background shadow-lg relative w-full h-full"
                 onClick={() => setSelectedWidgetId(null)}
             >
                 <div className="w-full h-full relative overflow-auto ">
@@ -100,10 +100,10 @@ function CanvasEditor() {
                                     key={widget.id}
                                     data-grid={widget.layout}
                                     className={clsx(
-                                        'bg-white dark:bg-gray-800',
+                                        'bg-card',
                                         'relative group transition-[border-color,box-shadow] duration-200  ',
                                         'cursor-grab active:cursor-grabbing',
-                                        isSelected ? 'border-1 border-indigo-500 shadow-xl z-10' : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 '
+                                        isSelected ? 'border-1 border-indigo-500 shadow-xl z-10' : 'border border-border hover:border-gray-300 dark:hover:border-gray-500 '
                                     )}
                                     onClick={(e) => handleWidgetClick(e, widget.id)}
                                 >
@@ -114,7 +114,7 @@ function CanvasEditor() {
                                     </div>
 
                                     {isSelected && (
-                                        <div className="absolute bottom-0 right-0 cursor-se-resize text-gray-400 pr-1 pb-1">
+                                        <div className="absolute bottom-0 right-0 cursor-se-resize text-muted-foreground pr-1 pb-1">
                                             <GripVertical size={16} className="-rotate-45" />
                                         </div>
                                     )}

@@ -83,7 +83,7 @@ const AddGaugeChart = ({ onClose }) => {
 
     return (
         <div className="space-y-4">
-            <div className="h-[300px] w-full bg-white dark:bg-gray-800 rounded-md shadow-inner relative border border-gray-200 dark:border-gray-600 overflow-hidden">
+            <div className="h-[300px] w-full bg-background rounded-md shadow-inner relative border border-border overflow-hidden">
                 <GaugeChartWidget {...chartProps} />
             </div>
 
@@ -98,37 +98,37 @@ const AddGaugeChart = ({ onClose }) => {
                     {!chartProps.isEmpty && (
                         <div className="space-y-3">
                              <div>
-                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Chart Title</label>
+                                <label className="block text-xs font-medium text-muted-foreground mb-1">Chart Title</label>
                                 <input
                                     type="text"
                                     value={chartProps.title}
                                     onChange={(e) => handlePropChange('title', e.target.value)}
-                                    className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    className="w-full p-2 text-sm border border-border rounded text-foreground focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                     placeholder="Enter chart title"
                                 />
                             </div>
 
                             {/* Format Options Section */}
-                            <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-3 bg-gray-50 dark:bg-gray-700">
-                                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-3">Format Options</h4>
+                            <div className="border border-border rounded-lg p-3 bg-muted">
+                                <h4 className="text-sm font-medium text-foreground mb-3">Format Options</h4>
                                 
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Unit / Prefix</label>
+                                        <label className="block text-xs font-medium text-muted-foreground mb-1">Unit / Prefix</label>
                                         <input 
                                             type="text" 
                                             value={chartProps.unit} 
                                             onChange={(e) => handlePropChange('unit', e.target.value)} 
-                                            className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                                            className="w-full p-2 text-sm border border-border rounded text-foreground focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
                                             placeholder="e.g., $, K, M, %" 
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Value Format</label>
+                                        <label className="block text-xs font-medium text-muted-foreground mb-1">Value Format</label>
                                         <select 
                                             value={chartProps.valueFormat} 
                                             onChange={(e) => handlePropChange('valueFormat', e.target.value)} 
-                                            className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                            className="w-full p-2 text-sm border border-border rounded text-foreground focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                         >
                                             <option value="default">Default</option>
                                             <option value="currency">Currency</option>
@@ -141,11 +141,11 @@ const AddGaugeChart = ({ onClose }) => {
                         </div>
                     )}
 
-                    <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
-                        <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-3">Data Source</h4>
+                    <div className="border border-border rounded-lg p-4 bg-muted">
+                        <h4 className="font-medium text-foreground mb-3">Data Source</h4>
                         {storedDataSets.length > 0 ? (
                             <div className="space-y-2">
-                                <div className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                                <div className="flex items-center space-x-2 text-sm font-medium text-foreground">
                                     <Database size={16} className="text-indigo-600" />
                                     <span>Available Datasets</span>
                                 </div>
@@ -154,13 +154,13 @@ const AddGaugeChart = ({ onClose }) => {
                                         <button
                                             key={dataSet.id}
                                             onClick={() => handleStoredDataSelect(dataSet)}
-                                            className="w-full text-left p-3 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded hover:bg-indigo-50 dark:hover:bg-gray-700 hover:border-indigo-300 transition-colors"
+                                            className="w-full text-left p-3 text-sm bg-background border border-border rounded hover:bg-indigo-500/10 hover:bg-muted hover:border-border transition-colors"
                                         >
-                                            <div className="font-medium text-gray-800 dark:text-gray-100">{dataSet.name}</div>
-                                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                            <div className="font-medium text-foreground">{dataSet.name}</div>
+                                            <div className="text-xs text-muted-foreground mt-1">
                                                 📊 {dataSet.rowCount} rows • {dataSet.headers.length} columns
                                             </div>
-                                            <div className="text-xs text-gray-400 mt-1">
+                                            <div className="text-xs text-muted-foreground mt-1">
                                                 Columns: {dataSet.headers.slice(0, 3).join(', ')}
                                                 {dataSet.headers.length > 3 && ` +${dataSet.headers.length - 3} more`}
                                             </div>
@@ -169,7 +169,7 @@ const AddGaugeChart = ({ onClose }) => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="text-center py-6 text-gray-500 dark:text-gray-400">
+                            <div className="text-center py-6 text-muted-foreground">
                                 <Database size={32} className="mx-auto mb-3 text-gray-300" />
                                 <p className="text-sm font-medium">No datasets available</p>
                                 <p className="text-xs mt-1">Import data using the "Data" tab in the sidebar first</p>
@@ -178,22 +178,22 @@ const AddGaugeChart = ({ onClose }) => {
                     </div>
 
                     {chartProps.isEmpty ? (
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        <div className="bg-muted border border-border rounded-lg p-3">
                             <div className="flex items-center space-x-2">
                                 <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                                <span className="text-sm font-medium text-blue-800">Preview Mode</span>
+                                <span className="text-sm font-medium text-foreground">Preview Mode</span>
                             </div>
-                            <p className="text-xs text-blue-700 mt-1">
+                            <p className="text-xs text-muted-foreground mt-1">
                                 Default chart preview shown. Select a dataset to configure your gauge chart.
                             </p>
                         </div>
                     ) : (
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                        <div className="bg-muted border border-border rounded-lg p-3">
                             <div className="flex items-center space-x-2">
                                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                                <span className="text-sm font-medium text-green-800">Data Configured</span>
+                                <span className="text-sm font-medium text-foreground">Data Configured</span>
                             </div>
-                            <p className="text-xs text-green-700 mt-1">
+                            <p className="text-xs text-muted-foreground mt-1">
                                 Chart is ready. You can add it to the canvas now.
                             </p>
                         </div>
@@ -206,8 +206,8 @@ const AddGaugeChart = ({ onClose }) => {
                 disabled={chartProps.isEmpty}
                 className={`w-full py-2 px-4 rounded-md font-medium transition-all duration-200 ${
                     chartProps.isEmpty
-                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 border-2 border-gray-200 cursor-not-allowed'
-                        : 'bg-blue-50 text-indigo-600 hover:text-white border-2 border-indigo-300 hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer'
+                        ? 'bg-muted text-muted-foreground border-2 border-border cursor-not-allowed'
+                        : 'bg-muted text-indigo-600 hover:text-white border-2 border-border hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer'
                 }`}
             >
                 {chartProps.isEmpty ? 'Select Data to Continue' : 'Add Gauge Chart to Canvas'}
@@ -309,12 +309,12 @@ const DataMapper = ({ data, onMap, onBack }) => {
     };
 
     return (
-        <div className="space-y-4 p-4 border bg-white dark:bg-gray-800 rounded-lg">
+        <div className="space-y-4 p-4 border bg-background rounded-lg">
             <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-gray-700 dark:text-gray-200">Configure Gauge Data</h4>
+                <h4 className="font-semibold text-foreground">Configure Gauge Data</h4>
                 <button
                     onClick={onBack}
-                    className="text-xs text-indigo-600 hover:text-indigo-800 underline"
+                    className="text-xs text-indigo-600 hover:text-foreground underline"
                 >
                     ← Back to Data Selection
                 </button>
@@ -330,14 +330,14 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
             {/* Value Field Selection */}
             <div>
-                <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-muted-foreground mb-2">
                     <TrendingUp size={16} className="inline mr-1" />
                     Value Column
                 </label>
                 <select
                     value={valueField}
                     onChange={(e) => setValueField(e.target.value)}
-                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full p-2 border border-border rounded text-sm bg-background text-foreground focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 >
                     {headers.map(header => {
                         const isNumeric = isNumericColumn(header);
@@ -348,25 +348,25 @@ const DataMapper = ({ data, onMap, onBack }) => {
                         );
                     })}
                 </select>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">The first value in this column will be displayed on the gauge.</p>
+                <p className="text-xs text-muted-foreground mt-1">The first value in this column will be displayed on the gauge.</p>
             </div>
 
             {/* Data Statistics Display */}
             {valueField && columnStats.values.length > 0 && (
-                <div className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-3">
-                    <h5 className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-3">Data Statistics for "{valueField}"</h5>
+                <div className="bg-muted border border-border rounded-lg p-3">
+                    <h5 className="text-sm font-medium text-foreground mb-3">Data Statistics for "{valueField}"</h5>
                     <div className="grid grid-cols-3 gap-3 text-xs">
-                        <div className="text-center bg-white dark:bg-gray-800 rounded p-2">
-                            <div className="font-bold text-lg text-gray-800 dark:text-gray-100">{columnStats.min}</div>
-                            <div className="text-gray-500 dark:text-gray-400 mt-1">Minimum</div>
+                        <div className="text-center bg-background rounded p-2">
+                            <div className="font-bold text-lg text-foreground">{columnStats.min}</div>
+                            <div className="text-muted-foreground mt-1">Minimum</div>
                         </div>
-                        <div className="text-center bg-white dark:bg-gray-800 rounded p-2">
+                        <div className="text-center bg-background rounded p-2">
                             <div className="font-bold text-lg text-indigo-600">{columnStats.avg}</div>
-                            <div className="text-gray-500 dark:text-gray-400 mt-1">Average</div>
+                            <div className="text-muted-foreground mt-1">Average</div>
                         </div>
-                        <div className="text-center bg-white dark:bg-gray-800 rounded p-2">
-                            <div className="font-bold text-lg text-gray-800 dark:text-gray-100">{columnStats.max}</div>
-                            <div className="text-gray-500 dark:text-gray-400 mt-1">Maximum</div>
+                        <div className="text-center bg-background rounded p-2">
+                            <div className="font-bold text-lg text-foreground">{columnStats.max}</div>
+                            <div className="text-muted-foreground mt-1">Maximum</div>
                         </div>
                     </div>
                 </div>
@@ -374,12 +374,12 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
             {/* Target Value Selection */}
             {valueField && columnStats.values.length > 0 && (
-                <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-3 bg-gray-50 dark:bg-gray-700">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-3">Target Configuration</label>
+                <div className="border border-border rounded-lg p-3 bg-muted">
+                    <label className="block text-sm font-medium text-foreground mb-3">Target Configuration</label>
                     <div className="space-y-2">
                         <div className="grid grid-cols-2 gap-2">
                             <label className={`flex items-center p-2 border-2 rounded cursor-pointer transition-all ${
-                                targetField === 'manual' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-white hover:bg-gray-50 dark:bg-gray-700'
+                                targetField === 'manual' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-background hover:bg-muted'
                             }`}>
                                 <input
                                     type="radio"
@@ -387,12 +387,12 @@ const DataMapper = ({ data, onMap, onBack }) => {
                                     value="manual"
                                     checked={targetField === 'manual'}
                                     onChange={(e) => setTargetField(e.target.value)}
-                                    className="h-4 w-4 border-gray-300 dark:border-gray-600 mr-2 text-indigo-600"
+                                    className="h-4 w-4 border-border mr-2 text-indigo-600"
                                 />
-                                <span className="text-sm text-gray-700 dark:text-gray-200 font-medium">Manual</span>
+                                <span className="text-sm text-foreground font-medium">Manual</span>
                             </label>
                             <label className={`flex items-center p-2 border-2 rounded cursor-pointer transition-all ${
-                                targetField === 'average' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-white hover:bg-gray-50 dark:bg-gray-700'
+                                targetField === 'average' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-background hover:bg-muted'
                             }`}>
                                 <input
                                     type="radio"
@@ -400,12 +400,12 @@ const DataMapper = ({ data, onMap, onBack }) => {
                                     value="average"
                                     checked={targetField === 'average'}
                                     onChange={(e) => setTargetField(e.target.value)}
-                                    className="h-4 w-4 border-gray-300 dark:border-gray-600 mr-2 text-indigo-600"
+                                    className="h-4 w-4 border-border mr-2 text-indigo-600"
                                 />
-                                <span className="text-sm text-gray-700 dark:text-gray-200 font-medium">Average ({columnStats.avg})</span>
+                                <span className="text-sm text-foreground font-medium">Average ({columnStats.avg})</span>
                             </label>
                             <label className={`flex items-center p-2 border-2 rounded cursor-pointer transition-all ${
-                                targetField === 'max' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-white hover:bg-gray-50 dark:bg-gray-700'
+                                targetField === 'max' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 bg-background hover:bg-muted'
                             }`}>
                                 <input
                                     type="radio"
@@ -413,15 +413,15 @@ const DataMapper = ({ data, onMap, onBack }) => {
                                     value="max"
                                     checked={targetField === 'max'}
                                     onChange={(e) => setTargetField(e.target.value)}
-                                    className="h-4 w-4 border-gray-300 dark:border-gray-600 mr-2 text-indigo-600"
+                                    className="h-4 w-4 border-border mr-2 text-indigo-600"
                                 />
-                                <span className="text-sm text-gray-700 dark:text-gray-200 font-medium">Maximum ({columnStats.max})</span>
+                                <span className="text-sm text-foreground font-medium">Maximum ({columnStats.max})</span>
                             </label>
                             <div>
                                 <select
                                     value={targetField !== 'manual' && targetField !== 'average' && targetField !== 'max' ? targetField : ''}
                                     onChange={(e) => setTargetField(e.target.value)}
-                                    className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    className="w-full p-2 text-sm border border-border rounded text-foreground focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 >
                                     <option value="">From Column...</option>
                                     {headers.filter(header => isNumericColumn(header) && header !== valueField).map(header => (
@@ -435,13 +435,13 @@ const DataMapper = ({ data, onMap, onBack }) => {
                         
                         {targetField === 'manual' && (
                             <div className="mt-2">
-                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Enter Target Value</label>
+                                <label className="block text-xs font-medium text-muted-foreground mb-1">Enter Target Value</label>
                                 <input
                                     type="number"
                                     value={manualTarget}
                                     onChange={(e) => setManualTarget(Number(e.target.value))}
                                     placeholder="Enter target value"
-                                    className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded text-black dark:text-white dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    className="w-full p-2 text-sm border border-border rounded text-foreground focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 />
                             </div>
                         )}
@@ -451,21 +451,21 @@ const DataMapper = ({ data, onMap, onBack }) => {
 
             {/* Custom Title (Optional) */}
             <div>
-                <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Custom Title (Optional)</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-2">Custom Title (Optional)</label>
                 <input
                     type="text"
                     value={customTitle}
                     onChange={(e) => setCustomTitle(e.target.value)}
                     placeholder="Leave empty for auto-generated title"
-                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white text-black dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full p-2 border border-border rounded text-sm bg-background text-foreground focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">If empty, title will be auto-generated from selected fields</p>
+                <p className="text-xs text-muted-foreground mt-1">If empty, title will be auto-generated from selected fields</p>
             </div>
 
             <button 
                 onClick={handleGenerate} 
                 disabled={!valueField}
-                className="w-full py-2 px-4 bg-blue-50 text-indigo-600 hover:text-white transition-all duration-200 border-2 border-indigo-300 rounded-md font-medium hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-2 px-4 bg-muted text-indigo-600 hover:text-white transition-all duration-200 border-2 border-border rounded-md font-medium hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 Generate Gauge Chart
             </button>

@@ -15,8 +15,8 @@ export default function Error({
     }, [error]);
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-            <div className="max-w-md w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
+        <div className="min-h-screen flex items-center justify-center bg-background">
+            <div className="max-w-md w-full bg-background shadow-lg rounded-lg p-8">
                 <div className="text-center">
                     <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
                         <svg
@@ -33,10 +33,10 @@ export default function Error({
                             />
                         </svg>
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                    <h2 className="text-2xl font-bold text-foreground mb-2">
                         Something went wrong!
                     </h2>
-                    <p className="text-gray-600 dark:text-gray-400 mb-6">
+                    <p className="text-muted-foreground mb-6">
                         {error.message || 'An unexpected error occurred while loading the design page.'}
                     </p>
                     <div className="flex gap-3 justify-center">
@@ -48,7 +48,7 @@ export default function Error({
                         </button>
                         <a
                             href="/"
-                            className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                            className="px-4 py-2 border border-border text-foreground rounded-md hover:bg-muted transition"
                         >
                             Go home
                         </a>

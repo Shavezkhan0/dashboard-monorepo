@@ -9,8 +9,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: 'var(--background)',
-        foreground: 'var(--foreground)',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
         // Add semantic colors for better theming
         muted: {
           DEFAULT: 'hsl(var(--muted))',

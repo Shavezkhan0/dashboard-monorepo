@@ -11,18 +11,18 @@ export default function HeaderWidget({ title, logoUrl, metrics }) {
     const displayMetrics = metrics || [];
 
     return (
-        <div className="w-full h-full bg-white dark:bg-gray-800 flex items-center p-4 border-b-2 border-gray-200 dark:border-gray-700 text-black dark:text-white">
+        <div className="w-full h-full bg-card flex items-center p-4 border-b-2 border-border text-card-foreground">
             {/* Logo Section */}
             <div className="flex items-center gap-4 flex-shrink-0">
                 {logoUrl ? (
                     <img src={logoUrl} alt="Logo" className="h-10 w-auto object-contain" />
                 ) : (
-                    <div className="h-10 w-28 bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400 dark:text-gray-300 rounded-md">
+                    <div className="h-10 w-28 bg-muted flex items-center justify-center text-muted-foreground rounded-md">
                         <ImageUp size={18} className="mr-2" />
                         <span className="text-xs">Logo</span>
                     </div>
                 )}
-                <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
+                <h1 className="text-2xl font-bold text-card-foreground whitespace-nowrap">
                     {displayTitle}
                 </h1>
             </div>
@@ -34,8 +34,8 @@ export default function HeaderWidget({ title, logoUrl, metrics }) {
             <div className="flex items-center gap-4">
                 {displayMetrics.map((metric) => (
                     <div key={metric.id} className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{metric.title}:</span>
-                        <div className="px-3 py-1.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-800 dark:text-gray-100 font-semibold">
+                        <span className="text-sm font-medium text-muted-foreground">{metric.title}:</span>
+                        <div className="px-3 py-1.5 bg-muted border border-border rounded-md text-sm text-card-foreground font-semibold">
                             {metric.value}
                         </div>
                     </div>
