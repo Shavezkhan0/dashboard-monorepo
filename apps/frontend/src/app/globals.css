@@ -2,6 +2,21 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Override react-hot-toast transparent backgrounds */
+[data-hot-toast-container] > div {
+  opacity: 1 !important;
+}
+
+[data-hot-toast-container] > div[data-type="success"],
+[data-hot-toast-container] > div[data-type="error"],
+[data-hot-toast-container] > div[data-type="loading"],
+[data-hot-toast-container] > div {
+  background: #1e293b !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
 @theme {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));

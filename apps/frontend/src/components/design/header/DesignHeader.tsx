@@ -3,14 +3,14 @@ import React, { useState, useRef, useEffect } from "react";
 import { BiExport, BiImport } from "react-icons/bi";
 import { FaRegSave } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
-import { X, Copy, ExternalLink, CheckCircle, AlertCircle } from "lucide-react";
-import * as Dialog from '@radix-ui/react-dialog';
 import { useCanvasHook } from "@/contexts/CanvasContext";
 import { useAuthContext } from "@/contexts/AuthContext";
 import Papa from 'papaparse';
-import Image from "next/image";
 import ProfileDropdown from '@/components/account/ProfileDropdown';
 import ThemeToggle from '@/components/ui/ThemeToggle';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import { ShareDashboardDialog, ExportDashboardDialog } from '@/components/ui/dialogs';
 
 export default function DesignHeader() {
     const { widgets, setWidgets, storedDataSets, setStoredDataSets, saveDashboard, dashboard } = useCanvasHook();
@@ -19,6 +19,15 @@ export default function DesignHeader() {
     const [isEditing, setIsEditing] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
 
+    // Export dropdown state
+    const [isExportOpen, setIsExportOpen] = useState(false);
+    const exportRef = useRef<HTMLDivElement>(null);
+
+    // Export dialog state
+    const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
+    const [isCapturing, setIsCapturing] = useState(false);
+    const [captureProgress, setCaptureProgress] = useState('');
+
     // Share dialog state
     const [shareDialogOpen, setShareDialogOpen] = useState(false);
     const [shareLink, setShareLink] = useState('');
@@ -26,13 +35,9 @@ export default function DesignHeader() {
     const [shareError, setShareError] = useState('');
     const [linkCopied, setLinkCopied] = useState(false);
 
-    const inputRef = useRef(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
-    const BasePort = process.env.NEXT_PUBLIC_BACKEND_BASE_PORT;
-    let API_BASE = "";
-    if (typeof window !== "undefined") {
-        API_BASE = `${window.location.protocol}//${window.location.hostname}:${BasePort}`;
-    }
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
     // Load project name from dashboard
     useEffect(() => {
@@ -94,13 +99,13 @@ export default function DesignHeader() {
 
         if (format === 'separate') {
             widgets.forEach(widget => {
-                let dataToExport = [];
+                let dataToExport: any[] = [];
 
                 switch (widget.type) {
                     case 'pie':
                     case 'donut':
                         if (widget.props.labels && widget.props.datasets?.[0]?.dataPoints) {
-                            dataToExport = widget.props.labels.map((label, index) => ({
+                            dataToExport = widget.props.labels.map((label: string, index: number) => ({
                                 Label: label,
                                 Value: widget.props.datasets[0].dataPoints[index] || 0
                             }));
@@ -110,11 +115,11 @@ export default function DesignHeader() {
                     case 'waterfall':
                         if (widget.props.labels && widget.props.dataPoints) {
                             const initial = widget.props.initialValue || 0;
-                            const total = widget.props.dataPoints.reduce((acc, val) => acc + val, initial);
+                            const total = widget.props.dataPoints.reduce((acc: number, val: number) => acc + val, initial);
 
                             dataToExport = [
                                 { Label: 'Initial', Value: initial },
-                                ...widget.props.labels.map((label, index) => ({
+                                ...widget.props.labels.map((label: string, index: number) => ({
                                     Label: label,
                                     Value: widget.props.dataPoints[index] || 0
                                 })),
@@ -125,7 +130,7 @@ export default function DesignHeader() {
 
                     case 'treemap':
                         if (widget.props.data) {
-                            dataToExport = widget.props.data.map(item => ({
+                            dataToExport = widget.props.data.map((item: any) => ({
                                 id: item.id,
                                 parent: item.parent || '',
                                 name: item.name,
@@ -136,7 +141,7 @@ export default function DesignHeader() {
 
                     case 'bubble':
                         if (widget.props.datasets?.[0]?.data) {
-                            dataToExport = widget.props.datasets[0].data.map((point, index) => ({
+                            dataToExport = widget.props.datasets[0].data.map((point: any, index: number) => ({
                                 X_Axis: point.x || 0,
                                 Y_Axis: point.y || 0,
                                 Radius: point.r || 1,
@@ -148,9 +153,9 @@ export default function DesignHeader() {
                     default:
                         // Handle bar, line, column charts and others
                         if (widget.props.labels && widget.props.datasets) {
-                            dataToExport = widget.props.labels.map((label, index) => {
-                                const row = { Label: label };
-                                widget.props.datasets.forEach(ds => {
+                            dataToExport = widget.props.labels.map((label: string, index: number) => {
+                                const row: any = { Label: label };
+                                widget.props.datasets.forEach((ds: any) => {
                                     row[ds.name || 'Value'] = ds.dataPoints?.[index] || 0;
                                 });
                                 return row;
@@ -262,14 +267,16 @@ export default function DesignHeader() {
             link.click();
 
             // Cleanup
-            link.parentNode.removeChild(link);
+            if (link.parentNode) {
+                link.parentNode.removeChild(link);
+            }
             window.URL.revokeObjectURL(url);
 
             alert('Power BI template downloaded successfully!');
 
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Error generating Power BI template:', error);
-            alert(`Failed to export Power BI template: ${error.message}`);
+            alert(`Failed to export Power BI template: ${error instanceof Error ? error.message : 'Unknown error'}`);
         } finally {
             setIsExporting(false);
         }
@@ -309,9 +316,9 @@ export default function DesignHeader() {
             } else {
                 throw new Error(result.error || 'Failed to create link.');
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error("Publishing error:", error);
-            setShareError(error.message);
+            setShareError(error instanceof Error ? error.message : 'Unknown error');
             setShareStatus('error');
         }
     };
@@ -353,6 +360,99 @@ export default function DesignHeader() {
         }
     }, [isEditing]);
 
+    // Click outside handler for export dropdown
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (exportRef.current && !exportRef.current.contains(event.target as Node)) {
+                setIsExportOpen(false);
+            }
+        };
+        if (isExportOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isExportOpen]);
+
+    // Canvas capture function
+    const captureCanvas = async (): Promise<HTMLCanvasElement | null> => {
+        const element = document.getElementById('dashboard-canvas');
+        if (!element) {
+            alert('Dashboard canvas not found. Make sure widgets are loaded.');
+            return null;
+        }
+        return await html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            logging: false,
+        });
+    };
+
+    const handleExportPDF = async () => {
+        if (widgets.length === 0) {
+            alert('Canvas is empty. Add widgets before exporting.');
+            return;
+        }
+        setIsCapturing(true);
+        setCaptureProgress('Capturing dashboard...');
+        try {
+            const canvas = await captureCanvas();
+            if (!canvas) return;
+            setCaptureProgress('Generating PDF...');
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({
+                orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
+                unit: 'px',
+                format: [canvas.width / 2, canvas.height / 2],
+            });
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
+            pdf.save(`${projectName}_dashboard.pdf`);
+            setCaptureProgress('');
+        } catch (error) {
+            console.error('PDF export error:', error);
+            alert('Failed to export PDF. Please try again.');
+        } finally {
+            setIsCapturing(false);
+            setCaptureProgress('');
+        }
+    };
+
+    const handleExportImage = async (format: 'png' | 'jpg') => {
+        if (widgets.length === 0) {
+            alert('Canvas is empty. Add widgets before exporting.');
+            return;
+        }
+        setIsCapturing(true);
+        setCaptureProgress(`Capturing dashboard as ${format.toUpperCase()}...`);
+        try {
+            const canvas = await captureCanvas();
+            if (!canvas) return;
+            const mimeType = format === 'jpg' ? 'image/jpeg' : 'image/png';
+            const quality = format === 'jpg' ? 0.95 : undefined;
+            const dataUrl = format === 'jpg' ? canvas.toDataURL(mimeType, quality) : canvas.toDataURL(mimeType);
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = `${projectName}_dashboard.${format}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error('Image export error:', error);
+            alert(`Failed to export ${format.toUpperCase()}. Please try again.`);
+        } finally {
+            setIsCapturing(false);
+            setCaptureProgress('');
+        }
+    };
+
+    const handleShareLinkAndCloseExport = async () => {
+        setIsExportDialogOpen(false);
+        handleShareLink();
+    };
+
     const baseBtnClass = `
         flex items-center justify-center gap-1
        px-[4px] py-[2px]
@@ -382,7 +482,7 @@ export default function DesignHeader() {
                 </div>
 
                 <div className="flex items-center space-x-4">
-                    <h3 className="text-sm font-medium text-indigo-600 dark:text-indigo-400">Your Project:</h3>
+                    <h3 className="text-sm font-medium text-indigo-600 dark:text-indigo-400">Name:</h3>
                     {isEditing ? (
                         <input
                             ref={inputRef}
@@ -420,37 +520,49 @@ export default function DesignHeader() {
                         />
                     </label>
 
-                    <div className="relative group">
-                        <button className={baseBtnClass}>
+                    <div className="relative" ref={exportRef}>
+                        <button 
+                            className={baseBtnClass}
+                            onClick={() => setIsExportOpen(!isExportOpen)}
+                        >
                             <BiExport size={18} /> Export
                         </button>
-                        <div className="absolute right-0 mt-2 w-56 bg-background border border-border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-100">
-                            <button
-                                onClick={handleShareLink}
-                                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted rounded-t-md"
-                            >
-                                Publish (Create Link To Share)
-                            </button>
-                            <button
-                                onClick={() => handleExportToCSV('single')}
-                                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted rounded-t-md"
-                            >
-                                Export Dashboard Layout (CSV)
-                            </button>
-                            <button
-                                onClick={() => handleExportToCSV('separate')}
-                                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted"
-                            >
-                                Export All Charts Data (CSV)
-                            </button>
-                            <button
-                                onClick={handleDownloadPBIT}
-                                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted rounded-b-md disabled:opacity-50 disabled:cursor-not-allowed"
-                                disabled={isExporting || widgets.length === 0}
-                            >
-                                {isExporting ? 'Generating...' : 'Export to Power BI (.pbit)'}
-                            </button>
-                        </div>
+                        {isExportOpen && (
+                            <div className="absolute right-0 mt-1 w-56 bg-background border border-border rounded-md shadow-lg z-50">
+                                <div className="absolute h-1 w-full -top-1" />
+                                <button
+                                    onClick={() => { setIsExportOpen(false); setIsExportDialogOpen(true); }}
+                                    className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted rounded-t-md"
+                                >
+                                    Export Dashboard
+                                </button>
+                                <button
+                                    onClick={() => { setIsExportOpen(false); handleShareLink(); }}
+                                    className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted"
+                                >
+                                    Publish (Create Link To Share)
+                                </button>
+                                <button
+                                    onClick={() => { setIsExportOpen(false); handleExportToCSV('single'); }}
+                                    className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted"
+                                >
+                                    Export Dashboard Layout (CSV)
+                                </button>
+                                <button
+                                    onClick={() => { setIsExportOpen(false); handleExportToCSV('separate'); }}
+                                    className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted"
+                                >
+                                    Export All Charts Data (CSV)
+                                </button>
+                                <button
+                                    onClick={() => { setIsExportOpen(false); handleDownloadPBIT(); }}
+                                    className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted rounded-b-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled={isExporting || widgets.length === 0}
+                                >
+                                    {isExporting ? 'Generating...' : 'Export to Power BI (.pbit)'}
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     <button
@@ -464,117 +576,33 @@ export default function DesignHeader() {
             </header>
 
             {/* Share Link Dialog */}
-            <Dialog.Root open={shareDialogOpen} onOpenChange={handleShareDialogClose}>
-                <Dialog.Portal>
-                    <Dialog.Overlay className="fixed inset-0 bg-black/50 z-40" />
-                    <Dialog.Content className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-background rounded-lg shadow-2xl w-[500px] max-w-[90vw]">
-                        <div className="flex justify-between items-center p-4 border-b">
-                            <Dialog.Title className="text-xl text-foreground font-semibold">
-                                Share Dashboard
-                            </Dialog.Title>
-                            <Dialog.Close asChild>
-                                <button className="p-1 rounded-full text-foreground hover:bg-muted" aria-label="Close">
-                                    <X size={20} />
-                                </button>
-                            </Dialog.Close>
-                        </div>
+            <ShareDashboardDialog
+                open={shareDialogOpen}
+                onOpenChange={handleShareDialogClose}
+                shareLink={shareLink}
+                shareStatus={shareStatus}
+                shareError={shareError}
+                linkCopied={linkCopied}
+                onShareLink={handleShareLink}
+                onCopyLink={handleCopyLink}
+                onOpenInNewTab={handleOpenInNewTab}
+            />
 
-                        <div className="p-6">
-                            {shareStatus === 'loading' && (
-                                <div className="flex items-center justify-center py-8">
-                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-                                    <span className="ml-3 text-muted-foreground">Creating shareable link...</span>
-                                </div>
-                            )}
-
-                            {shareStatus === 'success' && (
-                                <div className="space-y-4">
-                                    <div className="flex items-center text-green-600 mb-4">
-                                        <CheckCircle size={20} className="mr-2" />
-                                        <span className="font-medium">Link created successfully!</span>
-                                    </div>
-
-                                    <div className="space-y-3">
-                                        <label className="block text-sm font-medium text-foreground">
-                                            Shareable Link:
-                                        </label>
-                                        <div className="flex items-center space-x-2">
-                                            <input
-                                                type="text"
-                                                value={shareLink}
-                                                readOnly
-                                                className="flex-1 text-foreground px-3 py-2 border border-border rounded-md bg-muted text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                            />
-                                            <button
-                                                onClick={handleCopyLink}
-                                                className="flex items-center justify-center gap-1
-        px-3 py-2
-        border-2 border-indigo-300
-        text-indigo-600
-        bg-blue-50
-        rounded-md
-        text-sm font-medium
-        hover:border-0
-        hover:text-white
-        hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600
-        hover:border-transparent
-        disabled:opacity-50 disabled:cursor-not-allowed"
-                                                title="Copy to clipboard"
-                                            >
-                                                <Copy size={16} className="mr-1" />
-                                                {linkCopied ? 'Copied!' : 'Copy'}
-                                            </button>
-                                            <button
-                                                onClick={handleOpenInNewTab}
-                                                className="flex items-center justify-center gap-1
-        px-3 py-2
-        border-2 border-indigo-300
-        text-indigo-600
-        bg-blue-50
-        rounded-md
-        text-sm font-medium
-        hover:border-0
-        hover:text-white
-        hover:bg-gradient-to-r from-blue-800 via-indigo-700 to-purple-600
-        hover:border-transparent
-        disabled:opacity-50 disabled:cursor-not-allowed"
-                                                title="Open in new tab"
-                                            >
-                                                <ExternalLink size={16} className="mr-1" />
-                                                Open
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <p className="text-sm text-gray-600 mt-4">
-                                        Anyone with this link can view your dashboard. The link will remain active until you delete the shared dashboard.
-                                    </p>
-                                </div>
-                            )}
-
-                            {shareStatus === 'error' && (
-                                <div className="space-y-4">
-                                    <div className="flex items-center text-red-600 mb-4">
-                                        <AlertCircle size={20} className="mr-2" />
-                                        <span className="font-medium">Failed to create link</span>
-                                    </div>
-
-                                    <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                                        <p className="text-sm text-red-800">{shareError}</p>
-                                    </div>
-
-                                    <button
-                                        onClick={handleShareLink}
-                                        className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm"
-                                    >
-                                        Try Again
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </Dialog.Content>
-                </Dialog.Portal>
-            </Dialog.Root>
+            {/* Export Dialog */}
+            <ExportDashboardDialog
+                open={isExportDialogOpen}
+                onOpenChange={setIsExportDialogOpen}
+                widgets={widgets}
+                projectName={projectName}
+                isCapturing={isCapturing}
+                captureProgress={captureProgress}
+                isExporting={isExporting}
+                onExportPDF={handleExportPDF}
+                onExportImage={handleExportImage}
+                onExportCSV={handleExportToCSV}
+                onDownloadPBIT={handleDownloadPBIT}
+                onShareLink={handleShareLinkAndCloseExport}
+            />
         </>
     );
 }

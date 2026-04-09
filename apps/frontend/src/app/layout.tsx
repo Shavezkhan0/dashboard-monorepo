@@ -55,12 +55,26 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <Toaster
             position="top-right"
             reverseOrder={false}
+            gutterBarSize={0}
             toastOptions={{
-              // Default options for all toasts
               className: '',
               style: {
-                background: 'var(--background)',
-                color: 'var(--foreground)',
+                background: 'linear-gradient(to right, #1e40af, #4338ca, #9333ea)',
+                color: '#ffffff',
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+              },
+              success: {
+                iconTheme: {
+                  primary: '#22c55e',
+                  secondary: '#ffffff',
+                },
+              },
+              error: {
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: '#ffffff',
+                },
               },
             }}
           />

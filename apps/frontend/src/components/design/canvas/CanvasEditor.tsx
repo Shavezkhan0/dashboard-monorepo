@@ -75,6 +75,7 @@ function CanvasEditor() {
     return (
         <div className="w-full flex-1 bg-muted p-4 flex justify-center items-center overflow-auto">
             <div
+                id="dashboard-canvas"
                 className="bg-background shadow-lg relative w-full h-full"
                 onClick={() => setSelectedWidgetId(null)}
             >

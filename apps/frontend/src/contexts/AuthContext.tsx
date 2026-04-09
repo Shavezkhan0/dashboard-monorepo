@@ -29,6 +29,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [client, setClient] = useState<ApiClient | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
+  // Logout function - must be defined before use
+  const logout = () => {
+    setToken(null);
+    setExpiresAt(null);
+    setRefreshToken(null);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('expiresAt');
+      localStorage.removeItem('refreshToken');
+    }
+  };
+
   // Load token from localStorage on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -63,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return null;
     });
     setClient(apiClient);
-  }, [token]);
+  }, []);
 
   // Auto-refresh token 1 hour before expiration
   useEffect(() => {
@@ -110,14 +122,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return null;
   };
 
-  const loginMutation = useLogin(client || new ApiClient(API_URL, () => null));
-  const registerMutation = useRegister(client || new ApiClient(API_URL, () => null));
+  const getTokenGetter = () => {
+    if (typeof window !== 'undefined') {
+      return () => localStorage.getItem('token');
+    }
+    return () => null;
+  };
 
-  // Fetch user data when we have a token
+  const loginMutation = useLogin(new ApiClient(API_URL, getTokenGetter()));
+  const registerMutation = useRegister(new ApiClient(API_URL, getTokenGetter()));
+
+  // Fetch user data when we have a token - always use a valid client with localStorage token getter
   const { data: user, isLoading: isLoadingUser } = useAuth(
-    client || new ApiClient(API_URL, () => null),
+    new ApiClient(API_URL, getTokenGetter()),
     {
-      enabled: !!token && !!client && isInitialized,
+      enabled: !!token && isInitialized,
       retry: false,
       staleTime: 5 * 60 * 1000, // 5 minutes
     }
@@ -161,17 +180,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('Register error:', error);
       throw error;
-    }
-  };
-
-  const logout = () => {
-    setToken(null);
-    setExpiresAt(null);
-    setRefreshToken(null);
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('token');
-      localStorage.removeItem('expiresAt');
-      localStorage.removeItem('refreshToken');
     }
   };
 
