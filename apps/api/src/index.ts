@@ -1,77 +1,116 @@
+/**
+ * Main API Server Entry Point
+ * Hono server with all routes registered
+ */
+
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import auth from './routes/auth';
-import dashboards from './routes/dashboards';
-import dataSources from './routes/data-sources';
-import admin from './routes/admin';
+import { serve } from '@hono/node-server';
+
+// Import routes
+import authRoutes from './routes/auth';
+import dashboardRoutes from './routes/dashboards';
+import dataSourceRoutes from './routes/data-sources';
+import adminRoutes from './routes/admin';
+
+// Import NEW routes
+import datasetRoutes from './routes/datasets';
+import chartRoutes from './routes/charts';
 
 const app = new Hono();
 
-// CORS middleware
-app.use(
-  '*',
-  cors({
-    origin: [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'http://localhost:3002',
-    ],
-    credentials: true,
-    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization'],
-  })
-);
+// ============================================================================
+// MIDDLEWARE
+// ============================================================================
+
+// CORS configuration
+app.use('/*', cors({
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    // Add your production frontend URLs
+  ],
+  credentials: true,
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization'],
+}));
+
+// Request logging middleware
+app.use('*', async (c, next) => {
+  const start = Date.now();
+  await next();
+  const ms = Date.now() - start;
+  console.log(`${c.req.method} ${c.req.url} - ${ms}ms`);
+});
+
+// ============================================================================
+// ROUTES
+// ============================================================================
 
 // Health check
 app.get('/health', (c) => {
-  return c.json({ status: 'ok', timestamp: new Date().toISOString() });
+  return c.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    version: '2.0.0'
+  });
 });
 
-// API routes
-app.route('/api/auth', auth);
-app.route('/api/dashboards', dashboards);
-app.route('/api/data-sources', dataSources);
-app.route('/api/admin', admin);
+// Root endpoint
+app.get('/', (c) => {
+  return c.json({
+    message: 'Dashboard Builder API v2.0',
+    endpoints: {
+      auth: '/api/auth',
+      datasets: '/api/datasets',
+      charts: '/api/charts',
+      dashboards: '/api/dashboards',
+      dataSources: '/api/data-sources',
+      admin: '/api/admin'
+    }
+  });
+});
+
+// Register route groups
+app.route('/api/auth', authRoutes);
+app.route('/api/datasets', datasetRoutes);        // NEW
+app.route('/api/charts', chartRoutes);            // NEW
+app.route('/api/dashboards', dashboardRoutes);
+app.route('/api/data-sources', dataSourceRoutes);
+app.route('/api/admin', adminRoutes);
+
+// ============================================================================
+// ERROR HANDLING
+// ============================================================================
 
 // 404 handler
 app.notFound((c) => {
-  return c.json({ error: 'Not Found', message: 'Route not found' }, 404);
+  return c.json({
+    error: 'Not Found',
+    path: c.req.url
+  }, 404);
 });
 
-// Error handler
+// Global error handler
 app.onError((err, c) => {
-  console.error('Error:', err);
-  return c.json(
-    { error: 'Internal Server Error', message: err.message },
-    500
-  );
+  console.error('Server Error:', err);
+  return c.json({
+    error: 'Internal Server Error',
+    message: err.message
+  }, 500);
 });
 
-const port = Number(process.env.PORT) || 4000;
+// ============================================================================
+// START SERVER
+// ============================================================================
 
-import { serve } from '@hono/node-server';
+const port = parseInt(process.env.PORT || '4000');
 
-// ... (existing imports)
+console.log(`🚀 Starting Dashboard Builder API v2.0...`);
+console.log(`📊 Professional Architecture: Datasets → Charts → Dashboards`);
+console.log(`🔗 Server running at http://localhost:${port}`);
 
-// Start server - works with both Bun and Node.js via tsx
-if (typeof Bun !== 'undefined') {
-  Bun.serve({
-    port,
-    fetch: app.fetch,
-  });
-  console.log(`🚀 Server running on http://localhost:${port}`);
-} else {
-  // For Node.js with tsx
-  console.log(`🚀 Server starting on port ${port}...`);
-  serve({
-    fetch: app.fetch,
-    port,
-  }, (info) => {
-    console.log(`🚀 Server running on http://localhost:${info.port}`);
-  });
-}
-
-export default {
-  port,
+serve({
   fetch: app.fetch,
-};
+  port,
+});

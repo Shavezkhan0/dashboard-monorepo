@@ -15,6 +15,9 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
   },
 });
 
+// Export as 'supabase' for compatibility with new routes
+export const supabase = supabaseAdmin;
+
 // Create a client for a specific user's JWT
 export function createSupabaseClient(authToken: string) {
   return createClient(supabaseUrl, supabaseServiceKey, {

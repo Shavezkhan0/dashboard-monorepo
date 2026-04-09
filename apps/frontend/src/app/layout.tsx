@@ -25,12 +25,59 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const theme = localStorage.getItem('dashboard-theme') || 'system';
+                const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                const resolvedTheme = theme === 'system' ? systemTheme : theme;
+                
+                if (resolvedTheme === 'dark') {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
+      </head>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning
+      >
         <Providers>
           <ThemeProvider>
             <AuthProvider>{children}</AuthProvider>
           </ThemeProvider>
-          <Toaster position="top-right" reverseOrder={false} />
+          <Toaster
+            position="top-right"
+            reverseOrder={false}
+            gutterBarSize={0}
+            toastOptions={{
+              className: '',
+              style: {
+                background: 'linear-gradient(to right, #1e40af, #4338ca, #9333ea)',
+                color: '#ffffff',
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+              },
+              success: {
+                iconTheme: {
+                  primary: '#22c55e',
+                  secondary: '#ffffff',
+                },
+              },
+              error: {
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: '#ffffff',
+                },
+              },
+            }}
+          />
         </Providers>
       </body>
     </html>

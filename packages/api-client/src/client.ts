@@ -4,9 +4,17 @@ import type {
   Dashboard,
   CreateDashboardInput,
   UpdateDashboardInput,
+  DashboardWithCharts,
   DataSource,
   CreateDataSourceInput,
   UpdateDataSourceInput,
+  Dataset,
+  CreateDatasetInput,
+  UpdateDatasetInput,
+  Chart,
+  CreateChartInput,
+  UpdateChartInput,
+  ChartWithData,
   User,
   LoginRequest,
   RegisterRequest,
@@ -18,9 +26,14 @@ export class ApiClient {
   private baseUrl: string;
   private getAuthToken: () => string | null;
 
-  constructor(baseUrl: string, getAuthToken?: () => string | null) {
-    this.baseUrl = baseUrl.replace(/\/$/, '');
-    this.getAuthToken = getAuthToken || (() => null);
+  constructor(baseUrl?: string, getAuthToken?: () => string | null) {
+    this.baseUrl = (baseUrl || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').replace(/\/$/, '');
+    this.getAuthToken = getAuthToken || (() => {
+      if (typeof window !== 'undefined') {
+        return localStorage.getItem('token');
+      }
+      return null;
+    });
   }
 
   private async request<T>(
@@ -62,7 +75,10 @@ export class ApiClient {
     return data.data;
   }
 
-  // Auth methods
+  // ============================================================================
+  // AUTH METHODS
+  // ============================================================================
+
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     return this.request<AuthResponse>('/api/auth/login', {
       method: 'POST',
@@ -88,13 +104,146 @@ export class ApiClient {
     return this.request<User>('/api/auth/me');
   }
 
-  // Dashboard methods
-  async getDashboards(): Promise<Dashboard[]> {
-    return this.request<Dashboard[]>('/api/dashboards');
+  // ============================================================================
+  // DATASET METHODS
+  // ============================================================================
+
+  async getDatasets(): Promise<Dataset[]> {
+    return this.request<Dataset[]>('/api/datasets');
   }
 
-  async getDashboard(id: string): Promise<Dashboard> {
+  async getDatasetById(id: string): Promise<Dataset> {
+    return this.request<Dataset>(`/api/datasets/${id}`);
+  }
+
+  async getDatasetPreview(id: string): Promise<any> {
+    return this.request<any>(`/api/datasets/${id}/preview`);
+  }
+
+  async createDataset(data: CreateDatasetInput): Promise<Dataset> {
+    return this.request<Dataset>('/api/datasets', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateDataset(id: string, data: UpdateDatasetInput): Promise<Dataset> {
+    return this.request<Dataset>(`/api/datasets/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteDataset(id: string): Promise<void> {
+    return this.request<void>(`/api/datasets/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async uploadCSV(file: File, name?: string, description?: string): Promise<Dataset> {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (name) formData.append('name', name);
+    if (description) formData.append('description', description);
+
+    const token = this.getAuthToken();
+    const headers = new Headers();
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    const response = await fetch(`${this.baseUrl}/api/datasets/upload/csv`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Upload failed' }));
+      throw new Error(error.error || 'Upload failed');
+    }
+
+    const data = await response.json();
+    return data.data;
+  }
+
+  // ============================================================================
+  // CHART METHODS
+  // ============================================================================
+
+  async getCharts(filters?: { dataset_id?: string; type?: string; is_template?: string }): Promise<Chart[]> {
+    const params = new URLSearchParams();
+    if (filters?.dataset_id) params.set('dataset_id', filters.dataset_id);
+    if (filters?.type) params.set('type', filters.type);
+    if (filters?.is_template) params.set('is_template', filters.is_template);
+
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return this.request<Chart[]>(`/api/charts${query}`);
+  }
+
+  async getChartById(id: string): Promise<Chart> {
+    return this.request<Chart>(`/api/charts/${id}`);
+  }
+
+  async getChartWithData(id: string): Promise<ChartWithData> {
+    return this.request<ChartWithData>(`/api/charts/${id}/with-data`);
+  }
+
+  async getChartTemplates(category?: string): Promise<Chart[]> {
+    const query = category ? `?category=${category}` : '';
+    return this.request<Chart[]>(`/api/charts/templates${query}`);
+  }
+
+  async createChart(data: CreateChartInput): Promise<Chart> {
+    return this.request<Chart>('/api/charts', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateChart(id: string, data: UpdateChartInput): Promise<Chart> {
+    return this.request<Chart>(`/api/charts/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteChart(id: string): Promise<void> {
+    return this.request<void>(`/api/charts/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async cloneChart(id: string, dataset_id?: string, name?: string): Promise<Chart> {
+    return this.request<Chart>(`/api/charts/${id}/clone`, {
+      method: 'POST',
+      body: JSON.stringify({ dataset_id, name }),
+    });
+  }
+
+  // ============================================================================
+  // DASHBOARD METHODS (Enhanced)
+  // ============================================================================
+
+  async getDashboards(filters?: { folder?: string; tag?: string }): Promise<Dashboard[]> {
+    const params = new URLSearchParams();
+    if (filters?.folder) params.set('folder', filters.folder);
+    if (filters?.tag) params.set('tag', filters.tag);
+
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return this.request<Dashboard[]>(`/api/dashboards${query}`);
+  }
+
+  async getDashboardById(id: string): Promise<Dashboard> {
     return this.request<Dashboard>(`/api/dashboards/${id}`);
+  }
+
+  async getDashboardWithData(id: string): Promise<DashboardWithCharts> {
+    return this.request<DashboardWithCharts>(`/api/dashboards/${id}/with-data`);
+  }
+
+  async getPublicDashboard(shareToken: string): Promise<Dashboard> {
+    return this.request<Dashboard>(`/api/dashboards/public/${shareToken}`);
   }
 
   async createDashboard(data: CreateDashboardInput): Promise<Dashboard> {
@@ -104,10 +253,7 @@ export class ApiClient {
     });
   }
 
-  async updateDashboard(
-    id: string,
-    data: UpdateDashboardInput
-  ): Promise<Dashboard> {
+  async updateDashboard(id: string, data: UpdateDashboardInput): Promise<Dashboard> {
     return this.request<Dashboard>(`/api/dashboards/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -120,7 +266,28 @@ export class ApiClient {
     });
   }
 
-  // Data Source methods
+  async cloneDashboard(id: string, name?: string): Promise<Dashboard> {
+    return this.request<Dashboard>(`/api/dashboards/${id}/clone`, {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    });
+  }
+
+  async getDashboardVersions(id: string): Promise<any[]> {
+    return this.request<any[]>(`/api/dashboards/${id}/versions`);
+  }
+
+  async restoreDashboardVersion(id: string, version_number: number): Promise<Dashboard> {
+    return this.request<Dashboard>(`/api/dashboards/${id}/restore-version`, {
+      method: 'POST',
+      body: JSON.stringify({ version_number }),
+    });
+  }
+
+  // ============================================================================
+  // DATA SOURCE METHODS
+  // ============================================================================
+
   async getDataSources(): Promise<DataSource[]> {
     return this.request<DataSource[]>('/api/data-sources');
   }
@@ -136,10 +303,7 @@ export class ApiClient {
     });
   }
 
-  async updateDataSource(
-    id: string,
-    data: UpdateDataSourceInput
-  ): Promise<DataSource> {
+  async updateDataSource(id: string, data: UpdateDataSourceInput): Promise<DataSource> {
     return this.request<DataSource>(`/api/data-sources/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -156,7 +320,10 @@ export class ApiClient {
     return this.request<any>(`/api/data-sources/${id}/data`);
   }
 
-  // Admin methods
+  // ============================================================================
+  // ADMIN METHODS
+  // ============================================================================
+
   async getAdminStats(): Promise<AdminStats> {
     return this.request<AdminStats>('/api/admin/stats');
   }

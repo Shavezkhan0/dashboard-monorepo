@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { ApiClient } from '@dashboard/api-client';
 import { useCreateDashboard } from '@dashboard/api-client';
-import DesignHeader from "./Components/DesignHeader";
-import { CanvasProvider } from "./Context/CanvasContext";
-import Sidebar from "./Components/Sidebar";
-import CanvasEditor from "./Components/CanvasEditor";
+import DesignHeader from "@/components/design/header/DesignHeader";
+import { CanvasProvider } from "@/contexts/CanvasContext";
+import Sidebar from "@/components/design/sidebar/Sidebar";
+import CanvasEditor from "@/components/design/canvas/CanvasEditor";
 
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
@@ -68,15 +68,15 @@ export default function NewDesignPage() {
 
     if (authLoading || !dashboardId) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-                <p className="text-gray-600 dark:text-gray-300">Creating dashboard...</p>
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <p className="text-muted-foreground">Creating dashboard...</p>
             </div>
         );
     }
 
     return (
         <CanvasProvider dashboardId={dashboardId} client={client}>
-            <main className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900">
+            <main className="flex flex-col h-screen bg-background">
                 <DesignHeader />
                 <div className="flex flex-1 overflow-hidden">
                     <Sidebar />
