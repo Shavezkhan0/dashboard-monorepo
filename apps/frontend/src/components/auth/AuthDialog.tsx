@@ -22,27 +22,46 @@ export default function AuthDialog({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [infoMsg, setInfoMsg] = useState<string | null>(null);
   const { login, register, isLoading } = useAuthContext();
+
+  const handleTabChange = (tab: 'login' | 'signup') => {
+    setActiveTab(tab);
+    if (tab === 'signup') {
+      setErrorMsg(null);
+      setInfoMsg(null);
+    } else {
+      setErrorMsg(null);
+    }
+  };
   
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg(null);
     try {
       await login({ email, password });
       onSuccess?.();
       onClose();
     } catch (error: any) {
-      alert(error.message || 'Login failed');
+      setErrorMsg(error.message || 'Login failed');
     }
   };
   
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg(null);
     try {
       await register({ email, password, name });
       onSuccess?.();
       onClose();
     } catch (error: any) {
-      alert(error.message || 'Signup failed');
+      if (error.message === 'EMAIL_CONFIRMATION_REQUIRED') {
+        setInfoMsg("Registration successful! Please check your email to confirm your account before logging in.");
+        setActiveTab('login');
+      } else {
+        setErrorMsg(error.message || 'Signup failed');
+      }
     }
   };
   
@@ -65,7 +84,7 @@ export default function AuthDialog({
           {/* Tab Switcher */}
           <div className="flex gap-2 mb-6 bg-muted p-1 rounded-lg">
             <button
-              onClick={() => setActiveTab('login')}
+              onClick={() => handleTabChange('login')}
               className={`flex-1 py-2 px-4 rounded-md transition ${
                 activeTab === 'login'
                   ? 'bg-background shadow-sm'
@@ -75,7 +94,7 @@ export default function AuthDialog({
               Login
             </button>
             <button
-              onClick={() => setActiveTab('signup')}
+              onClick={() => handleTabChange('signup')}
               className={`flex-1 py-2 px-4 rounded-md transition ${
                 activeTab === 'signup'
                   ? 'bg-background shadow-sm'
@@ -85,6 +104,13 @@ export default function AuthDialog({
               Sign Up
             </button>
           </div>
+
+          {/* Info Message */}
+          {infoMsg && (
+            <div className="mb-4 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg p-3 text-sm">
+              {infoMsg}
+            </div>
+          )}
           
           {/* Login Form */}
           {activeTab === 'login' && (
@@ -116,6 +142,11 @@ export default function AuthDialog({
               >
                 {isLoading ? 'Logging in...' : 'Login'}
               </button>
+              {errorMsg && activeTab === 'login' && (
+                <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 text-sm">
+                  {errorMsg}
+                </div>
+              )}
             </form>
           )}
           
@@ -160,6 +191,11 @@ export default function AuthDialog({
               >
                 {isLoading ? 'Creating account...' : 'Sign Up'}
               </button>
+              {errorMsg && activeTab === 'signup' && (
+                <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 text-sm">
+                  {errorMsg}
+                </div>
+              )}
             </form>
           )}
         </Dialog.Content>
