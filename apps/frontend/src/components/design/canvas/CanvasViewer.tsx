@@ -21,6 +21,24 @@ import KpiWidget from '@/components/design/widgets/KpiWidget';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
+// Helper to get the actual chart component based on widget properties
+const getChartComponent = (widget: any) => {
+    // 1. If widget has chartId, check widget.type first (set from chart_config.widgetType)
+    if (widget.chartId) {
+        if (widget.type && widgetComponents[widget.type]) {
+            return widgetComponents[widget.type];
+        }
+        // Fallback to bar
+        return widgetComponents.bar;
+    }
+    // 2. If widget has chart-like data (labels + datasets), it's a chart
+    if (widget.props?.labels && widget.props?.datasets) {
+        return widgetComponents[widget.type] || widgetComponents.bar;
+    }
+    // 3. Otherwise use widget type directly
+    return widgetComponents[widget.type] || widgetComponents.bar;
+};
+
 const widgetComponents = {
     header: HeaderWidget,
     line: LineChartWidget,
@@ -57,7 +75,7 @@ function CanvasViewer() {
                         cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
                     >
                         {widgets.map((widget) => {
-                            const WidgetComponent = widgetComponents[widget.type];
+                            const WidgetComponent = getChartComponent(widget);
 
                             return (
                                 <div

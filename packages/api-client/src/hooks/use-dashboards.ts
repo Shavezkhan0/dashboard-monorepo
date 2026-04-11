@@ -20,7 +20,7 @@ export function useDashboards(
 export function useDashboard(client: ApiClient, id: string | null) {
   return useQuery({
     queryKey: ['dashboard', id],
-    queryFn: () => client.getDashboard(id!),
+    queryFn: () => client.getDashboardById(id!),
     enabled: !!id,
   });
 }

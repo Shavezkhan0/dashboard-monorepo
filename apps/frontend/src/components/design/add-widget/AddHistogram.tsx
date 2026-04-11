@@ -54,7 +54,7 @@ const AddHistogram = ({ onClose }) => {
     const handleStoredDataSelect = (dataSet) => {
         const mockResults = {
             data: dataSet.data,
-            meta: { fields: dataSet.headers }
+            meta: { fields: dataSet.headers || dataSet.columns || [] }
         };
         setParsedData(mockResults);
         setDataSource('stored');

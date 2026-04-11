@@ -1,9 +1,10 @@
 // src/app/design/Context/CanvasContext.jsx
 
 'use client';
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { ApiClient, useDashboard, useUpdateDashboard } from '@dashboard/api-client';
+import { ApiClient, useUpdateDashboard } from '@dashboard/api-client';
+import { useDashboardWithData } from '@dashboard/api-client/src/hooks/use-dashboards-enhanced';
 import { Widget } from '@dashboard/shared-types';
 import toast from 'react-hot-toast';
 
@@ -23,9 +24,11 @@ interface CanvasContextType {
     addStoredDataSet: (dataSet: any) => string;
     removeStoredDataSet: (dataSetId: string) => void;
     getStoredDataSet: (dataSetId: string) => any;
+    getDataSetByChartId: (chartId: string) => any;
     saveDashboard: (name?: string) => void;
     isSaving: boolean;
-    dashboard?: any; // or specific Dashboard type
+    dashboard?: any;
+    charts?: any[];
 }
 
 const CanvasContext = createContext<CanvasContextType | null>(null);
@@ -41,18 +44,120 @@ interface CanvasProviderProps {
 export const CanvasProvider = ({ children, dashboardId, client, onSaveAttempt, isPreviewMode = false }: CanvasProviderProps) => {
     const [widgets, setWidgets] = useState<Widget[]>([]);
     const [selectedWidgetId, setSelectedWidgetId] = useState<string | null>(null);
+    const isDirty = useRef(false);
 
     // Global data storage
     const [storedDataSets, setStoredDataSets] = useState<any[]>([]);
 
-    const { data: dashboard, isLoading } = useDashboard(client!, dashboardId);
+    // Use useDashboardWithData to get dashboard with charts/datasets
+    const { data: dashboardResult, isLoading } = useDashboardWithData(dashboardId!, { enabled: !!dashboardId && !!client });
+    const dashboard: any = dashboardResult;
+    
+    // Extract charts and datasets for widget rendering
+    const charts = (dashboard as any)?.charts || [];
+    const datasets = (dashboard as any)?.datasets || [];
+    
     const updateMutation = useUpdateDashboard(client!);
+
+    // Load datasets from localStorage on dashboard load
+    useEffect(() => {
+        const loadDatasets = () => {
+            const allDatasets: any[] = [];
+            const existingIds = new Set<string>();
+
+            // 1. Load from localStorage (uploaded data files)
+            if (dashboardId && typeof window !== 'undefined') {
+                const storageKey = `dashboard_datasets_${dashboardId}`;
+                const stored = localStorage.getItem(storageKey);
+                if (stored) {
+                    try {
+                        const parsed = JSON.parse(stored);
+                        parsed.forEach((d: any) => {
+                            if (!existingIds.has(d.id)) {
+                                allDatasets.push(d);
+                                existingIds.add(d.id);
+                            }
+                        });
+                    } catch (e) {
+                        console.error('Failed to parse stored datasets:', e);
+                    }
+                }
+            }
+
+            if (allDatasets.length > 0) {
+                setStoredDataSets(allDatasets);
+            }
+        };
+
+        loadDatasets();
+    }, [dashboardId]);
 
     // Load initial widgets
     useEffect(() => {
-        if (dashboard?.widgets) {
-            // Ensure widgets have valid layout and props
-            setWidgets(dashboard.widgets);
+        if (dashboard?.widgets && widgets.length === 0) {
+            const hydratedWidgets = dashboard.widgets.map((w: any) => {
+                // If it's a chart widget with an ID and we have loaded charts
+                if (w.chartId && dashboard.charts && dashboard.datasets) {
+                    const chartData = dashboard.charts.find(c => c.id === w.chartId);
+                    if (chartData) {
+                        const datasetData = dashboard.datasets.find(d => d.id === chartData.dataset_id);
+                        
+                        // Map the raw backend data back into the frontend "labels" and "datasets" props
+                        const xKey = chartData.data_mapping?.x || 'Label';
+                        const labels = datasetData?.data?.map((row: any) => row[xKey]) || [];
+                        
+                        const yKeys = chartData.data_mapping?.y || [];
+                        const series = Array.isArray(yKeys) ? yKeys.map((yKey: string, index: number) => ({
+                            name: yKey,
+                            dataPoints: datasetData?.data?.map((row: any) => row[yKey]) || [],
+                            color: chartData.chart_config?.colors?.[index]
+                        })) : [];
+
+                        // Deep map the database type fallback back into frontend type keys
+                        const typeMap: Record<string, string> = {
+                            'area': 'areachart',
+                            'line': 'line',
+                            'pie': 'pie',
+                            'bar': 'bar',
+                            'histogram': 'histogram',
+                            'donut': 'donut',
+                            'funnel': 'funnel',
+                            'scatter': 'scatter',
+                            'gauge': 'gauge',
+                            'treemap': 'treemap',
+                            'bubble': 'bubble',
+                            'waterfall': 'waterfall',
+                            'kpi': 'kpi'
+                        };
+                        const restoredType = (chartData.chart_config as any)?.widgetType || typeMap[chartData.type] || 'bar';
+
+                        return {
+                            ...w,
+                            // Ensure layout is preserved correctly
+                            layout: w.layout || w.position,
+                            type: restoredType, // Properly target the correct WidgetComponent mapping
+                            datasetId: chartData.dataset_id, 
+                            props: {
+                                ...chartData.chart_config,
+                                type: restoredType,
+                                title: chartData.name,
+                                labels,
+                                datasets: series
+                            }
+                        };
+                    }
+                }
+                
+                // For non-chart widgets, just make sure layout is mapped
+                return {
+                    ...w,
+                    layout: w.layout || w.position || { ...w.position, i: w.id },
+                    props: w.config || w.props || {}
+                };
+            });
+
+            setWidgets(hydratedWidgets);
+            isDirty.current = false;
         }
     }, [dashboard]);
 
@@ -72,8 +177,25 @@ export const CanvasProvider = ({ children, dashboardId, client, onSaveAttempt, i
                 id: dashboardId,
                 data: updateData
             }, {
-                onSuccess: () => {
+                onSuccess: (updatedDashboard) => {
+                    isDirty.current = false;
                     toast.success('Dashboard saved successfully');
+                    // IMPORTANT: Update local widgets state with chartIds from saved dashboard
+                    // This ensures new widgets get their chartIds for future updates
+                    if (updatedDashboard?.widgets && Array.isArray(updatedDashboard.widgets)) {
+                      setWidgets(prev => prev.map(localWidget => {
+                        const savedWidget = updatedDashboard.widgets.find((sw: any) => sw.id === localWidget.id);
+                        // If saved widget has chartId, update local widget with it
+                        if (savedWidget?.chartId) {
+                          return {
+                            ...localWidget,
+                            chartId: savedWidget.chartId,
+                            type: savedWidget.type || localWidget.type
+                          } as Widget;
+                        }
+                        return localWidget;
+                      }));
+                    }
                 },
                 onError: (error) => {
                     toast.error('Failed to save dashboard');
@@ -83,14 +205,9 @@ export const CanvasProvider = ({ children, dashboardId, client, onSaveAttempt, i
         }
     };
 
-    // Auto-save on widget change (optional, or rely on manual trigger)
-    // For now, let's expose saveDashboard and also auto-save after delay?
-    // User asked for "same functionality". 
-    // We'll add a debounced auto-save or just rely on the user/UI. 
-    // Given the UI doesn't seem to have a save button in the new design (from decompose_docker), 
-    // we should probably auto-save.
+    // Auto-save on widget change
     useEffect(() => {
-        if (!isLoading && dashboardId && client && widgets.length > 0) {
+        if (!isLoading && dashboardId && client && widgets.length > 0 && isDirty.current) {
             const timer = setTimeout(() => {
                 saveDashboard();
             }, 2000);
@@ -125,6 +242,7 @@ export const CanvasProvider = ({ children, dashboardId, client, onSaveAttempt, i
         };
         setWidgets((prev) => [...prev, newWidget]);
         setSelectedWidgetId(newId);
+        isDirty.current = true;
     };
 
     const updateWidget = (widgetId: string, newProps: any) => {
@@ -133,6 +251,7 @@ export const CanvasProvider = ({ children, dashboardId, client, onSaveAttempt, i
                 (w.id === widgetId) ? { ...w, props: newProps } : w
             )
         );
+        isDirty.current = true;
     };
 
     const updateLayout = (newLayout: any[]) => {
@@ -140,6 +259,7 @@ export const CanvasProvider = ({ children, dashboardId, client, onSaveAttempt, i
             const layoutItem = newLayout.find((item: any) => item.i === widget.id);
             return layoutItem ? { ...widget, layout: layoutItem } : widget;
         }));
+        isDirty.current = true;
     };
 
     const deleteWidget = (widgetId: string) => {
@@ -147,6 +267,7 @@ export const CanvasProvider = ({ children, dashboardId, client, onSaveAttempt, i
         if (selectedWidgetId === widgetId) {
             setSelectedWidgetId(null);
         }
+        isDirty.current = true;
     };
 
     const duplicateWidget = (widgetId: string) => {
@@ -165,6 +286,7 @@ export const CanvasProvider = ({ children, dashboardId, client, onSaveAttempt, i
         };
         setWidgets(prev => [...prev, newWidget]);
         setSelectedWidgetId(newId);
+        isDirty.current = true;
     };
 
     const bringToFront = (widgetId: string) => {
@@ -174,6 +296,7 @@ export const CanvasProvider = ({ children, dashboardId, client, onSaveAttempt, i
             const otherWidgets = prev.filter(w => w.id !== widgetId);
             return [...otherWidgets, widgetToMove];
         });
+        isDirty.current = true;
     };
 
     // Data management functions
@@ -183,16 +306,70 @@ export const CanvasProvider = ({ children, dashboardId, client, onSaveAttempt, i
             ...dataSet,
             createdAt: new Date().toISOString()
         };
-        setStoredDataSets(prev => [...prev, newDataSet]);
+        
+        // Add to local state
+        setStoredDataSets(prev => {
+            const updated = [...prev, newDataSet];
+            // Persist to localStorage for reload persistence
+            if (typeof window !== 'undefined' && dashboardId) {
+                const storageKey = `dashboard_datasets_${dashboardId}`;
+                try {
+                    localStorage.setItem(storageKey, JSON.stringify(updated));
+                } catch (e: any) {
+                    console.warn('Failed to persist datasets to localStorage:', e.message);
+                }
+            }
+            return updated;
+        });
+        
         return newDataSet.id;
     };
 
+    // Load datasets from localStorage on dashboard load
+    useEffect(() => {
+        if (dashboardId && typeof window !== 'undefined') {
+            const storageKey = `dashboard_datasets_${dashboardId}`;
+            const stored = localStorage.getItem(storageKey);
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (parsed.length > 0) {
+                        setStoredDataSets(parsed);
+                    }
+                } catch (e) {
+                    console.error('Failed to parse stored datasets:', e);
+                }
+            }
+        }
+    }, [dashboardId]);
+
     const removeStoredDataSet = (dataSetId: string) => {
-        setStoredDataSets(prev => prev.filter(ds => ds.id !== dataSetId));
+        setStoredDataSets(prev => {
+            const updated = prev.filter(ds => ds.id !== dataSetId);
+            // Update localStorage
+            if (typeof window !== 'undefined' && dashboardId) {
+                const storageKey = `dashboard_datasets_${dashboardId}`;
+                try {
+                    localStorage.setItem(storageKey, JSON.stringify(updated));
+                } catch (e: any) {
+                    console.warn('Failed to persist datasets to localStorage:', e.message);
+                }
+            }
+            return updated;
+        });
     };
 
     const getStoredDataSet = (dataSetId: string) => {
         return storedDataSets.find(ds => ds.id === dataSetId);
+    };
+
+    // Helper to get dataset by chartId - used by widgets when loading from saved dashboard
+    const getDataSetByChartId = (chartId: string) => {
+        const chart = charts.find((c: any) => c.id === chartId);
+        if (chart?.dataset_id) {
+            return storedDataSets.find(ds => ds.id === chart.dataset_id);
+        }
+        return null;
     };
 
     const value = {
@@ -212,9 +389,11 @@ export const CanvasProvider = ({ children, dashboardId, client, onSaveAttempt, i
         addStoredDataSet,
         removeStoredDataSet,
         getStoredDataSet,
+        getDataSetByChartId,
         saveDashboard,
         isSaving: updateMutation.isPending,
-        dashboard // Expose full dashboard data
+        dashboard,
+        charts
     };
 
     return <CanvasContext.Provider value={value}>{children}</CanvasContext.Provider>;

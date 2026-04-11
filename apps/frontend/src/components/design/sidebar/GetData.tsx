@@ -42,6 +42,7 @@ const GetData: React.FC<GetDataProps> = ({ onClose }) => {
                             name: file.name.replace('.csv', ''),
                             fileName: file.name,
                             headers: headers,
+                            columns: headers, // Add columns for database compatibility
                             data: results.data,
                             rowCount: results.data.length,
                             totalRows: results.data.length,

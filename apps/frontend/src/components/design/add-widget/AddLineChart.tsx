@@ -7,6 +7,7 @@ import { Database, Info, TrendingUp } from 'lucide-react';
 const AddLineChart = ({ onClose }) => {
     const { addWidget, storedDataSets } = useCanvasHook();
     const [parsedData, setParsedData] = useState(null);
+    const [dataSource, setDataSource] = useState('default');
 
     // Default chart data
     const [chartProps, setChartProps] = useState({
@@ -50,9 +51,10 @@ const AddLineChart = ({ onClose }) => {
     const handleStoredDataSelect = (dataSet) => {
         const mockResults = {
             data: dataSet.data,
-            meta: { fields: dataSet.headers }
+            meta: { fields: dataSet.headers || dataSet.columns || [] }
         };
         setParsedData(mockResults);
+        setDataSource('stored');
     };
 
     const handleDataMapped = ({ labels, datasets, xAxisField, yAxisFields, legendField, aggregationType, generatedTitle }) => {

@@ -56,7 +56,7 @@ const AddScatterChart = ({ onClose }) => {
     const handleStoredDataSelect = (dataSet) => {
         const mockResults = {
             data: dataSet.data,
-            meta: { fields: dataSet.headers }
+            meta: { fields: dataSet.headers || dataSet.columns || [] }
         };
         setParsedData(mockResults);
         setDataSource('stored');
@@ -204,7 +204,7 @@ const AddScatterChart = ({ onClose }) => {
 };
 
 const DataMapper = ({ data, onMap, onBack }) => {
-    const headers = data.meta.fields;
+    const headers = data?.meta?.fields || [];
     const [aggregationType, setAggregationType] = useState('sum');
     
     const isNumericColumn = (columnName) => {
