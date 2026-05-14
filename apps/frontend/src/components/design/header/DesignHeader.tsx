@@ -471,14 +471,12 @@ export default function DesignHeader() {
         <>
             <header className="flex justify-between items-center px-3 py-1 border-b-2 border-border bg-background z-10">
                 <div className="ml-4">
-                    {/* <Image
-                        className="cursor-pointer"
-                        title="Indian Navy"
+                    <img
+                        className="cursor-pointer h-8 w-auto object-contain"
+                        title="Logo"
                         alt="logo"
                         src="/logo.png"
-                        width={35}
-                        height={35}
-                    /> */}
+                    />
                 </div>
 
                 <div className="flex items-center space-x-4">
