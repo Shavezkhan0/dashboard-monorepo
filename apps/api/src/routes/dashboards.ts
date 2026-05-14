@@ -81,7 +81,8 @@ function extractDatasetFromWidget(widget: Widget): { name: string; data: any[]; 
   }
 
   const columns = inferColumns(data);
-  const name = widget.props?.title || widget.props?.name || `Dataset for ${widget.type} chart`;
+  const baseName = widget.props?.title || widget.props?.name || `Dataset for ${widget.type} chart`;
+  const name = `${baseName} - ${widget.id.substring(0, 4)}`;
 
   return { name, data, columns };
 }
@@ -147,7 +148,7 @@ function extractChartConfigFromWidget(widget: Widget, datasetId: string): any {
   // Extract chart config (visual settings)
   const chart_config: any = {
     title: props.title || props.chartTitle,
-    subtitle: props.subtitle,
+    subtitle: props.description,
     colors: props.datasets?.map((ds: any) => ds.color).filter(Boolean) || props.colors || (props.color ? [props.color] : undefined),
     showLegend: props.showLegend !== false,
     showGrid: props.showGrid !== false,
@@ -156,6 +157,8 @@ function extractChartConfigFromWidget(widget: Widget, datasetId: string): any {
     orientation: props.orientation,
     stacked: props.stacked,
     showDataLabels: props.showDataLabels || props.showValues,
+    widgetId: widget.id,
+    widgetType: widget.type,
 
     // Line chart specific
     strokeWidth: props.strokeWidth,
@@ -184,7 +187,7 @@ function extractChartConfigFromWidget(widget: Widget, datasetId: string): any {
   });
 
   return {
-    name: props.title || props.name || `${chartType} Chart`,
+    name: (props.title || props.name || `${chartType} Chart`) + ` - ${widget.id.substring(0, 4)}`,
     description: props.description,
     dataset_id: datasetId,
     type: chartType,
@@ -267,10 +270,10 @@ async function processWidgetsForSave(widgets: any[], userId: string): Promise<Da
 
         console.log('✅ Chart saved successfully! ID:', savedChart.id);
 
-        // Convert to new DashboardWidget format
+        // Convert to new DashboardWidget format - preserve original widget type
         processedWidgets.push({
           id: widget.id,
-          type: 'chart',
+          type: widget.type || 'chart',
           chartId: savedChart.id,
           position: {
             x: widget.layout?.x || 0,

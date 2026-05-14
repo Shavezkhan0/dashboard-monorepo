@@ -32,6 +32,8 @@ export interface AuthResponse {
   refreshToken: string;
   expiresAt: string;
   expiresIn: number;
+  needsEmailConfirmation?: boolean;
+  message?: string;
 }
 
 // Dashboard API

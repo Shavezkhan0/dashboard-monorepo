@@ -268,25 +268,46 @@ charts.put('/:id', authMiddleware, async (c) => {
 
 /**
  * DELETE /api/charts/:id
- * Delete a chart
+ * Delete a chart and its associated dataset
  */
 charts.delete('/:id', authMiddleware, async (c) => {
     try {
         const { id } = c.req.param();
         const userId = c.get('userId') as string;
 
-        // Note: Dashboards will need to handle missing charts gracefully
-        const { error } = await supabase
+        // First get the chart to find its dataset_id
+        const { data: chart, error: fetchError } = await supabase
+            .from('charts')
+            .select('dataset_id')
+            .eq('id', id)
+            .eq('user_id', userId)
+            .single();
+
+        if (fetchError || !chart) {
+            return c.json({ error: 'Chart not found' }, 404);
+        }
+
+        // Delete the chart
+        const { error: deleteChartError } = await supabase
             .from('charts')
             .delete()
             .eq('id', id)
             .eq('user_id', userId);
 
-        if (error) {
-            return c.json({ error: error.message }, 400);
+        if (deleteChartError) {
+            return c.json({ error: deleteChartError.message }, 400);
         }
 
-        return c.json({ message: 'Chart deleted successfully' });
+        // If there was a dataset, delete it too
+        if (chart.dataset_id) {
+            await supabase
+                .from('datasets')
+                .delete()
+                .eq('id', chart.dataset_id)
+                .eq('user_id', userId);
+        }
+
+        return c.json({ message: 'Chart and associated data deleted successfully' });
     } catch (error: any) {
         return c.json({ error: error.message }, 500);
     }

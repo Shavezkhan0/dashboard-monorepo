@@ -27,6 +27,9 @@ auth.post('/register', async (c) => {
     });
 
     if (error) {
+      if (error.message?.toLowerCase().includes('rate limit')) {
+        return c.json({ error: 'Rate limit exceeded', message: 'Too many requests. Please wait a moment and try again.' }, 429);
+      }
       return c.json({ error: 'Registration failed', message: error.message }, 400);
     }
 
@@ -46,23 +49,49 @@ auth.post('/register', async (c) => {
       console.error('Error creating user record:', userError);
     }
 
-    // Get session token
-    const { data: sessionData, error: sessionError } =
-      await supabaseAdmin.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-    if (sessionError || !sessionData.session) {
-      return c.json(
-        { error: 'Login failed', message: 'Could not create session' },
-        500
-      );
-    }
-
     // Set token expiration to 5 days
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 5);
+
+    // Try to get session token - might fail if email confirmation is pending
+    let sessionData;
+    let sessionError;
+    try {
+      const result = await supabaseAdmin.auth.signInWithPassword({
+        email,
+        password,
+      });
+      sessionData = result.data;
+      sessionError = result.error;
+    } catch (e: any) {
+      sessionError = e;
+    }
+
+    // If session creation failed due to email not confirmed, return special response
+    if (sessionError || !sessionData?.session) {
+      if (sessionData?.user && !sessionData.session) {
+        return c.json({
+          data: {
+            user: { id: sessionData.user.id, email: sessionData.user.email, name: name || null },
+            token: null,
+            refreshToken: null,
+            expiresAt: null,
+            needsEmailConfirmation: true,
+            message: "Please check your email to confirm your account before logging in."
+          }
+        }, 200);
+      }
+      // For other errors, still return success - user can log in later
+      return c.json({
+        data: {
+          user: { id: data.user.id, email: data.user.email!, name: name || null },
+          token: null,
+          refreshToken: null,
+          expiresAt: null,
+          message: "Account created. Please log in."
+        }
+      }, 200);
+    }
 
     return c.json({
       data: {
@@ -103,6 +132,19 @@ auth.post('/login', async (c) => {
     });
 
     if (error || !data.session) {
+      if (error?.message?.toLowerCase().includes('rate limit')) {
+        return c.json(
+          { error: 'Rate limit exceeded', message: 'Too many requests. Please wait a moment and try again.' },
+          429
+        );
+      }
+      if (error?.message?.toLowerCase().includes('email') && 
+          error?.message?.toLowerCase().includes('confirm')) {
+        return c.json(
+          { error: 'Authentication failed', message: 'Please confirm your email before logging in. Check your inbox for the confirmation link.' },
+          401
+        );
+      }
       return c.json(
         { error: 'Authentication failed', message: error?.message || 'Invalid credentials' },
         401

@@ -30,7 +30,7 @@ const AddTreemap = ({ onClose }) => {
     const handleStoredDataSelect = useCallback((dataSet) => {
         const mockResults = {
             data: dataSet.data,
-            meta: { fields: dataSet.headers },
+            meta: { fields: dataSet.headers || dataSet.columns || [] },
             id: dataSet.id
         };
         setParsedData(mockResults);

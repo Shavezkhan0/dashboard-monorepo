@@ -58,6 +58,8 @@ export class ApiClient {
       headers,
     });
 
+    // Check content-type
+    const contentType = response.headers.get('content-type');
     if (!response.ok) {
       const error: ApiError = await response.json().catch(() => ({
         error: 'Unknown Error',
@@ -69,6 +71,13 @@ export class ApiClient {
 
     if (response.status === 204) {
       return {} as T;
+    }
+
+    // Handle non-JSON responses
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      console.error('Non-JSON response:', text);
+      throw new Error('Invalid response format');
     }
 
     const data: ApiResponse<T> = await response.json();

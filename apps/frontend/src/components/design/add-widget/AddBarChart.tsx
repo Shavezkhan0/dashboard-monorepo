@@ -56,7 +56,7 @@ const AddBarChart = ({ onClose }) => {
     const handleStoredDataSelect = useCallback((dataSet) => {
         const mockResults = {
             data: dataSet.data,
-            meta: { fields: dataSet.headers }
+            meta: { fields: dataSet.headers || dataSet.columns || [] }
         };
         setParsedData(mockResults);
     }, []);

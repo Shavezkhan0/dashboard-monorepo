@@ -39,7 +39,7 @@ export const useDashboard = (id: string, options?: UseQueryOptions<Dashboard>) =
         queryFn: async () => {
             const client = new ApiClient();
             const res = await client.getDashboardById(id);
-            return res.data;
+            return res;
         },
         enabled: !!id,
         ...options,
@@ -50,15 +50,15 @@ export const useDashboard = (id: string, options?: UseQueryOptions<Dashboard>) =
  * Get dashboard with all associated charts and datasets
  * This is the main hook for rendering dashboards with data
  */
-export const useDashboardWithData = (id: string, options?: UseQueryOptions<DashboardWithCharts>) => {
-    return useQuery({
+export const useDashboardWithData = (id: string, options?: Omit<UseQueryOptions<DashboardWithCharts, Error, DashboardWithCharts, any>, 'queryKey'>) => {
+    return useQuery<DashboardWithCharts, Error>({
         queryKey: ['dashboards', id, 'with-data'],
         queryFn: async () => {
             const client = new ApiClient();
             return await client.getDashboardWithData(id);
         },
         enabled: !!id,
-        ...options,
+        ...options as any,
     });
 };
 

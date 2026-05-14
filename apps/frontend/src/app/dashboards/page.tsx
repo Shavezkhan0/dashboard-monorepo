@@ -100,6 +100,11 @@ export default function DashboardsPage() {
           <div className="flex justify-between items-center h-16">
             {/* Left side - Logo and Search */}
             <div className="flex items-center space-x-6">
+              <img
+                src="/logo.png"
+                alt="Logo"
+                className="h-10 w-auto object-contain"
+              />
               <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                 What will you design today?
               </h1>

@@ -24,9 +24,14 @@ import KpiChartSetting from '@/components/design/settings-widget/KpiChartSetting
 export default function Sidebar() {
     const { widgets, selectedWidgetId, setSelectedWidgetId, updateWidget } = useCanvasHook();
 
+    console.log('[Sidebar] selectedWidgetId:', selectedWidgetId);
+    console.log('[Sidebar] widgets:', widgets.map(w => ({ id: w.id, type: w.type })));
+
     const selectedWidget = useMemo(() => {
         return widgets.find(w => w.id === selectedWidgetId);
     }, [widgets, selectedWidgetId]);
+
+    console.log('[Sidebar] selectedWidget:', selectedWidget);
 
     const [selectedOption, setSelectedOption] = useState<any>(null);
     const [selectedAi, setSelectedAi] = useState(false);

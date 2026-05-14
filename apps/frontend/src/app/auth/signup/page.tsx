@@ -42,7 +42,11 @@ export default function SignupPage() {
       await register({ email, password, name: name || undefined });
       router.push('/dashboards');
     } catch (err: any) {
-      setError(err.message || 'Signup failed');
+      if (err.message === 'EMAIL_CONFIRMATION_REQUIRED') {
+        setError('Registration successful! Please check your email to confirm your account before logging in.');
+      } else {
+        setError(err.message || 'Signup failed');
+      }
     }
   };
 

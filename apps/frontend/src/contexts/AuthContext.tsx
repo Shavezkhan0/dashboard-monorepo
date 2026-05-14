@@ -1,8 +1,7 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { ApiClient } from '@dashboard/api-client';
-import { useAuth, useLogin, useRegister } from '@dashboard/api-client';
+import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
+import { ApiClient, useAuth } from '@dashboard/api-client';
 import type { User, LoginRequest, RegisterRequest } from '@dashboard/shared-types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -26,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
-  const [client, setClient] = useState<ApiClient | null>(null);
+  const [localUser, setLocalUser] = useState<User | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Logout function - must be defined before use
@@ -34,6 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null);
     setExpiresAt(null);
     setRefreshToken(null);
+    setLocalUser(null);
     if (typeof window !== 'undefined') {
       localStorage.removeItem('token');
       localStorage.removeItem('expiresAt');
@@ -64,17 +64,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       setIsInitialized(true);
     }
-  }, []);
-
-  // Create API client when token changes - pass function that gets current token from localStorage
-  useEffect(() => {
-    const apiClient = new ApiClient(API_URL, () => {
-      if (typeof window !== 'undefined') {
-        return localStorage.getItem('token');
-      }
-      return null;
-    });
-    setClient(apiClient);
   }, []);
 
   // Auto-refresh token 1 hour before expiration
@@ -122,25 +111,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return null;
   };
 
-  const getTokenGetter = () => {
+  const getTokenGetter = useMemo(() => {
     if (typeof window !== 'undefined') {
       return () => localStorage.getItem('token');
     }
     return () => null;
-  };
+  }, []);
 
-  const loginMutation = useLogin(new ApiClient(API_URL, getTokenGetter()));
-  const registerMutation = useRegister(new ApiClient(API_URL, getTokenGetter()));
-
-  // Fetch user data when we have a token - always use a valid client with localStorage token getter
-  const { data: user, isLoading: isLoadingUser } = useAuth(
-    new ApiClient(API_URL, getTokenGetter()),
-    {
-      enabled: !!token && isInitialized,
-      retry: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-    }
+  const apiClient = useMemo(
+    () => new ApiClient(API_URL, getTokenGetter),
+    [getTokenGetter]
   );
+
+  // Fetch user data when we have a token
+  const { data: fetchedUser, isLoading: isLoadingUser } = useAuth(apiClient, {
+    enabled: !!token && isInitialized,
+    retry: false,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Sync fetched user to local state
+  useEffect(() => {
+    if (fetchedUser) {
+      setLocalUser(fetchedUser as User);
+    }
+  }, [fetchedUser]);
 
   const login = async (credentials: LoginRequest) => {
     try {
@@ -151,6 +146,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(result.token);
       setRefreshToken(result.refreshToken);
       setExpiresAt(result.expiresAt);
+
+      if (result.user) {
+        setLocalUser(result.user as User);
+      }
 
       if (typeof window !== 'undefined') {
         localStorage.setItem('token', result.token);
@@ -167,10 +166,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const tempClient = new ApiClient(API_URL, () => null);
       const result = await tempClient.register(data);
 
+      if (result.needsEmailConfirmation) {
+        if (result.user) {
+          setLocalUser(result.user as User);
+        }
+        throw new Error('EMAIL_CONFIRMATION_REQUIRED');
+      }
+
       // The API client already unwraps the 'data' field, so result is AuthResponse
       setToken(result.token);
       setRefreshToken(result.refreshToken);
       setExpiresAt(result.expiresAt);
+
+      if (result.user) {
+        setLocalUser(result.user as User);
+      }
 
       if (typeof window !== 'undefined') {
         localStorage.setItem('token', result.token);
@@ -184,19 +194,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   // Show loading until we've checked localStorage and fetched user data (if token exists)
-  const isLoading = !isInitialized || (!!token && isLoadingUser) || loginMutation.isPending || registerMutation.isPending;
+  const isLoading = !isInitialized || (!!token && isLoadingUser && !localUser);
 
   return (
     <AuthContext.Provider
       value={{
-        user: user as User | null,
+        user: (localUser || fetchedUser) as User | null,
         token,
         expiresAt,
         isLoading,
         login,
         register,
         logout,
-        isAuthenticated: !!token && !!user,
+        isAuthenticated: !!token && (!!localUser || !!fetchedUser),
         setPendingRedirect,
         getPendingRedirect,
       }}
